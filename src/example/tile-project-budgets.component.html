@@ -1,0 +1,15 @@
+<sky-tile tileName="Project budgets vs. actuals">
+  <sky-tile-title> Project budgets vs. actuals </sky-tile-title>
+  <sky-tile-content>
+    <sky-tile-content-section>
+      @for (project of projects; track project.name) {
+        <div class="sky-margin-stacked-xl">
+          <h3 class="sky-subsection-heading sky-margin-stacked-sm">{{ project.name }}</h3>
+          <div class="chart-container">
+            <canvas #projectChart></canvas>
+          </div>
+        </div>
+      }
+    </sky-tile-content-section>
+  </sky-tile-content>
+</sky-tile>
