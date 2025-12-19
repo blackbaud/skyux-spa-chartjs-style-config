@@ -110,13 +110,19 @@ function getBaseBarChartConfig(): Partial<ChartOptions<'bar'>> {
         backgroundColor: skyuxChartStyles.tooltipBackgroundColor,
         titleColor: skyuxChartStyles.tooltipTitleColor,
         bodyColor: skyuxChartStyles.tooltipBodyColor,
-        borderColor: skyuxChartStyles.tooltipBorderColor,
-        borderWidth: 1,
+        borderColor: 'transparent',
+        borderWidth: 0,
         padding: skyuxChartStyles.tooltipPadding,
+        // Hide default caret since we draw our own colored one
+        displayColors: true,
+        // @ts-ignore - multiKeyBackground sets caret color
+        multiKeyBackground: 'transparent',
         bodySpacing: skyuxChartStyles.tooltipBodySpacing,
         titleMarginBottom: skyuxChartStyles.tooltipTitleMarginBottom,
         caretSize: skyuxChartStyles.tooltipCaretSize,
         boxPadding: skyuxChartStyles.tooltipBoxPadding,
+        // @ts-ignore - caretPadding is a valid Chart.js option
+        caretPadding: 4,
         usePointStyle: true,
         titleFont: {
           family: skyuxChartStyles.fontFamily,

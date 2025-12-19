@@ -69,13 +69,19 @@ function getSkyuxGlobalChartConfig(): Partial<ChartOptions> {
         backgroundColor: tooltipBgColor,
         titleColor: skyuxChartStyles.tooltipTitleColor,
         bodyColor: tooltipTextColor,
-        borderColor: skyuxChartStyles.tooltipBorderColor,
-        borderWidth: 1,
+        borderColor: 'transparent',
+        borderWidth: 0,
         padding: skyuxChartStyles.tooltipPadding || 16,
+        // Hide default caret since we draw our own colored one
+        displayColors: true,
+        // @ts-ignore - multiKeyBackground sets caret color
+        multiKeyBackground: 'transparent',
         bodySpacing: skyuxChartStyles.tooltipBodySpacing,
         titleMarginBottom: skyuxChartStyles.tooltipTitleMarginBottom,
         caretSize: skyuxChartStyles.tooltipCaretSize,
         boxPadding: skyuxChartStyles.tooltipBoxPadding,
+        // @ts-ignore - caretPadding is a valid Chart.js option
+        caretPadding: 4,
         usePointStyle: true,
         titleFont: {
           family: skyuxChartStyles.fontFamily,
@@ -228,6 +234,18 @@ export const skyuxChartStyles = {
     return color || '#c2c4c6'; // Fallback to gray-300
   },
   
+  get tooltipAccentBorderColor(): string {
+    const color = resolveCssVariable('--sky-color-border-info');
+    console.log('SKY UX Tooltip Accent Border Color:', color);
+    return color || '#00b4f1'; // Fallback to info blue
+  },
+  
+  get tooltipAccentBorderWidth(): number {
+    const width = resolveCssVariable('--sky-border-width-accent');
+    console.log('SKY UX Tooltip Accent Border Width:', width);
+    return remToPixels(width || '3px'); // Fallback
+  },
+  
   get tooltipTitleColor(): string {
     const color = resolveCssVariable('--sky-color-text-heading');
     console.log('SKY UX Tooltip Title Color:', color);
@@ -293,8 +311,32 @@ export const skyuxChartStyles = {
     console.log('SKY UX Tooltip Box Padding:', space);
     return remToPixels(space || '4px'); // Fallback
   },
-  
-  // =============================================================================
+    get tooltipShadow(): { offsetX: number; offsetY: number; blur: number; color: string } {
+    const shadow = resolveCssVariable('--sky-elevation-overlay-100');
+    console.log('SKY UX Tooltip Shadow:', shadow);
+    
+    // Parse box-shadow format: "0px 2px 4px 0px rgba(0, 0, 0, 0.15)"
+    // Format: offset-x offset-y blur-radius spread-radius color
+    const match = shadow.match(/(-?[\d.]+)px\s+(-?[\d.]+)px\s+([\d.]+)px\s+[\d.]+px\s+(.+)/);
+    
+    if (match) {
+      return {
+        offsetX: parseFloat(match[1]),
+        offsetY: parseFloat(match[2]),
+        blur: parseFloat(match[3]),
+        color: match[4].trim(),
+      };
+    }
+    
+    // Fallback values
+    return {
+      offsetX: 0,
+      offsetY: 2,
+      blur: 4,
+      color: 'rgba(0, 0, 0, 0.15)',
+    };
+  },
+    // =============================================================================
   // SHARED/GENERAL
   // =============================================================================
   
