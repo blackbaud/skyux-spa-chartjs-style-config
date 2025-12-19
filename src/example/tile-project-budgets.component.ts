@@ -1,7 +1,8 @@
 import { Component, OnInit, ViewChild, ElementRef, AfterViewInit, QueryList, ViewChildren } from '@angular/core';
 import { SkyTilesModule } from '@skyux/tiles';
+import { SkyDropdownModule } from '@skyux/popovers';
 import { Chart, ChartConfiguration, registerables } from 'chart.js';
-import { getSkyuxBarChartConfig, skyuxChartColors } from './chartjs-config';
+import { getSkyuxBarChartConfig, skyuxChartStyles } from './chartjs-config';
 
 Chart.register(...registerables);
 
@@ -19,6 +20,11 @@ interface ProjectData {
     :host {
       display: block;
     }
+    .chart-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
     .chart-container {
       position: relative;
       height: 180px;
@@ -26,7 +32,7 @@ interface ProjectData {
     }
   `,
   templateUrl: './tile-project-budgets.component.html',
-  imports: [SkyTilesModule],
+  imports: [SkyTilesModule, SkyDropdownModule],
 })
 export class TileProjectBudgetsComponent implements AfterViewInit {
   @ViewChildren('projectChart') projectCharts!: QueryList<ElementRef<HTMLCanvasElement>>;
@@ -58,6 +64,11 @@ export class TileProjectBudgetsComponent implements AfterViewInit {
 
   ngAfterViewInit(): void {
     this.createCharts();
+  }
+
+  protected onViewDataTable(projectName: string): void {
+    console.log('View data table for:', projectName);
+    // TODO: Implement data table view
   }
 
   private createCharts(): void {
@@ -99,7 +110,7 @@ export class TileProjectBudgetsComponent implements AfterViewInit {
     });
 
     // Get SKY UX visualization category colors for the series
-    const seriesColors = skyuxChartColors.series;
+    const seriesColors = skyuxChartStyles.series;
     console.log('Chart colors for', project.name, ':', seriesColors);
     console.log('Grid color from config:', (baseConfig.scales as any)?.x?.grid?.color);
     console.log('Axis color from config:', (baseConfig.scales as any)?.x?.border?.color);
@@ -115,13 +126,13 @@ export class TileProjectBudgetsComponent implements AfterViewInit {
           {
             label: 'Budget',
             data: [project.revenueBudget, project.expensesBudget],
-            backgroundColor: seriesColors[0] || skyuxChartColors.primary,
+            backgroundColor: seriesColors[0] || '#06a39e', // Fallback to category 1 color (teal-500)
             barThickness: 12,
           },
           {
             label: 'Actuals',
             data: [project.revenueActuals, project.expensesActuals],
-            backgroundColor: seriesColors[1] || skyuxChartColors.primaryLight,
+            backgroundColor: seriesColors[1] || '#6d3c96', // Fallback to category 2 color (purple-800)
             barThickness: 12,
           },
         ],

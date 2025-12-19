@@ -7,7 +7,7 @@
  * 
  * Usage:
  * ```typescript
- * import { getSkyuxBarChartConfig, skyuxChartColors } from './chartjs-config';
+ * import { getSkyuxBarChartConfig, skyuxChartStyles } from './chartjs-config';
  * 
  * const config = getSkyuxBarChartConfig({
  *   // Your custom options here
@@ -17,15 +17,11 @@
 
 // Global configuration
 export {
-  skyuxGlobalChartConfig,
-  skyuxChartColors,
+  skyuxChartStyles,
   mergeChartConfig,
 } from './global-chart.config';
 
 // Bar chart configuration
 export {
-  skyuxBarChartConfig,
-  skyuxHorizontalBarChartConfig,
-  skyuxStackedBarChartConfig,
   getSkyuxBarChartConfig,
 } from './bar-chart.config';

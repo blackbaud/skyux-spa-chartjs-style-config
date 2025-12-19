@@ -4,7 +4,18 @@
     <sky-tile-content-section>
       @for (project of projects; track project.name) {
         <div class="sky-margin-stacked-xl">
-          <h3 class="sky-subsection-heading sky-margin-stacked-sm">{{ project.name }}</h3>
+          <div class="chart-header">
+            <h3 class="sky-margin-stacked-xs">{{ project.name }}</h3>
+            <sky-dropdown buttonType="context-menu">
+              <sky-dropdown-menu>
+                <sky-dropdown-item>
+                  <button type="button" (click)="onViewDataTable(project.name)">
+                    View data table
+                  </button>
+                </sky-dropdown-item>
+              </sky-dropdown-menu>
+            </sky-dropdown>
+          </div>
           <div class="chart-container">
             <canvas #projectChart></canvas>
           </div>

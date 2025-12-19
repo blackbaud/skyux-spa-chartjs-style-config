@@ -1,5 +1,5 @@
 import { ChartOptions, TooltipItem } from 'chart.js';
-import { skyuxChartColors, mergeChartConfig } from './global-chart.config';
+import { skyuxChartStyles, mergeChartConfig } from './global-chart.config';
 
 /**
  * SKY UX Bar Chart Configuration
@@ -13,16 +13,38 @@ import { skyuxChartColors, mergeChartConfig } from './global-chart.config';
  * Use this as a starting point for vertical bar charts
  */
 function getBaseBarChartConfig(): Partial<ChartOptions<'bar'>> {
-  const axisColor = skyuxChartColors.axis;
-  const gridlineColor = skyuxChartColors.gridline;
+  const axisColor = skyuxChartStyles.axisLineColor;
+  const gridlineColor = skyuxChartStyles.axisGridlineColor;
+  const textColor = skyuxChartStyles.axisTickColor;
+  const barBorderColor = skyuxChartStyles.barBorderColor;
+  const barBorderRadius = skyuxChartStyles.barBorderRadius;
+  const fontSize = skyuxChartStyles.axisTickFontSize;
+  const fontFamily = skyuxChartStyles.fontFamily;
+  const fontWeight = skyuxChartStyles.axisTickFontWeight as any;
+  const labelPadding = skyuxChartStyles.axisTickPadding;
   
   console.log('Base config axis color:', axisColor);
   console.log('Base config gridline color:', gridlineColor);
+  console.log('Base config text color:', textColor);
+  console.log('Base config bar border color:', barBorderColor);
+  console.log('Base config bar border radius:', barBorderRadius);
+  console.log('Base config font size:', fontSize);
+  console.log('Base config font family:', fontFamily);
+  console.log('Base config font weight:', fontWeight);
+  console.log('Base config label padding:', labelPadding);
   
   return {
     indexAxis: 'x',
     responsive: true,
     maintainAspectRatio: false,
+    
+    elements: {
+      bar: {
+        borderWidth: 2,
+        borderColor: barBorderColor,
+        borderRadius: barBorderRadius,
+      },
+    },
     
     scales: {
       x: {
@@ -36,11 +58,13 @@ function getBaseBarChartConfig(): Partial<ChartOptions<'bar'>> {
           color: axisColor,
         },
         ticks: {
-          color: axisColor,
+          color: textColor,
           font: {
-            size: 11,
-            family: 'Blackbaud Sans, Arial, sans-serif',
+            size: fontSize,
+            family: fontFamily,
+            weight: fontWeight,
           },
+          padding: labelPadding,
         },
       },
       y: {
@@ -55,11 +79,13 @@ function getBaseBarChartConfig(): Partial<ChartOptions<'bar'>> {
           color: axisColor,
         },
         ticks: {
-          color: axisColor,
+          color: textColor,
           font: {
-            size: 11,
-            family: 'Blackbaud Sans, Arial, sans-serif',
+            size: fontSize,
+            family: fontFamily,
+            weight: fontWeight,
           },
+          padding: labelPadding,
         },
       },
     },
@@ -81,12 +107,27 @@ function getBaseBarChartConfig(): Partial<ChartOptions<'bar'>> {
         enabled: true,
         mode: 'index',
         intersect: false,
-        backgroundColor: skyuxChartColors.backgroundContainer,
-        titleColor: skyuxChartColors.textDefault,
-        bodyColor: skyuxChartColors.textDefault,
-        borderColor: skyuxChartColors.borderContainer,
+        backgroundColor: skyuxChartStyles.tooltipBackgroundColor,
+        titleColor: skyuxChartStyles.tooltipTitleColor,
+        bodyColor: skyuxChartStyles.tooltipBodyColor,
+        borderColor: skyuxChartStyles.tooltipBorderColor,
         borderWidth: 1,
-        padding: parseInt(skyuxChartColors.spaceInsetBalanced) || 8,
+        padding: skyuxChartStyles.tooltipPadding,
+        bodySpacing: skyuxChartStyles.tooltipBodySpacing,
+        titleMarginBottom: skyuxChartStyles.tooltipTitleMarginBottom,
+        caretSize: skyuxChartStyles.tooltipCaretSize,
+        boxPadding: skyuxChartStyles.tooltipBoxPadding,
+        usePointStyle: true,
+        titleFont: {
+          family: skyuxChartStyles.fontFamily,
+          size: skyuxChartStyles.tooltipTitleFontSize,
+          weight: skyuxChartStyles.tooltipTitleFontWeight as any,
+        },
+        bodyFont: {
+          family: skyuxChartStyles.fontFamily,
+          size: skyuxChartStyles.tooltipBodyFontSize,
+          weight: skyuxChartStyles.tooltipBodyFontWeight as any,
+        },
       },
     },
   };

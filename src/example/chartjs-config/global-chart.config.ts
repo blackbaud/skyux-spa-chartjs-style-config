@@ -1,14 +1,32 @@
-import { ChartOptions, FontSpec, InteractionMode } from 'chart.js';
+import { ChartOptions, InteractionMode } from 'chart.js';
+
+/**
+ * Helper function to convert rem values to pixels
+ * Chart.js requires pixel values, not rem units
+ */
+function remToPixels(remValue: string): number {
+  const remMatch = remValue.match(/([\d.]+)rem/);
+  if (remMatch) {
+    const rem = parseFloat(remMatch[1]);
+    // Get root font size (typically 16px)
+    const rootFontSize = typeof document !== 'undefined' 
+      ? parseFloat(getComputedStyle(document.documentElement).fontSize) 
+      : 16;
+    return rem * rootFontSize;
+  }
+  // Try to parse as pixels
+  return parseInt(remValue) || 0;
+}
 
 /**
  * Get SKY UX Global Chart.js Configuration
  * Contains default style options that apply to all chart types
  * These options align with SKY UX design system principles
- * Colors are resolved at runtime from CSS custom properties
+ * Colors and styles are resolved at runtime from CSS custom properties
  */
 function getSkyuxGlobalChartConfig(): Partial<ChartOptions> {
-  const tooltipBgColor = skyuxChartColors.backgroundContainer;
-  const tooltipTextColor = skyuxChartColors.textDefault;
+  const tooltipBgColor = skyuxChartStyles.tooltipBackgroundColor;
+  const tooltipTextColor = skyuxChartStyles.tooltipBodyColor;
   
   return {
     // Responsiveness
@@ -27,425 +45,52 @@ function getSkyuxGlobalChartConfig(): Partial<ChartOptions> {
       easing: 'easeInOutQuart',
     },
     
-    // Layout options
-    layout: {
-      padding: {
-        top: 0,
-        right: 0,
-        bottom: 0,
-        left: 0,
-      },
-    },
-    
     // Global plugin options
     plugins: {
       // Legend configuration
       legend: {
         display: true,
         position: 'bottom',
-        align: 'center',
         labels: {
           usePointStyle: true,
-          padding: 15,
-          boxWidth: 8,
-          boxHeight: 8,
+          padding: 10,
           font: {
             family: 'Blackbaud Sans, Arial, sans-serif',
-            size: 12,
-            style: 'normal',
-            weight: 400,
-            lineHeight: 1.5,
-          },
-          color: '#212121',
-          pointStyle: 'circle',
-          textAlign: 'left',
-        },
-        title: {
-          display: false,
-          color: '#212121',
-          font: {
-            family: 'Blackbaud Sans, Arial, sans-serif',
-            size: 14,
-            style: 'normal',
-            weight: 600,
-            lineHeight: 1.5,
-          },
-          padding: {
-            top: 0,
-            bottom: 10,
+            size: 11,
           },
         },
-        fullSize: true,
-        reverse: false,
-        maxHeight: undefined,
-        maxWidth: undefined,
       },
       
       // Tooltip configuration
       tooltip: {
         enabled: true,
-        mode: 'nearest' as InteractionMode,
+        mode: 'index' as InteractionMode,
         intersect: false,
         backgroundColor: tooltipBgColor,
-        titleColor: tooltipTextColor,
+        titleColor: skyuxChartStyles.tooltipTitleColor,
         bodyColor: tooltipTextColor,
-        borderColor: 'rgba(0, 0, 0, 0.1)',
+        borderColor: skyuxChartStyles.tooltipBorderColor,
         borderWidth: 1,
-        padding: {
-          top: 8,
-          right: 12,
-          bottom: 8,
-          left: 12,
-        },
-        cornerRadius: 4,
-        displayColors: true,
-        boxWidth: 12,
-        boxHeight: 12,
-        boxPadding: 4,
+        padding: skyuxChartStyles.tooltipPadding || 16,
+        bodySpacing: skyuxChartStyles.tooltipBodySpacing,
+        titleMarginBottom: skyuxChartStyles.tooltipTitleMarginBottom,
+        caretSize: skyuxChartStyles.tooltipCaretSize,
+        boxPadding: skyuxChartStyles.tooltipBoxPadding,
         usePointStyle: true,
         titleFont: {
-          family: 'Blackbaud Sans, Arial, sans-serif',
-          size: 12,
-          style: 'normal',
-          weight: 600,
-          lineHeight: 1.5,
+          family: skyuxChartStyles.fontFamily,
+          size: skyuxChartStyles.tooltipTitleFontSize,
+          weight: skyuxChartStyles.tooltipTitleFontWeight as any,
         },
         bodyFont: {
-          family: 'Blackbaud Sans, Arial, sans-serif',
-          size: 12,
-          style: 'normal',
-          weight: 400,
-          lineHeight: 1.5,
+          family: skyuxChartStyles.fontFamily,
+          size: skyuxChartStyles.tooltipBodyFontSize,
+          weight: skyuxChartStyles.tooltipBodyFontWeight as any,
         },
-        footerFont: {
-          family: 'Blackbaud Sans, Arial, sans-serif',
-          size: 11,
-          style: 'normal',
-          weight: 400,
-          lineHeight: 1.5,
-        },
-        titleAlign: 'left',
-        bodyAlign: 'left',
-        footerAlign: 'left',
-        titleSpacing: 2,
-        titleMarginBottom: 6,
-        bodySpacing: 4,
-        footerSpacing: 2,
-        footerMarginTop: 6,
-        caretPadding: 4,
-        caretSize: 6,
-        multiKeyBackground: '#ffffff',
       },
-      
-      // Title configuration
-      title: {
-        display: false,
-        position: 'top',
-        align: 'center',
-        color: '#212121',
-        font: {
-          family: 'Blackbaud Sans, Arial, sans-serif',
-          size: 16,
-          style: 'normal',
-          weight: 600,
-          lineHeight: 1.5,
-        },
-        padding: {
-          top: 0,
-          bottom: 10,
-        },
-        fullSize: true,
-      },
-      
-      // Subtitle configuration
-      subtitle: {
-        display: false,
-        position: 'top',
-        align: 'center',
-        color: '#686c73',
-        font: {
-          family: 'Blackbaud Sans, Arial, sans-serif',
-          size: 13,
-          style: 'normal',
-          weight: 400,
-          lineHeight: 1.5,
-        },
-        padding: {
-          top: 0,
-          bottom: 10,
-        },
-        fullSize: true,
-      },
-    },
-    
-    // Global element options
-    elements: {
-      point: {
-        radius: 3,
-        pointStyle: 'circle',
-        backgroundColor: '#0078d4',
-        borderWidth: 0,
-        borderColor: '#ffffff',
-        hitRadius: 4,
-        hoverRadius: 5,
-        hoverBorderWidth: 2,
-      },
-      line: {
-        tension: 0.4,
-        backgroundColor: 'rgba(0, 120, 212, 0.1)',
-        borderWidth: 2,
-        borderColor: '#0078d4',
-        borderCapStyle: 'round',
-        borderJoinStyle: 'round',
-        fill: false,
-        stepped: false,
-      },
-      arc: {
-        backgroundColor: '#0078d4',
-        borderWidth: 0,
-        borderColor: '#ffffff',
-        borderAlign: 'center',
-        borderRadius: 0,
-        circular: true,
-        offset: 0,
-      },
-      bar: {
-        backgroundColor: '#0078d4',
-        borderWidth: 0,
-        borderColor: '#ffffff',
-        borderSkipped: 'start',
-        borderRadius: 4,
-        inflateAmount: 'auto',
-      },
-    },
-    
-    // Hover interaction mode
-    hover: {
-      mode: 'nearest' as InteractionMode,
-      intersect: false,
     },
   };
 }
-
-/**
- * SKY UX Global Chart.js Configuration (deprecated)
- * @deprecated Use mergeChartConfig() which calls getSkyuxGlobalChartConfig() for proper color resolution
- */
-export const skyuxGlobalChartConfig: Partial<ChartOptions> = {
-  // Responsiveness
-  responsive: true,
-  maintainAspectRatio: false,
-  
-  // Interaction options
-  interaction: {
-    mode: 'nearest' as InteractionMode,
-    intersect: false,
-  },
-  
-  // Animation options
-  animation: {
-    duration: 400,
-    easing: 'easeInOutQuart',
-  },
-  
-  // Layout options
-  layout: {
-    padding: {
-      top: 0,
-      right: 0,
-      bottom: 0,
-      left: 0,
-    },
-  },
-  
-  // Global plugin options
-  plugins: {
-    // Legend configuration
-    legend: {
-      display: true,
-      position: 'bottom',
-      align: 'center',
-      labels: {
-        usePointStyle: true,
-        padding: 15,
-        boxWidth: 8,
-        boxHeight: 8,
-        font: {
-          family: 'Blackbaud Sans, Arial, sans-serif',
-          size: 12,
-          style: 'normal',
-          weight: 400,
-          lineHeight: 1.5,
-        },
-        color: '#212121',
-        pointStyle: 'circle',
-        textAlign: 'left',
-      },
-      title: {
-        display: false,
-        color: '#212121',
-        font: {
-          family: 'Blackbaud Sans, Arial, sans-serif',
-          size: 14,
-          style: 'normal',
-          weight: 600,
-          lineHeight: 1.5,
-        },
-        padding: {
-          top: 0,
-          bottom: 10,
-        },
-      },
-      fullSize: true,
-      reverse: false,
-      maxHeight: undefined,
-      maxWidth: undefined,
-    },
-    
-    // Tooltip configuration
-    tooltip: {
-      enabled: true,
-      mode: 'nearest' as InteractionMode,
-      intersect: false,
-      backgroundColor: 'rgba(0, 0, 0, 0.8)',
-      titleColor: '#ffffff',
-      bodyColor: '#ffffff',
-      borderColor: 'rgba(255, 255, 255, 0.1)',
-      borderWidth: 1,
-      padding: {
-        top: 8,
-        right: 12,
-        bottom: 8,
-        left: 12,
-      },
-      cornerRadius: 4,
-      displayColors: true,
-      boxWidth: 12,
-      boxHeight: 12,
-      boxPadding: 4,
-      usePointStyle: true,
-      titleFont: {
-        family: 'Blackbaud Sans, Arial, sans-serif',
-        size: 12,
-        style: 'normal',
-        weight: 600,
-        lineHeight: 1.5,
-      },
-      bodyFont: {
-        family: 'Blackbaud Sans, Arial, sans-serif',
-        size: 12,
-        style: 'normal',
-        weight: 400,
-        lineHeight: 1.5,
-      },
-      footerFont: {
-        family: 'Blackbaud Sans, Arial, sans-serif',
-        size: 11,
-        style: 'normal',
-        weight: 400,
-        lineHeight: 1.5,
-      },
-      titleAlign: 'left',
-      bodyAlign: 'left',
-      footerAlign: 'left',
-      titleSpacing: 2,
-      titleMarginBottom: 6,
-      bodySpacing: 4,
-      footerSpacing: 2,
-      footerMarginTop: 6,
-      caretPadding: 4,
-      caretSize: 6,
-      multiKeyBackground: '#ffffff',
-    },
-    
-    // Title configuration
-    title: {
-      display: false,
-      position: 'top',
-      align: 'center',
-      color: '#212121',
-      font: {
-        family: 'Blackbaud Sans, Arial, sans-serif',
-        size: 16,
-        style: 'normal',
-        weight: 600,
-        lineHeight: 1.5,
-      },
-      padding: {
-        top: 0,
-        bottom: 10,
-      },
-      fullSize: true,
-    },
-    
-    // Subtitle configuration
-    subtitle: {
-      display: false,
-      position: 'top',
-      align: 'center',
-      color: '#686c73',
-      font: {
-        family: 'Blackbaud Sans, Arial, sans-serif',
-        size: 13,
-        style: 'normal',
-        weight: 400,
-        lineHeight: 1.5,
-      },
-      padding: {
-        top: 0,
-        bottom: 10,
-      },
-      fullSize: true,
-    },
-  },
-  
-  // Global element options
-  elements: {
-    point: {
-      radius: 3,
-      pointStyle: 'circle',
-      backgroundColor: '#0078d4',
-      borderWidth: 0,
-      borderColor: '#ffffff',
-      hitRadius: 4,
-      hoverRadius: 5,
-      hoverBorderWidth: 2,
-    },
-    line: {
-      tension: 0.4,
-      backgroundColor: 'rgba(0, 120, 212, 0.1)',
-      borderWidth: 2,
-      borderColor: '#0078d4',
-      borderCapStyle: 'round',
-      borderJoinStyle: 'round',
-      fill: false,
-      stepped: false,
-    },
-    arc: {
-      backgroundColor: '#0078d4',
-      borderWidth: 0,
-      borderColor: '#ffffff',
-      borderAlign: 'center',
-      borderRadius: 0,
-      circular: true,
-      offset: 0,
-    },
-    bar: {
-      backgroundColor: '#0078d4',
-      borderWidth: 0,
-      borderColor: '#ffffff',
-      borderSkipped: 'start',
-      borderRadius: 4,
-      inflateAmount: 'auto',
-    },
-  },
-  
-  // Hover interaction mode
-  hover: {
-    mode: 'nearest' as InteractionMode,
-    intersect: false,
-  },
-};
 
 /**
  * Resolve CSS custom property value
@@ -475,7 +120,7 @@ function resolveCssVariable(varName: string): string {
  * Get SKY UX visualization category colors
  * Resolves CSS custom properties at runtime
  */
-function getSkyUXVizColors(): string[] {
+function getCategoryColors(): string[] {
   const colors = [
     resolveCssVariable('--sky-color-viz-category-1'),
     resolveCssVariable('--sky-color-viz-category-2'),
@@ -494,84 +139,174 @@ function getSkyUXVizColors(): string[] {
 }
 
 /**
- * SKY UX Color Palette for Charts
- * Standard colors that align with SKY UX design system
- * All colors are resolved from CSS custom properties at runtime
+ * SKY UX Chart Styles and Design Tokens
+ * Provides runtime-resolved design system values for charts including colors, 
+ * typography, spacing, and other visual properties.
+ * All values are resolved from CSS custom properties at runtime for proper theme support.
  */
-export const skyuxChartColors = {
-  // Primary colors
-  primary: '#0078d4',
-  primaryLight: '#50e6ff',
-  primaryDark: '#005a9e',
+export const skyuxChartStyles = {
+  // =============================================================================
+  // CHART SERIES COLORS
+  // =============================================================================
   
-  // Semantic colors
-  success: '#71bf44',
-  warning: '#fbb034',
-  danger: '#d13438',
-  info: '#00b4f0',
-  
-  // Neutral colors
-  black: '#212121',
-  grayDark: '#686c73',
-  gray: '#a5acb5',
-  grayLight: '#cdcfd2',
-  grayLighter: '#e1e1e1',
-  grayLightest: '#f1f1f1',
-  white: '#ffffff',
-  
-  // Chart series colors (for multi-series charts)
+  // Chart series colors for multi-series charts
   // Uses SKY UX visualization category colors resolved from CSS custom properties
   // Always start with category 1 and increment for each additional series
   get series(): string[] {
-    return getSkyUXVizColors();
+    return getCategoryColors();
   },
   
-  // Visualization colors resolved from CSS custom properties
-  get axis(): string {
+  // =============================================================================
+  // AXIS (X/Y AXES)
+  // =============================================================================
+  
+  get axisLineColor(): string {
     const color = resolveCssVariable('--sky-color-viz-axis');
-    console.log('SKY UX Axis Color:', color);
+    console.log('SKY UX Axis Line Color:', color);
     return color || '#85888d'; // Fallback to gray-500
   },
   
-  get gridline(): string {
+  get axisGridlineColor(): string {
     const color = resolveCssVariable('--sky-color-viz-gridline');
-    console.log('SKY UX Gridline Color:', color);
+    console.log('SKY UX Axis Gridline Color:', color);
     return color || '#e0e1e2'; // Fallback to gray-200
   },
   
-  get marker(): string {
-    const color = resolveCssVariable('--sky-color-viz-marker');
+  get axisTickColor(): string {
+    const color = resolveCssVariable('--sky-color-text-default');
+    console.log('SKY UX Axis Tick Color:', color);
     return color || '#252b33'; // Fallback to gray-900
   },
   
-  get backgroundContainer(): string {
+  get axisTickFontSize(): number {
+    const size = resolveCssVariable('--sky-font-size-body-s');
+    console.log('SKY UX Axis Tick Font Size:', size);
+    return remToPixels(size || '13px'); // Fallback
+  },
+  
+  get axisTickFontWeight(): string {
+    const weight = resolveCssVariable('--sky-font-style-body-s');
+    console.log('SKY UX Axis Tick Font Weight:', weight);
+    return weight || '400'; // Fallback
+  },
+  
+  get axisTickPadding(): number {
+    const space = resolveCssVariable('--sky-space-gap-label-m');
+    console.log('SKY UX Axis Tick Padding:', space);
+    return remToPixels(space || '0.5rem'); // Fallback to 8px
+  },
+  
+  // =============================================================================
+  // BAR/CHART ELEMENTS
+  // =============================================================================
+  
+  get barBorderColor(): string {
     const color = resolveCssVariable('--sky-color-background-container-base');
-    console.log('SKY UX Background Container Color:', color);
+    console.log('SKY UX Bar Border Color:', color);
     return color || '#ffffff'; // Fallback to white
   },
   
-  get textDefault(): string {
-    const color = resolveCssVariable('--sky-color-text-default');
-    console.log('SKY UX Text Default Color:', color);
-    return color || '#252b33'; // Fallback to gray-900
+  get barBorderRadius(): number {
+    const radius = resolveCssVariable('--sky-border-radius-m');
+    console.log('SKY UX Bar Border Radius:', radius);
+    return remToPixels(radius || '4px'); // Fallback
   },
   
-  get borderContainer(): string {
-    const color = resolveCssVariable('--sky-color-border-container-base');
-    console.log('SKY UX Border Container Color:', color);
+  // =============================================================================
+  // TOOLTIP
+  // =============================================================================
+  
+  get tooltipBackgroundColor(): string {
+    const color = resolveCssVariable('--sky-color-background-container-dimmed');
+    console.log('SKY UX Tooltip Background Color:', color);
+    return color || '#ffffff'; // Fallback to white
+  },
+  
+  get tooltipBorderColor(): string {
+    const color = resolveCssVariable('--sky-color-viz-axis');
+    console.log('SKY UX Tooltip Border Color:', color);
     return color || '#c2c4c6'; // Fallback to gray-300
   },
   
-  get elevationOverlay(): string {
-    const shadow = resolveCssVariable('--sky-elevation-overlay-100');
-    console.log('SKY UX Elevation Overlay:', shadow);
-    return shadow || '0px 2px 4px 0px rgba(0, 0, 0, 0.15)'; // Fallback
+  get tooltipTitleColor(): string {
+    const color = resolveCssVariable('--sky-color-text-heading');
+    console.log('SKY UX Tooltip Title Color:', color);
+    return color || '#252b33'; // Fallback to gray-900
   },
   
-  get spaceInsetBalanced(): string {
-    const space = resolveCssVariable('--sky-space-inset-balanced-s');
-    console.log('SKY UX Space Inset Balanced:', space);
-    return space || '8px'; // Fallback
+  get tooltipBodyColor(): string {
+    const color = resolveCssVariable('--sky-color-text-default');
+    console.log('SKY UX Tooltip Body Color:', color);
+    return color || '#252b33'; // Fallback to gray-900
+  },
+  
+  get tooltipPadding(): number {
+    const space = resolveCssVariable('--sky-space-inset-balanced-l');
+    console.log('SKY UX Tooltip Padding:', space);
+    return remToPixels(space || '16px'); // Fallback
+  },
+  
+  get tooltipTitleMarginBottom(): number {
+    const space = resolveCssVariable('--sky-space-stacked-l');
+    console.log('SKY UX Tooltip Title Margin Bottom:', space);
+    return remToPixels(space || '12px'); // Fallback
+  },
+  
+  get tooltipBodySpacing(): number {
+    const space = resolveCssVariable('--sky-space-stacked-s');
+    console.log('SKY UX Tooltip Body Spacing:', space);
+    return remToPixels(space || '4px'); // Fallback
+  },
+  
+  get tooltipCaretSize(): number {
+    const size = resolveCssVariable('--sky-size-icon-xxs');
+    console.log('SKY UX Tooltip Caret Size:', size);
+    return remToPixels(size || '8px'); // Fallback
+  },
+  
+  get tooltipTitleFontSize(): number {
+    const size = resolveCssVariable('--sky-font-size-heading-4');
+    console.log('SKY UX Tooltip Title Font Size:', size);
+    return remToPixels(size || '15px'); // Fallback
+  },
+  
+  get tooltipTitleFontWeight(): string {
+    const weight = resolveCssVariable('--sky-font-style-heading-4');
+    console.log('SKY UX Tooltip Title Font Weight:', weight);
+    return weight || '600'; // Fallback
+  },
+  
+  get tooltipBodyFontSize(): number {
+    const size = resolveCssVariable('--sky-font-size-body-m');
+    console.log('SKY UX Tooltip Body Font Size:', size);
+    return remToPixels(size || '15px'); // Fallback
+  },
+  
+  get tooltipBodyFontWeight(): string {
+    const weight = resolveCssVariable('--sky-font-style-body-m');
+    console.log('SKY UX Tooltip Body Font Weight:', weight);
+    return weight || '400'; // Fallback
+  },
+  
+  get tooltipBoxPadding(): number {
+    const space = resolveCssVariable('--sky-space-gap-label-xs');
+    console.log('SKY UX Tooltip Box Padding:', space);
+    return remToPixels(space || '4px'); // Fallback
+  },
+  
+  // =============================================================================
+  // SHARED/GENERAL
+  // =============================================================================
+  
+  get fontFamily(): string {
+    const family = resolveCssVariable('--sky-font-family-primary');
+    console.log('SKY UX Font Family:', family);
+    return family || 'Blackbaud Sans, Arial, sans-serif'; // Fallback
+  },
+  
+  get markerColor(): string {
+    const color = resolveCssVariable('--sky-color-viz-marker');
+    return color || '#252b33'; // Fallback to gray-900
   },
 };
 
