@@ -233,13 +233,11 @@ export class TileProjectBudgetsComponent implements AfterViewInit {
             label: 'Budget',
             data: [project.revenueBudget, project.expensesBudget],
             backgroundColor: seriesColors[0] || '#06a39e', // Fallback to category 1 color (teal-500)
-            barThickness: 12,
           },
           {
             label: 'Actuals',
             data: [project.revenueActuals, project.expensesActuals],
             backgroundColor: seriesColors[1] || '#6d3c96', // Fallback to category 2 color (purple-800)
-            barThickness: 12,
           },
         ],
       },

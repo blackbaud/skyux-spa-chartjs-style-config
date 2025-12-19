@@ -219,6 +219,32 @@ export const skyuxChartStyles = {
   },
   
   // =============================================================================
+  // LINE CHART ELEMENTS
+  // =============================================================================
+  
+  get lineTension(): number {
+    return 0.2; // Slight curve for smooth lines
+  },
+  
+  get lineBorderWidth(): number {
+    return 2;
+  },
+  
+  get linePointRadius(): number {
+    const size = resolveCssVariable('--sky-size-icon-xxxs');
+    console.log('SKY UX Line Point Radius:', size);
+    return remToPixels(size || '4px'); // Fallback
+  },
+  
+  get linePointHoverRadius(): number {
+    return this.linePointRadius + 2; // Slightly larger on hover
+  },
+  
+  get linePointBorderWidth(): number {
+    return 2;
+  },
+  
+  // =============================================================================
   // TOOLTIP
   // =============================================================================
   

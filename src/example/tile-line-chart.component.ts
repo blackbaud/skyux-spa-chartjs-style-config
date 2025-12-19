@@ -1,5 +1,119 @@
-import { Component } from '@angular/core';
+import { Component, AfterViewInit, ElementRef, ViewChild } from '@angular/core';
+import { FormControl, ReactiveFormsModule } from '@angular/forms';
 import { SkyTilesModule } from '@skyux/tiles';
+import { SkyDropdownModule } from '@skyux/popovers';
+import { SkyInputBoxModule } from '@skyux/forms';
+import { SkyKeyInfoModule } from '@skyux/indicators';
+import { Chart, ChartConfiguration, registerables } from 'chart.js';
+import { getSkyuxLineChartConfig } from './chartjs-config/line-chart.config';
+import { skyuxChartStyles } from './chartjs-config/global-chart.config';
+
+Chart.register(...registerables);
+
+// Custom plugin for tooltip shadow and accent border
+const tooltipShadowPlugin = {
+  id: 'tooltipShadow',
+  beforeTooltipDraw(chart: any) {
+    const tooltip = chart.tooltip;
+    if (!tooltip || tooltip.opacity === 0) {
+      return;
+    }
+
+    const ctx = chart.ctx;
+    const { x, y, width, height } = tooltip;
+    const borderRadius = 6;
+    const shadow = skyuxChartStyles.tooltipShadow;
+
+    ctx.save();
+    ctx.shadowOffsetX = shadow.offsetX;
+    ctx.shadowOffsetY = shadow.offsetY;
+    ctx.shadowBlur = shadow.blur;
+    ctx.shadowColor = shadow.color;
+
+    // Draw background with shadow
+    ctx.fillStyle = skyuxChartStyles.tooltipBackgroundColor;
+    ctx.beginPath();
+    ctx.roundRect(x, y, width, height, borderRadius);
+    ctx.fill();
+
+    ctx.restore();
+  },
+  afterTooltipDraw(chart: any) {
+    const tooltip = chart.tooltip;
+    if (!tooltip || tooltip.opacity === 0) {
+      return;
+    }
+
+    const ctx = chart.ctx;
+    const accentColor = skyuxChartStyles.tooltipAccentBorderColor;
+    const accentWidth = skyuxChartStyles.tooltipAccentBorderWidth;
+    
+    // Get tooltip position and dimensions
+    const { x, y, width, height, caretX, caretY } = tooltip;
+    const borderRadius = 6;
+    
+    ctx.save();
+    
+    // Draw colored caret (20px wide x 8px tall)
+    const caretWidth = 20;
+    const caretHeight = 8;
+    ctx.fillStyle = accentColor;
+    ctx.beginPath();
+    
+    if (caretX < x) {
+      // Caret on left side (pointing left)
+      ctx.moveTo(caretX, caretY);
+      ctx.lineTo(x, caretY - caretWidth / 2);
+      ctx.lineTo(x, caretY + caretWidth / 2);
+    } else if (caretX > x + width) {
+      // Caret on right side (pointing right)
+      ctx.moveTo(caretX, caretY);
+      ctx.lineTo(x + width, caretY - caretWidth / 2);
+      ctx.lineTo(x + width, caretY + caretWidth / 2);
+    } else if (caretY < y) {
+      // Caret on top (pointing up)
+      ctx.moveTo(caretX, caretY);
+      ctx.lineTo(caretX - caretWidth / 2, y);
+      ctx.lineTo(caretX + caretWidth / 2, y);
+    } else {
+      // Caret on bottom (pointing down)
+      ctx.moveTo(caretX, caretY);
+      ctx.lineTo(caretX - caretWidth / 2, y + height);
+      ctx.lineTo(caretX + caretWidth / 2, y + height);
+    }
+    
+    ctx.closePath();
+    ctx.fill();
+    
+    // Draw accent border as a straight line on the inside, only on the side with the caret
+    ctx.strokeStyle = accentColor;
+    ctx.lineWidth = accentWidth;
+    ctx.beginPath();
+    
+    const inset = accentWidth / 2;
+    
+    if (caretX < x) {
+      // Caret on left - draw vertical line on left side
+      ctx.moveTo(x + inset, y + borderRadius);
+      ctx.lineTo(x + inset, y + height - borderRadius);
+    } else if (caretX > x + width) {
+      // Caret on right - draw vertical line on right side
+      ctx.moveTo(x + width - inset, y + borderRadius);
+      ctx.lineTo(x + width - inset, y + height - borderRadius);
+    } else if (caretY < y) {
+      // Caret on top - draw horizontal line on top side
+      ctx.moveTo(x + borderRadius, y + inset);
+      ctx.lineTo(x + width - borderRadius, y + inset);
+    } else {
+      // Caret on bottom - draw horizontal line on bottom side
+      ctx.moveTo(x + borderRadius, y + height - inset);
+      ctx.lineTo(x + width - borderRadius, y + height - inset);
+    }
+    
+    ctx.stroke();
+    ctx.restore();
+  },
+};
 
 @Component({
   selector: 'app-tile-line-chart',
@@ -7,8 +121,114 @@ import { SkyTilesModule } from '@skyux/tiles';
     :host {
       display: block;
     }
+    .chart-container {
+      height: 250px;
+      position: relative;
+    }
+    .chart-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .key-info-container {
+      display: flex;
+      align-items: center;
+    }
   `,
   templateUrl: './tile-line-chart.component.html',
-  imports: [SkyTilesModule],
+  imports: [SkyTilesModule, SkyDropdownModule, SkyInputBoxModule, SkyKeyInfoModule, ReactiveFormsModule],
 })
-export class TileLineChartComponent {}
+export class TileLineChartComponent implements AfterViewInit {
+  @ViewChild('lineChartCanvas') lineChartCanvas!: ElementRef<HTMLCanvasElement>;
+  
+  protected timePeriodControl = new FormControl('committed');
+  protected year2025Total = '$542K';
+  protected year2024Total = '$487K';
+  protected year2023Total = '$423K';
+  protected year2022Total = '$365K';
+  
+  private chart?: Chart<'line'>;
+
+  ngAfterViewInit(): void {
+    this.createChart();
+  }
+
+  onViewDataTable(): void {
+    console.log('View data table clicked');
+  }
+
+  private createChart(): void {
+    const ctx = this.lineChartCanvas.nativeElement.getContext('2d');
+    if (!ctx) return;
+
+    const baseConfig = getSkyuxLineChartConfig({
+      scales: {
+        y: {
+          ticks: {
+            callback: (value: string | number) => {
+              return '$' + value + 'K';
+            },
+          },
+        },
+      },
+      plugins: {
+        tooltip: {
+          callbacks: {
+            label: (context: any) => {
+              const label = context.dataset.label || '';
+              const value = context.parsed.y;
+              return `${label}: $${value?.toLocaleString() ?? '0'}K`;
+            },
+          },
+        },
+      },
+    });
+
+    const seriesColors = skyuxChartStyles.series;
+
+    const config: ChartConfiguration<'line'> = {
+      type: 'line',
+      data: {
+        labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
+        datasets: [
+          {
+            label: '2022',
+            data: [25, 28, 22, 35, 30, 45, 38, 42, 50, 40, 55, 48],
+            borderColor: seriesColors[0],
+            backgroundColor: seriesColors[0],
+            pointBackgroundColor: seriesColors[0],
+            pointBorderColor: '#fff',
+          },
+          {
+            label: '2023',
+            data: [28, 35, 30, 42, 38, 50, 42, 48, 58, 45, 62, 55],
+            borderColor: seriesColors[1],
+            backgroundColor: seriesColors[1],
+            pointBackgroundColor: seriesColors[1],
+            pointBorderColor: '#fff',
+          },
+          {
+            label: '2024',
+            data: [32, 42, 35, 48, 40, 55, 48, 52, 65, 50, 68, 60],
+            borderColor: seriesColors[2],
+            backgroundColor: seriesColors[2],
+            pointBackgroundColor: seriesColors[2],
+            pointBorderColor: '#fff',
+          },
+          {
+            label: '2025',
+            data: [35, 48, 38, 52, 45, 60, 52, 58, 70, 55, 75, 65],
+            borderColor: seriesColors[3],
+            backgroundColor: seriesColors[3],
+            pointBackgroundColor: seriesColors[3],
+            pointBorderColor: '#fff',
+          },
+        ],
+      },
+      options: baseConfig,
+      plugins: [tooltipShadowPlugin],
+    };
+
+    this.chart = new Chart(ctx, config);
+  }
+}

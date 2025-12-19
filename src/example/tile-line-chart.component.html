@@ -1,23 +1,58 @@
-<sky-tile tileName="Line chart">
-  <sky-tile-title> Line chart </sky-tile-title>
+<sky-tile tileName="Year-over-year fundraising">
+  <sky-tile-title> Year-over-year fundraising </sky-tile-title>
   <sky-tile-content>
     <sky-tile-content-section>
-      <div class="sky-margin-stacked-lg">
-        <h3 class="sky-margin-stacked-sm">Monthly Trends</h3>
-        <div class="sky-margin-stacked-md">
-          <div class="sky-margin-stacked-xs">
-            <span class="sky-font-deemphasized">Current Month:</span> December 2025
-          </div>
-          <div class="sky-margin-stacked-xs">
-            <span class="sky-font-deemphasized">Total Records:</span> 1,245
-          </div>
-          <div class="sky-margin-stacked-xs">
-            <span class="sky-font-deemphasized">Trend:</span> +12% vs. last month
-          </div>
-        </div>
-        <div>
-          <a href="#">View full chart details</a>
-        </div>
+      <sky-input-box labelText="Include revenue" class="sky-margin-stacked-lg">
+        <select [formControl]="timePeriodControl">
+          <option value="committed">Committed only</option>
+          <option value="received">Received only</option>
+          <option value="all">All revenue</option>
+        </select>
+      </sky-input-box>
+      
+      <div class="key-info-container sky-margin-stacked-lg">
+        <sky-key-info class="sky-margin-inline-xl">
+          <sky-key-info-value class="sky-font-display-3">
+            {{ year2025Total }}
+          </sky-key-info-value>
+          <sky-key-info-label>2025</sky-key-info-label>
+        </sky-key-info>
+        
+        <sky-key-info class="sky-margin-inline-xl">
+          <sky-key-info-value class="sky-font-display-3">
+            {{ year2024Total }}
+          </sky-key-info-value>
+          <sky-key-info-label>2024</sky-key-info-label>
+        </sky-key-info>
+        
+        <sky-key-info class="sky-margin-inline-xl">
+          <sky-key-info-value class="sky-font-display-3">
+            {{ year2023Total }}
+          </sky-key-info-value>
+          <sky-key-info-label>2023</sky-key-info-label>
+        </sky-key-info>
+        
+        <sky-key-info>
+          <sky-key-info-value class="sky-font-display-3">
+            {{ year2022Total }}
+          </sky-key-info-value>
+          <sky-key-info-label>2022</sky-key-info-label>
+        </sky-key-info>
+      </div>
+      
+      <div class="chart-header sky-margin-stacked-lg">
+        <h3 class="sky-margin-stacked-xs">Month-by-month revenue</h3>
+        <sky-dropdown buttonType="context-menu">
+          <sky-dropdown-menu>
+            <sky-dropdown-item>
+              <button type="button" (click)="onViewDataTable()">View data table</button>
+            </sky-dropdown-item>
+          </sky-dropdown-menu>
+        </sky-dropdown>
+      </div>
+      
+      <div class="chart-container">
+        <canvas #lineChartCanvas></canvas>
       </div>
     </sky-tile-content-section>
   </sky-tile-content>

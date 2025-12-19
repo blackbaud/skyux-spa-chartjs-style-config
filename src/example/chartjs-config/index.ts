@@ -25,3 +25,8 @@ export {
 export {
   getSkyuxBarChartConfig,
 } from './bar-chart.config';
+
+// Line chart configuration
+export {
+  getSkyuxLineChartConfig,
+} from './line-chart.config';
