@@ -201,6 +201,11 @@ export class TileProjectBudgetsComponent implements AfterViewInit {
             },
           },
         },
+        y: {
+          grid: {
+            display: false, // Remove y-axis gridlines
+          },
+        },
       },
       plugins: {
         tooltip: {
