@@ -18,9 +18,21 @@ function getBaseDoughnutChartConfig(): Partial<ChartOptions<'doughnut'>> {
   const fontFamily = skyuxChartStyles.fontFamily;
   const fontWeight = skyuxChartStyles.axisTickFontWeight as any;
   
+  // Get the border color from CSS custom property
+  const borderColor = getComputedStyle(document.documentElement)
+    .getPropertyValue('--sky-color-background-container-base')
+    .trim() || '#000000';
+  
   return {
     responsive: true,
     maintainAspectRatio: false,
+    
+    datasets: {
+      doughnut: {
+        borderWidth: 2,
+        borderColor: borderColor,
+      },
+    },
     
     plugins: {
       legend: {
@@ -154,5 +166,20 @@ export function getSkyuxDoughnutChartConfig(
     ...baseConfig,
     ...customConfig,
     plugins: mergedPlugins,
+  };
+}
+
+/**
+ * Get dataset border configuration for doughnut charts
+ * Returns border width and color to apply to dataset
+ */
+export function getSkyuxDoughnutDatasetBorder(): { borderWidth: number; borderColor: string } {
+  const borderColor = getComputedStyle(document.documentElement)
+    .getPropertyValue('--sky-color-background-container-base')
+    .trim() || '#ffffff';
+  
+  return {
+    borderWidth: 2,
+    borderColor: borderColor,
   };
 }

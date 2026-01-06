@@ -34,4 +34,5 @@ export {
 // Doughnut chart configuration
 export {
   getSkyuxDoughnutChartConfig,
+  getSkyuxDoughnutDatasetBorder,
 } from './doughnut-chart.config';

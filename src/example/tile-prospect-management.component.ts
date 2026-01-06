@@ -5,7 +5,7 @@ import { SkyToolbarModule } from '@skyux/layout';
 import { SkyIconModule } from '@skyux/icon';
 import { SkyKeyInfoModule } from '@skyux/indicators';
 import { Chart, ChartConfiguration, registerables } from 'chart.js';
-import { getSkyuxDoughnutChartConfig, skyuxChartStyles } from './chartjs-config';
+import { getSkyuxDoughnutChartConfig, getSkyuxDoughnutDatasetBorder, skyuxChartStyles } from './chartjs-config';
 
 Chart.register(...registerables);
 
@@ -190,6 +190,7 @@ export class TileProspectManagementComponent implements AfterViewInit {
     });
 
     const seriesColors = skyuxChartStyles.series;
+    const datasetBorder = getSkyuxDoughnutDatasetBorder();
     
     const labels = this.assetCategories.map((cat) => cat.name);
     const data = this.assetCategories.map((cat) => cat.value);
@@ -205,7 +206,7 @@ export class TileProspectManagementComponent implements AfterViewInit {
           {
             data: data,
             backgroundColor: backgroundColors,
-            borderWidth: 0,
+            ...datasetBorder,
           },
         ],
       },
