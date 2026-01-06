@@ -30,3 +30,8 @@ export {
 export {
   getSkyuxLineChartConfig,
 } from './line-chart.config';
+
+// Doughnut chart configuration
+export {
+  getSkyuxDoughnutChartConfig,
+} from './doughnut-chart.config';

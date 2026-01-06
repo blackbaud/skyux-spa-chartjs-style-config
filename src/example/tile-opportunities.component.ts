@@ -1,6 +1,7 @@
 import { Component, OnInit, ViewChild, ElementRef, AfterViewInit } from '@angular/core';
 import { SkyTilesModule } from '@skyux/tiles';
 import { SkyDropdownModule } from '@skyux/popovers';
+import { SkyKeyInfoModule } from '@skyux/indicators';
 import { Chart, ChartConfiguration, registerables } from 'chart.js';
 import ChartDataLabels from 'chartjs-plugin-datalabels';
 import { getSkyuxBarChartConfig, skyuxChartStyles } from './chartjs-config';
@@ -125,25 +126,6 @@ interface OpportunityStage {
     :host {
       display: block;
     }
-    .key-metrics {
-      display: flex;
-      gap: 20px;
-      margin-bottom: 20px;
-    }
-    .metric {
-      text-align: left;
-    }
-    .metric-value {
-      font-size: 20px;
-      font-weight: 600;
-      color: #212327;
-      margin: 0;
-    }
-    .metric-label {
-      font-size: 14px;
-      color: #686c73;
-      margin: 0;
-    }
     .chart-container {
       position: relative;
       height: 400px;
@@ -151,7 +133,7 @@ interface OpportunityStage {
     }
   `,
   templateUrl: './tile-opportunities.component.html',
-  imports: [SkyTilesModule, SkyDropdownModule],
+  imports: [SkyTilesModule, SkyDropdownModule, SkyKeyInfoModule],
 })
 export class TileOpportunitiesComponent implements AfterViewInit {
   @ViewChild('opportunityChart') chartCanvas!: ElementRef<HTMLCanvasElement>;
