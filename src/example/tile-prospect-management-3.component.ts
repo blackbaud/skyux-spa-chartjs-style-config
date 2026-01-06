@@ -107,7 +107,7 @@ interface AssetCategory {
 }
 
 @Component({
-  selector: 'app-tile-prospect-management',
+  selector: 'app-tile-prospect-management-3',
   styles: `
     :host {
       display: block;
@@ -120,14 +120,14 @@ interface AssetCategory {
     }
     .chart-container {
       position: relative;
-      height: 240px;
+      height: 220px;
       width: 100%;
     }
   `,
-  templateUrl: './tile-prospect-management.component.html',
+  templateUrl: './tile-prospect-management-3.component.html',
   imports: [SkyTilesModule, SkyDropdownModule, SkyToolbarModule, SkyIconModule, SkyKeyInfoModule],
 })
-export class TileProspectManagementComponent implements AfterViewInit {
+export class TileProspectManagement3Component implements AfterViewInit {
   @ViewChild('assetChart') chartCanvas!: ElementRef<HTMLCanvasElement>;
   private chart?: Chart<'doughnut'>;
 
@@ -149,7 +149,7 @@ export class TileProspectManagementComponent implements AfterViewInit {
   }
 
   protected onEdit(): void {
-    console.log('Edit prospect management');
+    console.log('Edit prospect management 3');
     // TODO: Implement edit functionality
   }
 
@@ -174,15 +174,16 @@ export class TileProspectManagementComponent implements AfterViewInit {
     const baseConfig = getSkyuxDoughnutChartConfig({
       layout: {
         padding: {
-          top: 46,
-          bottom: 26,
-          left: 46,
-          right: 46,
+          top: 40,
+          bottom: 24,
+          left: 26,
+          right: 26,
         },
       },
       plugins: {
         legend: {
-          display: false,
+          display: true,
+          position: 'right',
         },
         tooltip: {
           callbacks: {
@@ -204,9 +205,8 @@ export class TileProspectManagementComponent implements AfterViewInit {
           },
           formatter: (value: number, context: any) => {
             const category = this.assetCategories[context.dataIndex];
-            const label = category.name;
             const formattedValue = this.formatCurrency(value);
-            return `${label}\n${formattedValue} (${category.percentage}%)`;
+            return `${formattedValue}\n(${category.percentage}%)`;
           },
           anchor: 'end',
           align: 'end',

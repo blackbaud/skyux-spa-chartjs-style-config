@@ -5,7 +5,6 @@ import { SkyToolbarModule } from '@skyux/layout';
 import { SkyIconModule } from '@skyux/icon';
 import { SkyKeyInfoModule } from '@skyux/indicators';
 import { Chart, ChartConfiguration, registerables } from 'chart.js';
-import ChartDataLabels from 'chartjs-plugin-datalabels';
 import { getSkyuxDoughnutChartConfig, getSkyuxDoughnutDatasetBorder, skyuxChartStyles } from './chartjs-config';
 
 Chart.register(...registerables);
@@ -107,7 +106,7 @@ interface AssetCategory {
 }
 
 @Component({
-  selector: 'app-tile-prospect-management',
+  selector: 'app-tile-prospect-management-2',
   styles: `
     :host {
       display: block;
@@ -120,14 +119,14 @@ interface AssetCategory {
     }
     .chart-container {
       position: relative;
-      height: 240px;
+      height: 187px;
       width: 100%;
     }
   `,
-  templateUrl: './tile-prospect-management.component.html',
+  templateUrl: './tile-prospect-management-2.component.html',
   imports: [SkyTilesModule, SkyDropdownModule, SkyToolbarModule, SkyIconModule, SkyKeyInfoModule],
 })
-export class TileProspectManagementComponent implements AfterViewInit {
+export class TileProspectManagement2Component implements AfterViewInit {
   @ViewChild('assetChart') chartCanvas!: ElementRef<HTMLCanvasElement>;
   private chart?: Chart<'doughnut'>;
 
@@ -149,7 +148,7 @@ export class TileProspectManagementComponent implements AfterViewInit {
   }
 
   protected onEdit(): void {
-    console.log('Edit prospect management');
+    console.log('Edit prospect management 2');
     // TODO: Implement edit functionality
   }
 
@@ -172,17 +171,10 @@ export class TileProspectManagementComponent implements AfterViewInit {
     if (!ctx) return;
 
     const baseConfig = getSkyuxDoughnutChartConfig({
-      layout: {
-        padding: {
-          top: 46,
-          bottom: 26,
-          left: 46,
-          right: 46,
-        },
-      },
       plugins: {
         legend: {
-          display: false,
+          display: true,
+          position: 'right',
         },
         tooltip: {
           callbacks: {
@@ -193,26 +185,6 @@ export class TileProspectManagementComponent implements AfterViewInit {
               return `${label}: ${this.formatCurrency(value)} (${category.percentage}%)`;
             },
           },
-        },
-        datalabels: {
-          color: '#212327',
-          font: {
-            size: 13,
-            weight: 'normal',
-            family: 'Blackbaud Sans, Arial, sans-serif',
-            lineHeight: 1.4,
-          },
-          formatter: (value: number, context: any) => {
-            const category = this.assetCategories[context.dataIndex];
-            const label = category.name;
-            const formattedValue = this.formatCurrency(value);
-            return `${label}\n${formattedValue} (${category.percentage}%)`;
-          },
-          anchor: 'end',
-          align: 'end',
-          offset: 2,
-          clamp: false,
-          textAlign: 'center',
         },
       },
     });
@@ -239,7 +211,7 @@ export class TileProspectManagementComponent implements AfterViewInit {
         ],
       },
       options: baseConfig,
-      plugins: [tooltipShadowPlugin, ChartDataLabels],
+      plugins: [tooltipShadowPlugin],
     };
 
     this.chart = new Chart(ctx, config);
