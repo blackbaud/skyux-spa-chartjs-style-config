@@ -213,7 +213,7 @@ export const skyuxChartStyles = {
   },
   
   get barBorderRadius(): number {
-    const radius = resolveCssVariable('--sky-border-radius-m');
+    const radius = resolveCssVariable('--sky-border-radius-small');
     console.log('SKY UX Bar Border Radius:', radius);
     return remToPixels(radius || '4px'); // Fallback
   },
