@@ -3,6 +3,7 @@ import { SkyTileDashboardConfig, SkyTilesModule } from '@skyux/tiles';
 
 import { TileLineChartComponent } from './tile-line-chart.component';
 import { TileMyActionsComponent } from './tile-my-actions.component';
+import { TileOpportunitiesComponent } from './tile-opportunities.component';
 import { TileProjectBudgetsComponent } from './tile-project-budgets.component';
 import { TileUpdatesComponent } from './tile-updates.component';
 
@@ -30,6 +31,10 @@ export class HomePageContentComponent {
         id: 'tile-line-chart',
         componentType: TileLineChartComponent,
       },
+      {
+        id: 'tile-opportunities',
+        componentType: TileOpportunitiesComponent,
+      },
     ],
     layout: {
       singleColumn: {
@@ -48,6 +53,10 @@ export class HomePageContentComponent {
           },
           {
             id: 'tile-line-chart',
+            isCollapsed: false,
+          },
+          {
+            id: 'tile-opportunities',
             isCollapsed: false,
           },
         ],
@@ -73,6 +82,10 @@ export class HomePageContentComponent {
             },
             {
               id: 'tile-line-chart',
+              isCollapsed: false,
+            },
+            {
+              id: 'tile-opportunities',
               isCollapsed: false,
             },
           ],

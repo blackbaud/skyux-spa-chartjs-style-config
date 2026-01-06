@@ -1,0 +1,24 @@
+<sky-tile tileName="Opportunities">
+  <sky-tile-title> Opportunities </sky-tile-title>
+  <sky-tile-content>
+    <sky-tile-content-section>
+      <div class="key-metrics">
+        <div class="metric">
+          <p class="metric-value">{{ formatCurrency(keyMetrics.ask) }}</p>
+          <p class="metric-label">Ask</p>
+        </div>
+        <div class="metric">
+          <p class="metric-value">{{ formatCurrency(keyMetrics.funded) }}</p>
+          <p class="metric-label">Funded</p>
+        </div>
+        <div class="metric">
+          <p class="metric-value">{{ formatCurrency(keyMetrics.expected) }}</p>
+          <p class="metric-label">Expected</p>
+        </div>
+      </div>
+      <div class="chart-container">
+        <canvas #opportunityChart></canvas>
+      </div>
+    </sky-tile-content-section>
+  </sky-tile-content>
+</sky-tile>
