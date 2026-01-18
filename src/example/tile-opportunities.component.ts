@@ -128,7 +128,7 @@ interface OpportunityStage {
     }
     .chart-container {
       position: relative;
-      height: 400px;
+      height: 320px;
       width: 100%;
     }
   `,

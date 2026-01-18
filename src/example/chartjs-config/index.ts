@@ -26,6 +26,10 @@ export {
   getSkyuxBarChartConfig,
 } from './bar-chart.config';
 
+export type {
+  ResponsiveChartOptions,
+} from './bar-chart.config';
+
 // Line chart configuration
 export {
   getSkyuxLineChartConfig,

@@ -153,7 +153,7 @@ function getBaseBarChartConfig(): Partial<ChartOptions<'bar'>> {
 export const skyuxBarChartConfig: Partial<ChartOptions<'bar'>> = {
   indexAxis: 'x',
   responsive: true,
-  maintainAspectRatio: false,
+  maintainAspectRatio: true,
   
   scales: {
     x: {
@@ -166,7 +166,7 @@ export const skyuxBarChartConfig: Partial<ChartOptions<'bar'>> = {
       ticks: {
         font: {
           size: 11,
-          family: 'Blackbaud Sans, Arial, sans-serif',
+          family: 'BLKB Sans, Arial, sans-serif',
         },
       },
     },
@@ -181,7 +181,7 @@ export const skyuxBarChartConfig: Partial<ChartOptions<'bar'>> = {
       ticks: {
         font: {
           size: 11,
-          family: 'Blackbaud Sans, Arial, sans-serif',
+          family: 'BLKB Sans, Arial, sans-serif',
         },
       },
     },
@@ -196,7 +196,7 @@ export const skyuxBarChartConfig: Partial<ChartOptions<'bar'>> = {
         padding: 10,
         font: {
           size: 11,
-          family: 'Blackbaud Sans, Arial, sans-serif',
+          family: 'BLKB Sans, Arial, sans-serif',
         },
       },
     },
@@ -219,6 +219,15 @@ export const skyuxHorizontalBarChartConfig: Partial<ChartOptions<'bar'>> = {
 };
 
 /**
+ * Configuration options for responsive behavior and aspect ratio
+ */
+export interface ResponsiveChartOptions {
+  responsive?: boolean;
+  maintainAspectRatio?: boolean;
+  aspectRatio?: number;
+}
+
+/**
  * Stacked Bar Chart Configuration (deprecated)
  * @deprecated Use getSkyuxBarChartConfig() with scales.x.stacked and scales.y.stacked
  */
@@ -230,11 +239,28 @@ export const skyuxStackedBarChartConfig: Partial<ChartOptions<'bar'>> = {
  * Helper function to get complete bar chart configuration
  * Merges bar chart config with custom configuration
  * Colors are resolved at runtime for proper theme support
+ * 
+ * @param customConfig - Custom chart configuration options
+ * @param responsiveOptions - Responsive behavior options (responsive, maintainAspectRatio, aspectRatio)
  */
 export function getSkyuxBarChartConfig(
-  customConfig?: Partial<ChartOptions<'bar'>>
+  customConfig?: Partial<ChartOptions<'bar'>>,
+  responsiveOptions?: ResponsiveChartOptions
 ): Partial<ChartOptions<'bar'>> {
   const baseConfig = getBaseBarChartConfig();
+  
+  // Apply responsive options if provided
+  if (responsiveOptions) {
+    if (responsiveOptions.responsive !== undefined) {
+      baseConfig.responsive = responsiveOptions.responsive;
+    }
+    if (responsiveOptions.maintainAspectRatio !== undefined) {
+      baseConfig.maintainAspectRatio = responsiveOptions.maintainAspectRatio;
+    }
+    if (responsiveOptions.aspectRatio !== undefined) {
+      baseConfig.aspectRatio = responsiveOptions.aspectRatio;
+    }
+  }
   
   if (!customConfig) {
     return baseConfig;

@@ -132,9 +132,9 @@ interface ProjectData {
       align-items: center;
     }
     .chart-container {
-      position: relative;
+      // position: relative;
       height: 180px;
-      width: 100%;
+      // width: 100%;
     }
   `,
   templateUrl: './tile-project-budgets.component.html',
