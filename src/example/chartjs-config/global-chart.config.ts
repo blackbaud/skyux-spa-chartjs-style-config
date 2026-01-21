@@ -128,14 +128,14 @@ function resolveCssVariable(varName: string): string {
  */
 function getCategoryColors(): string[] {
   const colors = [
-    resolveCssVariable('--sky-color-viz-category-1'),
-    resolveCssVariable('--sky-color-viz-category-2'),
-    resolveCssVariable('--sky-color-viz-category-3'),
-    resolveCssVariable('--sky-color-viz-category-4'),
-    resolveCssVariable('--sky-color-viz-category-5'),
-    resolveCssVariable('--sky-color-viz-category-6'),
-    resolveCssVariable('--sky-color-viz-category-7'),
-    resolveCssVariable('--sky-color-viz-category-8'),
+    resolveCssVariable('--sky-theme-color-viz-category-1'),
+    resolveCssVariable('--sky-theme-color-viz-category-2'),
+    resolveCssVariable('--sky-theme-color-viz-category-3'),
+    resolveCssVariable('--sky-theme-color-viz-category-4'),
+    resolveCssVariable('--sky-theme-color-viz-category-5'),
+    resolveCssVariable('--sky-theme-color-viz-category-6'),
+    resolveCssVariable('--sky-theme-color-viz-category-7'),
+    resolveCssVariable('--sky-theme-color-viz-category-8'),
   ];
   
   // Debug: log resolved colors
@@ -167,13 +167,13 @@ export const skyuxChartStyles = {
   // =============================================================================
   
   get axisLineColor(): string {
-    const color = resolveCssVariable('--sky-color-viz-axis');
+    const color = resolveCssVariable('--sky-theme-color-viz-axis');
     console.log('SKY UX Axis Line Color:', color);
     return color || '#85888d'; // Fallback to gray-500
   },
   
   get axisGridlineColor(): string {
-    const color = resolveCssVariable('--sky-color-viz-gridline');
+    const color = resolveCssVariable('--sky-theme-color-viz-gridline');
     console.log('SKY UX Axis Gridline Color:', color);
     return color || '#e0e1e2'; // Fallback to gray-200
   },
@@ -255,7 +255,7 @@ export const skyuxChartStyles = {
   },
   
   get tooltipBorderColor(): string {
-    const color = resolveCssVariable('--sky-color-viz-axis');
+    const color = resolveCssVariable('--sky-theme-color-viz-axis');
     console.log('SKY UX Tooltip Border Color:', color);
     return color || '#c2c4c6'; // Fallback to gray-300
   },
@@ -373,7 +373,7 @@ export const skyuxChartStyles = {
   },
   
   get markerColor(): string {
-    const color = resolveCssVariable('--sky-color-viz-marker');
+    const color = resolveCssVariable('--sky-theme-color-viz-marker');
     return color || '#252b33'; // Fallback to gray-900
   },
 };
