@@ -38,10 +38,12 @@ export class HomePageContentComponent {
         id: 'tile-prospect-management',
         componentType: TileProspectManagementComponent,
       },
-      {        id: 'tile-prospect-management-3',
+      {
+        id: 'tile-prospect-management-3',
         componentType: TileProspectManagement3Component,
       },
-      {        id: 'tile-line-chart',
+      {
+        id: 'tile-line-chart',
         componentType: TileLineChartComponent,
       },
       {
@@ -72,10 +74,12 @@ export class HomePageContentComponent {
             id: 'tile-prospect-management',
             isCollapsed: false,
           },
-          {            id: 'tile-prospect-management-3',
+          {
+            id: 'tile-prospect-management-3',
             isCollapsed: false,
           },
-          {            id: 'tile-line-chart',
+          {
+            id: 'tile-line-chart',
             isCollapsed: false,
           },
           {
@@ -102,10 +106,12 @@ export class HomePageContentComponent {
             {
               id: 'tile-prospect-management',
               isCollapsed: false,
-            },            {
+            },
+            {
               id: 'tile-prospect-management-3',
               isCollapsed: false,
-            },          ],
+            },
+          ],
         },
         {
           tiles: [

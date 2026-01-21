@@ -1,8 +1,10 @@
-import { Component, OnInit, ViewChild, ElementRef, AfterViewInit, QueryList, ViewChildren } from '@angular/core';
+import { Component, ElementRef, AfterViewInit, inject, DestroyRef, ChangeDetectorRef, NgZone, OnDestroy, viewChildren } from '@angular/core';
 import { SkyTilesModule } from '@skyux/tiles';
 import { SkyDropdownModule } from '@skyux/popovers';
-import { Chart, ChartConfiguration, registerables } from 'chart.js';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { Chart, ChartConfiguration, UpdateMode, registerables } from 'chart.js';
 import { getSkyuxBarChartConfig, skyuxChartStyles } from './chartjs-config';
+import { SkyThemeService } from '@skyux/theme';
 
 Chart.register(...registerables);
 
@@ -140,8 +142,13 @@ interface ProjectData {
   templateUrl: './tile-project-budgets.component.html',
   imports: [SkyTilesModule, SkyDropdownModule],
 })
-export class TileProjectBudgetsComponent implements AfterViewInit {
-  @ViewChildren('projectChart') projectCharts!: QueryList<ElementRef<HTMLCanvasElement>>;
+export class TileProjectBudgetsComponent implements AfterViewInit, OnDestroy {
+  readonly #destroyRef = inject(DestroyRef);
+  readonly #changeDetector = inject(ChangeDetectorRef);
+  readonly #themeSvc = inject(SkyThemeService, { optional: true });
+  readonly #zone = inject(NgZone);
+
+  public readonly canvasRefs = viewChildren<ElementRef<HTMLCanvasElement>>('canvas');
   private charts: Chart<'bar'>[] = [];
 
   protected projects: ProjectData[] = [
@@ -168,27 +175,68 @@ export class TileProjectBudgetsComponent implements AfterViewInit {
     },
   ];
 
-  ngAfterViewInit(): void {
+  public ngAfterViewInit(): void {
     this.createCharts();
+
+    /* istanbul ignore else */
+    if (this.#themeSvc) {
+      this.#themeSvc.settingsChange
+        .pipe(takeUntilDestroyed(this.#destroyRef))
+        .subscribe(() => this.#onThemeChange());
+    }
   }
+
+  public ngOnDestroy(): void {
+    this.charts.forEach(chart => chart.destroy());
+    this.charts = [];
+  }
+
 
   protected onViewDataTable(projectName: string): void {
     console.log('View data table for:', projectName);
     // TODO: Implement data table view
   }
 
+  //#region Private
   private createCharts(): void {
-    this.projectCharts.forEach((chartRef, index) => {
-      const ctx = chartRef.nativeElement.getContext('2d');
-      if (!ctx) return;
+    this.charts.forEach(chart => chart.destroy());
 
+    this.canvasRefs().forEach((chartRef, index) => {
       const project = this.projects[index];
-      const chart = this.createChart(ctx, project);
-      this.charts.push(chart);
+      this.createChart(chartRef, project);
     });
   }
 
-  private createChart(ctx: CanvasRenderingContext2D, project: ProjectData): Chart<'bar'> {
+  private createChart(canvasRef: ElementRef<HTMLCanvasElement>, project: ProjectData): void {
+    const canvasContext = this.#getCanvasContext(canvasRef);
+    const config = this.#getChartConfig(project);
+    
+    this.#zone.runOutsideAngular(
+      () => {
+        const chart = new Chart(canvasContext, config);
+        this.charts.push(chart);
+      },
+    );
+  }
+
+  #updateCharts(mode?: UpdateMode) {
+    this.charts.forEach(chart => {
+      this.#zone.runOutsideAngular(() => chart.update(mode));
+    });
+  }
+
+  #getCanvasContext(canvasRef: ElementRef<HTMLCanvasElement>): CanvasRenderingContext2D {
+    const canvasEle = canvasRef.nativeElement;
+    const canvasContext = canvasEle.getContext('2d');
+
+    if (!canvasContext) {
+      throw new Error('Cannot create chart without a canvas');
+    }
+
+    return canvasContext;
+  }
+
+  #getChartConfig(project: ProjectData): ChartConfiguration<'bar'> {
     // Get the base configuration for horizontal bar charts
     const baseConfig = getSkyuxBarChartConfig({
       indexAxis: 'y',
@@ -250,6 +298,21 @@ export class TileProjectBudgetsComponent implements AfterViewInit {
       plugins: [tooltipShadowPlugin],
     };
 
-    return new Chart(ctx, config);
+    return config;
   }
+
+  #onThemeChange(): void {    
+    this.charts.forEach((chart, index) => {
+      const project = this.projects[index];
+      
+      // Reevaluate the Chart Options 
+      Object.assign(chart.config.options as any, this.#getChartConfig(project));
+    });
+
+    // Trigger ChartJS update
+    this.#updateCharts();
+    
+    this.#changeDetector.markForCheck();
+  }
+  // #endregion
 }
