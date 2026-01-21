@@ -1,4 +1,5 @@
 import { Component } from '@angular/core';
+import { RouterModule } from '@angular/router';
 import { SkyIconModule } from '@skyux/icon';
 import { SkyPageModule, SkyRecentLink } from '@skyux/pages';
 
@@ -16,7 +17,7 @@ import { SkyThemeSelectorComponent } from './theme-selector/theme-selector.compo
   host: {
     '[style.--playground-controls-height]': 'height + "px"',
   },
-  imports: [HomePageContentComponent, SkyIconModule, SkyPageModule, SkyThemeSelectorComponent],
+  imports: [HomePageContentComponent, RouterModule, SkyIconModule, SkyPageModule, SkyThemeSelectorComponent],
 })
 export class PagesPageHomePageBlocksLayoutExampleComponent {
   public readonly height = 80;

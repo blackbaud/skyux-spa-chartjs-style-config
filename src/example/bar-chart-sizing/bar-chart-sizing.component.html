@@ -1,0 +1,249 @@
+<sky-page layout="fit">
+  <sky-page-header pageTitle="Bar chart sizing and place" />
+
+  <sky-page-content>
+    <sky-tabset>
+      <sky-tab tabHeading="Horizontal" layout="blocks">
+        <sky-fluid-grid gutterSize="medium" [disableMargin]="true">
+          <sky-row>
+            <sky-column [screenSmall]="4">
+              <sky-box class="sky-margin-stacked-xl" headingText="Student Enrollment 1 (160px)">
+                <sky-box-content>
+                  <div style="height: 160px; position: relative;">
+                    <canvas #chart1></canvas>
+                  </div>
+                </sky-box-content>
+              </sky-box>
+            </sky-column>
+            <sky-column [screenSmall]="4">
+              <sky-box class="sky-margin-stacked-xl" headingText="Student Enrollment 2 (200px)">
+                <sky-box-content>
+                  <div style="height: 200px; position: relative;">
+                    <canvas #chart2></canvas>
+                  </div>
+                </sky-box-content>
+              </sky-box>
+            </sky-column>
+            <sky-column [screenSmall]="4">
+              <sky-box class="sky-margin-stacked-xl" headingText="Student Enrollment 3 (300px)">
+                <sky-box-content>
+                  <div style="height: 300px; position: relative;">
+                    <canvas #chart3></canvas>
+                  </div>
+                </sky-box-content>
+              </sky-box>
+            </sky-column>
+          </sky-row>
+          <sky-row>
+            <sky-column [screenSmall]="4">
+              <sky-box class="sky-margin-stacked-xl" headingText="Student Enrollment by Gender 1 (160px)">
+                <sky-box-content>
+                  <div style="height: 160px; position: relative;">
+                    <canvas #chart4></canvas>
+                  </div>
+                </sky-box-content>
+              </sky-box>
+            </sky-column>
+            <sky-column [screenSmall]="4">
+              <sky-box class="sky-margin-stacked-xl" headingText="Student Enrollment by Gender 2 (200px)">
+                <sky-box-content>
+                  <div style="height: 200px; position: relative;">
+                    <canvas #chart5></canvas>
+                  </div>
+                </sky-box-content>
+              </sky-box>
+            </sky-column>
+            <sky-column [screenSmall]="4">
+              <sky-box class="sky-margin-stacked-xl" headingText="Student Enrollment by Gender 3 (300px)">
+                <sky-box-content>
+                  <div style="height: 300px; position: relative;">
+                    <canvas #chart6></canvas>
+                  </div>
+                </sky-box-content>
+              </sky-box>
+            </sky-column>
+          </sky-row>
+          <sky-row>
+            <sky-column [screenSmall]="4">
+              <sky-box class="sky-margin-stacked-xl" headingText="Grade Distribution by Gender 1 (360px)">
+                <sky-box-content>
+                  <div style="height: 360px; position: relative;">
+                    <canvas #chart7></canvas>
+                  </div>
+                </sky-box-content>
+              </sky-box>
+            </sky-column>
+            <sky-column [screenSmall]="4">
+              <sky-box class="sky-margin-stacked-xl" headingText="Grade Distribution by Gender 2 (500px)">
+                <sky-box-content>
+                  <div style="height: 500px; position: relative;">
+                    <canvas #chart8></canvas>
+                  </div>
+                </sky-box-content>
+              </sky-box>
+            </sky-column>
+            <sky-column [screenSmall]="4">
+              <sky-box class="sky-margin-stacked-xl" headingText="Grade Distribution by Gender 3 (300px)">
+                <sky-box-content>
+                  <div style="height: 300px; position: relative;">
+                    <canvas #chart9></canvas>
+                  </div>
+                </sky-box-content>
+              </sky-box>
+            </sky-column>
+          </sky-row>
+          <sky-row>
+            <sky-column [screenSmall]="4">
+              <sky-box class="sky-margin-stacked-xl" headingText="Grade Metrics 1 (640px)">
+                <sky-box-content>
+                  <div style="height: 560px; position: relative;">
+                    <canvas #chart10></canvas>
+                  </div>
+                </sky-box-content>
+              </sky-box>
+            </sky-column>
+            <sky-column [screenSmall]="4">
+              <sky-box class="sky-margin-stacked-xl" headingText="Grade Metrics 2 (720px)">
+                <sky-box-content>
+                  <div style="height: 720px; position: relative;">
+                    <canvas #chart11></canvas>
+                  </div>
+                </sky-box-content>
+              </sky-box>
+            </sky-column>
+            <sky-column [screenSmall]="4">
+              <sky-box class="sky-margin-stacked-xl" headingText="Grade Metrics 3 (300px)">
+                <sky-box-content>
+                  <div style="height: 300px; position: relative;">
+                    <canvas #chart12></canvas>
+                  </div>
+                </sky-box-content>
+              </sky-box>
+            </sky-column>
+          </sky-row>
+        </sky-fluid-grid>
+      </sky-tab>
+
+      <sky-tab tabHeading="Vertical" layout="blocks">
+        <sky-fluid-grid gutterSize="medium" [disableMargin]="true">
+          <sky-row>
+            <sky-column [screenSmall]="4">
+              <sky-box class="sky-margin-stacked-xl" headingText="Student Enrollment 1 (160px)">
+                <sky-box-content>
+                  <div style="height: 160px; position: relative;">
+                    <canvas #chartV1></canvas>
+                  </div>
+                </sky-box-content>
+              </sky-box>
+            </sky-column>
+            <sky-column [screenSmall]="4">
+              <sky-box class="sky-margin-stacked-xl" headingText="Student Enrollment 2 (200px)">
+                <sky-box-content>
+                  <div style="height: 200px; position: relative;">
+                    <canvas #chartV2></canvas>
+                  </div>
+                </sky-box-content>
+              </sky-box>
+            </sky-column>
+            <sky-column [screenSmall]="4">
+              <sky-box class="sky-margin-stacked-xl" headingText="Student Enrollment 3 (300px)">
+                <sky-box-content>
+                  <div style="height: 300px; position: relative;">
+                    <canvas #chartV3></canvas>
+                  </div>
+                </sky-box-content>
+              </sky-box>
+            </sky-column>
+          </sky-row>
+          <sky-row>
+            <sky-column [screenSmall]="4">
+              <sky-box class="sky-margin-stacked-xl" headingText="Student Enrollment by Gender 1 (160px)">
+                <sky-box-content>
+                  <div style="height: 160px; position: relative;">
+                    <canvas #chartV4></canvas>
+                  </div>
+                </sky-box-content>
+              </sky-box>
+            </sky-column>
+            <sky-column [screenSmall]="4">
+              <sky-box class="sky-margin-stacked-xl" headingText="Student Enrollment by Gender 2 (200px)">
+                <sky-box-content>
+                  <div style="height: 200px; position: relative;">
+                    <canvas #chartV5></canvas>
+                  </div>
+                </sky-box-content>
+              </sky-box>
+            </sky-column>
+            <sky-column [screenSmall]="4">
+              <sky-box class="sky-margin-stacked-xl" headingText="Student Enrollment by Gender 3 (300px)">
+                <sky-box-content>
+                  <div style="height: 300px; position: relative;">
+                    <canvas #chartV6></canvas>
+                  </div>
+                </sky-box-content>
+              </sky-box>
+            </sky-column>
+          </sky-row>
+          <sky-row>
+            <sky-column [screenSmall]="4">
+              <sky-box class="sky-margin-stacked-xl" headingText="Grade Distribution by Gender 1 (360px)">
+                <sky-box-content>
+                  <div style="height: 360px; position: relative;">
+                    <canvas #chartV7></canvas>
+                  </div>
+                </sky-box-content>
+              </sky-box>
+            </sky-column>
+            <sky-column [screenSmall]="4">
+              <sky-box class="sky-margin-stacked-xl" headingText="Grade Distribution by Gender 2 (500px)">
+                <sky-box-content>
+                  <div style="height: 500px; position: relative;">
+                    <canvas #chartV8></canvas>
+                  </div>
+                </sky-box-content>
+              </sky-box>
+            </sky-column>
+            <sky-column [screenSmall]="4">
+              <sky-box class="sky-margin-stacked-xl" headingText="Grade Distribution by Gender 3 (300px)">
+                <sky-box-content>
+                  <div style="height: 300px; position: relative;">
+                    <canvas #chartV9></canvas>
+                  </div>
+                </sky-box-content>
+              </sky-box>
+            </sky-column>
+          </sky-row>
+          <sky-row>
+            <sky-column [screenSmall]="4">
+              <sky-box class="sky-margin-stacked-xl" headingText="Grade Metrics 1 (240px)">
+                <sky-box-content>
+                  <div style="height: 240px; position: relative;">
+                    <canvas #chartV10></canvas>
+                  </div>
+                </sky-box-content>
+              </sky-box>
+            </sky-column>
+            <sky-column [screenSmall]="4">
+              <sky-box class="sky-margin-stacked-xl" headingText="Grade Metrics 2 (480px)">
+                <sky-box-content>
+                  <div style="height: 480px; position: relative;">
+                    <canvas #chartV11></canvas>
+                  </div>
+                </sky-box-content>
+              </sky-box>
+            </sky-column>
+            <sky-column [screenSmall]="4">
+              <sky-box class="sky-margin-stacked-xl" headingText="Grade Metrics 3 (300px)">
+                <sky-box-content>
+                  <div style="height: 300px; position: relative;">
+                    <canvas #chartV12></canvas>
+                  </div>
+                </sky-box-content>
+              </sky-box>
+            </sky-column>
+          </sky-row>
+        </sky-fluid-grid>
+      </sky-tab>
+    </sky-tabset>
+  </sky-page-content>
+</sky-page>
