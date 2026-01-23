@@ -126,16 +126,14 @@ export class SkyBarChartComponent implements AfterViewInit, OnDestroy {
     const canvasContext = this.#getCanvasContext();
     const config = this.#getChartConfig();
 
-    // this.#zone.runOutsideAngular(
-    //   () => (this.#chart = new Chart(canvasContext, config)),
-    // );
-    this.#chart = new Chart(canvasContext, config)
+    this.#zone.runOutsideAngular(
+      () => (this.#chart = new Chart(canvasContext, config)),
+    );
   }
 
   #updateChart(mode?: UpdateMode): void {
     if (this.#chart) {
-      // this.#zone.runOutsideAngular(() => this.#chart?.update(mode));
-      this.#chart?.update(mode)
+      this.#zone.runOutsideAngular(() => this.#chart?.update(mode));
     }
   }
 
