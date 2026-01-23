@@ -16,9 +16,8 @@
           <sky-key-info-label>Expected</sky-key-info-label>
         </sky-key-info>
       </div>
-      <div class="chart-container">
-        <canvas #opportunityChart></canvas>
-      </div>
+
+      <sky-bar-chart [chartHeight]="320" [config]="chartConfig" />
     </sky-tile-content-section>
   </sky-tile-content>
 </sky-tile>

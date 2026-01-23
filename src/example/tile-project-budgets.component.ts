@@ -1,10 +1,9 @@
-import { Component, ElementRef, AfterViewInit, inject, DestroyRef, ChangeDetectorRef, NgZone, OnDestroy, viewChildren } from '@angular/core';
+import { Component } from '@angular/core';
 import { SkyTilesModule } from '@skyux/tiles';
 import { SkyDropdownModule } from '@skyux/popovers';
-import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import { Chart, ChartConfiguration, UpdateMode, registerables } from 'chart.js';
+import { Chart, ChartConfiguration, registerables } from 'chart.js';
 import { getSkyuxBarChartConfig, skyuxChartStyles } from './chartjs-config';
-import { SkyThemeService } from '@skyux/theme';
+import { SkyBarChartComponent } from '../skyux/bar-chart/bar-chart.component';
 
 Chart.register(...registerables);
 
@@ -17,26 +16,26 @@ const tooltipShadowPlugin = {
 
     const ctx = chart.ctx;
     const shadow = skyuxChartStyles.tooltipShadow;
-    
+
     // Get tooltip position and dimensions
     const { x, y, width, height } = tooltip;
     const borderRadius = 6;
-    
+
     ctx.save();
-    
+
     // Set shadow properties
     ctx.shadowColor = shadow.color;
     ctx.shadowBlur = shadow.blur;
     ctx.shadowOffsetX = shadow.offsetX;
     ctx.shadowOffsetY = shadow.offsetY;
-    
+
     // Draw the main tooltip background with shadow
     // This will be underneath the Chart.js tooltip content
     ctx.fillStyle = skyuxChartStyles.tooltipBackgroundColor;
     ctx.beginPath();
     ctx.roundRect(x, y, width, height, borderRadius);
     ctx.fill();
-    
+
     ctx.restore();
   },
   afterTooltipDraw: (chart: any) => {
@@ -46,19 +45,19 @@ const tooltipShadowPlugin = {
     const ctx = chart.ctx;
     const accentColor = skyuxChartStyles.tooltipAccentBorderColor;
     const accentWidth = skyuxChartStyles.tooltipAccentBorderWidth;
-    
+
     // Get tooltip position and dimensions
     const { x, y, width, height, caretX, caretY } = tooltip;
     const borderRadius = 6;
-    
+
     ctx.save();
-    
+
     // Draw colored caret (20px wide x 8px tall)
     const caretWidth = 20;
     const caretHeight = 8;
     ctx.fillStyle = accentColor;
     ctx.beginPath();
-    
+
     if (caretX < x) {
       // Caret on left side (pointing left)
       ctx.moveTo(caretX, caretY);
@@ -80,17 +79,17 @@ const tooltipShadowPlugin = {
       ctx.lineTo(caretX - caretWidth / 2, y + height);
       ctx.lineTo(caretX + caretWidth / 2, y + height);
     }
-    
+
     ctx.closePath();
     ctx.fill();
-    
+
     // Draw accent border as a straight line on the inside, only on the side with the caret
     ctx.strokeStyle = accentColor;
     ctx.lineWidth = accentWidth;
     ctx.beginPath();
-    
+
     const inset = accentWidth / 2;
-    
+
     if (caretX < x) {
       // Caret on left - draw vertical line on left side
       ctx.moveTo(x + inset, y + borderRadius);
@@ -108,7 +107,7 @@ const tooltipShadowPlugin = {
       ctx.moveTo(x + borderRadius, y + height - inset);
       ctx.lineTo(x + width - borderRadius, y + height - inset);
     }
-    
+
     ctx.stroke();
     ctx.restore();
   },
@@ -124,116 +123,40 @@ interface ProjectData {
 
 @Component({
   selector: 'app-tile-project-budgets',
-  styles: `
-    :host {
-      display: block;
-    }
-    .chart-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-    }
-    .chart-container {
-      // position: relative;
-      height: 180px;
-      // width: 100%;
-    }
-  `,
+  styles: ``,
   templateUrl: './tile-project-budgets.component.html',
-  imports: [SkyTilesModule, SkyDropdownModule],
+  imports: [SkyTilesModule, SkyDropdownModule, SkyBarChartComponent],
 })
-export class TileProjectBudgetsComponent implements AfterViewInit, OnDestroy {
-  readonly #destroyRef = inject(DestroyRef);
-  readonly #changeDetector = inject(ChangeDetectorRef);
-  readonly #themeSvc = inject(SkyThemeService, { optional: true });
-  readonly #zone = inject(NgZone);
-
-  public readonly canvasRefs = viewChildren<ElementRef<HTMLCanvasElement>>('canvas');
-  private charts: Chart<'bar'>[] = [];
-
+export class TileProjectBudgetsComponent {
   protected projects: ProjectData[] = [
-    { 
-      name: 'Project Alpha', 
-      revenueBudget: 120000, 
-      revenueActuals: 115000,
-      expensesBudget: 85000,
-      expensesActuals: 78000
+    {
+      name: 'Project Alpha',
+      revenueBudget: 120_000,
+      revenueActuals: 115_000,
+      expensesBudget: 85_000,
+      expensesActuals: 78_000,
     },
-    { 
-      name: 'Project Beta', 
-      revenueBudget: 95000, 
-      revenueActuals: 102000,
-      expensesBudget: 70000,
-      expensesActuals: 75000
+    {
+      name: 'Project Beta',
+      revenueBudget: 95_000,
+      revenueActuals: 102_000,
+      expensesBudget: 70_000,
+      expensesActuals: 75_000,
     },
-    { 
-      name: 'Project Gamma', 
-      revenueBudget: 80000, 
-      revenueActuals: 73000,
-      expensesBudget: 55000,
-      expensesActuals: 52000
+    {
+      name: 'Project Gamma',
+      revenueBudget: 80_000,
+      revenueActuals: 73_000,
+      expensesBudget: 55_000,
+      expensesActuals: 52_000,
     },
   ];
-
-  public ngAfterViewInit(): void {
-    this.createCharts();
-
-    /* istanbul ignore else */
-    if (this.#themeSvc) {
-      this.#themeSvc.settingsChange
-        .pipe(takeUntilDestroyed(this.#destroyRef))
-        .subscribe(() => this.#onThemeChange());
-    }
-  }
-
-  public ngOnDestroy(): void {
-    this.charts.forEach(chart => chart.destroy());
-    this.charts = [];
-  }
-
-
-  protected onViewDataTable(projectName: string): void {
-    console.log('View data table for:', projectName);
-    // TODO: Implement data table view
-  }
+  protected readonly chartConfigs: ChartConfiguration<'bar'>[] = this.createChartConfigs();
 
   //#region Private
-  private createCharts(): void {
-    this.charts.forEach(chart => chart.destroy());
-
-    this.canvasRefs().forEach((chartRef, index) => {
-      const project = this.projects[index];
-      this.createChart(chartRef, project);
-    });
-  }
-
-  private createChart(canvasRef: ElementRef<HTMLCanvasElement>, project: ProjectData): void {
-    const canvasContext = this.#getCanvasContext(canvasRef);
-    const config = this.#getChartConfig(project);
-    
-    this.#zone.runOutsideAngular(
-      () => {
-        const chart = new Chart(canvasContext, config);
-        this.charts.push(chart);
-      },
-    );
-  }
-
-  #updateCharts(mode?: UpdateMode) {
-    this.charts.forEach(chart => {
-      this.#zone.runOutsideAngular(() => chart.update(mode));
-    });
-  }
-
-  #getCanvasContext(canvasRef: ElementRef<HTMLCanvasElement>): CanvasRenderingContext2D {
-    const canvasEle = canvasRef.nativeElement;
-    const canvasContext = canvasEle.getContext('2d');
-
-    if (!canvasContext) {
-      throw new Error('Cannot create chart without a canvas');
-    }
-
-    return canvasContext;
+  private createChartConfigs(): ChartConfiguration<'bar'>[] {
+    const chartConfigs = this.projects.map(project => this.#getChartConfig(project));
+    return chartConfigs;
   }
 
   #getChartConfig(project: ProjectData): ChartConfiguration<'bar'> {
@@ -256,6 +179,7 @@ export class TileProjectBudgetsComponent implements AfterViewInit, OnDestroy {
         },
       },
       plugins: {
+        title: { display: true, text: project.name },
         tooltip: {
           callbacks: {
             label: (context: any) => {
@@ -299,20 +223,6 @@ export class TileProjectBudgetsComponent implements AfterViewInit, OnDestroy {
     };
 
     return config;
-  }
-
-  #onThemeChange(): void {    
-    this.charts.forEach((chart, index) => {
-      const project = this.projects[index];
-      
-      // Reevaluate the Chart Options 
-      Object.assign(chart.config.options as any, this.#getChartConfig(project));
-    });
-
-    // Trigger ChartJS update
-    this.#updateCharts();
-    
-    this.#changeDetector.markForCheck();
   }
   // #endregion
 }

@@ -1,25 +1,10 @@
 <sky-tile tileName="Project budgets vs. actuals">
   <sky-tile-title> Project budgets vs. actuals </sky-tile-title>
+  
   <sky-tile-content>
     <sky-tile-content-section>
-      @for (project of projects; track project.name) {
-        <div class="sky-margin-stacked-xl">
-          <div class="chart-header">
-            <h3 class="sky-margin-stacked-xs">{{ project.name }}</h3>
-            <sky-dropdown buttonType="context-menu">
-              <sky-dropdown-menu>
-                <sky-dropdown-item>
-                  <button type="button" (click)="onViewDataTable(project.name)">
-                    View data table
-                  </button>
-                </sky-dropdown-item>
-              </sky-dropdown-menu>
-            </sky-dropdown>
-          </div>
-          <div class="chart-container">
-            <canvas #canvas></canvas>
-          </div>
-        </div>
+      @for (chartConfig of chartConfigs; track $index) {
+        <sky-bar-chart  [chartHeight]="180" [config]="chartConfig" />
       }
     </sky-tile-content-section>
   </sky-tile-content>
