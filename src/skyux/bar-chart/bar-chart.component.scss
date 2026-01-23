@@ -1,8 +1,13 @@
 .chart-header {
   display: flex;
-  justify-content: flex-end;
+  justify-content: space-between;
   align-items: center;
 }
+
+.context-menu {
+  margin-left: auto;   
+}
+
 
 // ChartJS requires the Canvas to have a parent container that is dedicated to the element
 // See: https://www.chartjs.org/docs/latest/configuration/responsive.html

@@ -1,7 +1,11 @@
 <!-- Header Container -->
 <div class="chart-header">
+  @if (headingText()) {
+    <h3 class="sky-margin-stacked-xs">{{ headingText() }}</h3>
+  }
+
   <!-- Actions -->
-  <sky-dropdown buttonType="context-menu">
+  <sky-dropdown buttonType="context-menu" class="context-menu">
     <sky-dropdown-menu>
       <sky-dropdown-item>
         <button type="button" (click)="onViewDataTable()">View data table</button>

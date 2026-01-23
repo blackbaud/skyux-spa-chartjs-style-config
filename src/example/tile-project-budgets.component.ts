@@ -179,7 +179,6 @@ export class TileProjectBudgetsComponent {
         },
       },
       plugins: {
-        title: { display: true, text: project.name },
         tooltip: {
           callbacks: {
             label: (context: any) => {
