@@ -1,27 +1,21 @@
-<div id="controls">
-  <sky-theme-selector />
-</div>
+<sky-page layout="blocks">
+  <sky-page-header pageTitle="Home">
+    <sky-page-header-actions>
+      <button type="button" class="sky-btn sky-btn-default">
+        <sky-icon iconName="add" /> New
+      </button>
+    </sky-page-header-actions>
+  </sky-page-header>
+  
+  <sky-page-content>
+    <app-home-page-content />
+  </sky-page-content>
 
-<div id="content">
-  <sky-page layout="blocks">
-    <sky-page-header pageTitle="Home">
-      <sky-page-header-actions>
-        <button type="button" class="sky-btn sky-btn-default">
-          <sky-icon iconName="add" /> New
-        </button>
-      </sky-page-header-actions>
-    </sky-page-header>
-    
-    <sky-page-content>
-      <app-home-page-content />
-    </sky-page-content>
-
-  <sky-page-links>
-    <sky-link-list headingText="Ideation">
-      <sky-link-list-item>
-        <a routerLink="/bar-chart-sizing">Bar chart sizes</a>
-      </sky-link-list-item>
-    </sky-link-list>
-  </sky-page-links>
+<sky-page-links>
+  <sky-link-list headingText="Ideation">
+    <sky-link-list-item>
+      <a routerLink="/bar-chart-sizing">Bar chart sizes</a>
+    </sky-link-list-item>
+  </sky-link-list>
+</sky-page-links>
 </sky-page>
-</div>
