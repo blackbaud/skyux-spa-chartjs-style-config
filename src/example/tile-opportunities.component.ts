@@ -1,10 +1,11 @@
-import { Component, OnInit, ViewChild, ElementRef, AfterViewInit } from '@angular/core';
+import { Component } from '@angular/core';
 import { SkyTilesModule } from '@skyux/tiles';
 import { SkyDropdownModule } from '@skyux/popovers';
 import { SkyKeyInfoModule } from '@skyux/indicators';
 import { Chart, ChartConfiguration, registerables } from 'chart.js';
 import ChartDataLabels from 'chartjs-plugin-datalabels';
 import { getSkyuxBarChartConfig, skyuxChartStyles } from './chartjs-config';
+import { SkyBarChartComponent } from '../skyux/bar-chart/bar-chart.component';
 
 Chart.register(...registerables);
 
@@ -122,23 +123,11 @@ interface OpportunityStage {
 
 @Component({
   selector: 'app-tile-opportunities',
-  styles: `
-    :host {
-      display: block;
-    }
-    .chart-container {
-      position: relative;
-      height: 320px;
-      width: 100%;
-    }
-  `,
+  styles: ``,
   templateUrl: './tile-opportunities.component.html',
-  imports: [SkyTilesModule, SkyDropdownModule, SkyKeyInfoModule],
+  imports: [SkyTilesModule, SkyDropdownModule, SkyKeyInfoModule, SkyBarChartComponent],
 })
-export class TileOpportunitiesComponent implements AfterViewInit {
-  @ViewChild('opportunityChart') chartCanvas!: ElementRef<HTMLCanvasElement>;
-  private chart?: Chart<'bar'>;
-
+export class TileOpportunitiesComponent {
   protected keyMetrics = {
     ask: 1500000,
     funded: 160500,
@@ -158,14 +147,7 @@ export class TileOpportunitiesComponent implements AfterViewInit {
     { stage: 'No status', count: 3, value: 350000 },
   ];
 
-  ngAfterViewInit(): void {
-    this.createChart();
-  }
-
-  protected onViewDataTable(): void {
-    console.log('View data table for opportunities');
-    // TODO: Implement data table view
-  }
+  public chartConfig: ChartConfiguration<'bar'> = this.getChartConfiguration();
 
   protected formatCurrency(value: number): string {
     if (value >= 1000000) {
@@ -176,10 +158,7 @@ export class TileOpportunitiesComponent implements AfterViewInit {
     return '$' + value.toFixed(0);
   }
 
-  private createChart(): void {
-    const ctx = this.chartCanvas.nativeElement.getContext('2d');
-    if (!ctx) return;
-
+  private getChartConfiguration(): ChartConfiguration<'bar'> {
     // Get the base configuration for horizontal bar charts
     const baseConfig = getSkyuxBarChartConfig({
       indexAxis: 'y',
@@ -271,6 +250,6 @@ export class TileOpportunitiesComponent implements AfterViewInit {
       plugins: [tooltipShadowPlugin, ChartDataLabels],
     };
 
-    this.chart = new Chart(ctx, config);
+    return config;
   }
 }

@@ -1,10 +1,11 @@
-import { Component, AfterViewInit, ViewChild, ElementRef } from '@angular/core';
+import { Component } from '@angular/core';
 import { SkyBoxModule, SkyFluidGridModule } from '@skyux/layout';
 import { SkyPageModule } from '@skyux/pages';
 import { SkyTabsModule } from '@skyux/tabs';
 import { Chart, ChartConfiguration, registerables } from 'chart.js';
 import { getSkyuxBarChartConfig } from '../chartjs-config/bar-chart.config';
 import { skyuxChartStyles } from '../chartjs-config/global-chart.config';
+import { SkyBarChartComponent } from '../../skyux/bar-chart/bar-chart.component';
 
 Chart.register(...registerables);
 
@@ -12,41 +13,38 @@ Chart.register(...registerables);
   selector: 'app-bar-chart-sizing',
   standalone: true,
   templateUrl: './bar-chart-sizing.component.html',
-  imports: [SkyBoxModule, SkyFluidGridModule, SkyPageModule, SkyTabsModule],
+  imports: [SkyBoxModule, SkyFluidGridModule, SkyPageModule, SkyTabsModule, SkyBarChartComponent],
 })
-export class BarChartSizingComponent implements AfterViewInit {
-  @ViewChild('chart1') chart1Ref!: ElementRef<HTMLCanvasElement>;
-  @ViewChild('chart2') chart2Ref!: ElementRef<HTMLCanvasElement>;
-  @ViewChild('chart3') chart3Ref!: ElementRef<HTMLCanvasElement>;
-  @ViewChild('chart4') chart4Ref!: ElementRef<HTMLCanvasElement>;
-  @ViewChild('chart5') chart5Ref!: ElementRef<HTMLCanvasElement>;
-  @ViewChild('chart6') chart6Ref!: ElementRef<HTMLCanvasElement>;
-  @ViewChild('chart7') chart7Ref!: ElementRef<HTMLCanvasElement>;
-  @ViewChild('chart8') chart8Ref!: ElementRef<HTMLCanvasElement>;
-  @ViewChild('chart9') chart9Ref!: ElementRef<HTMLCanvasElement>;
-  @ViewChild('chart10') chart10Ref!: ElementRef<HTMLCanvasElement>;
-  @ViewChild('chart11') chart11Ref!: ElementRef<HTMLCanvasElement>;
-  @ViewChild('chart12') chart12Ref!: ElementRef<HTMLCanvasElement>;
-  @ViewChild('chartV1') chartV1Ref!: ElementRef<HTMLCanvasElement>;
-  @ViewChild('chartV2') chartV2Ref!: ElementRef<HTMLCanvasElement>;
-  @ViewChild('chartV3') chartV3Ref!: ElementRef<HTMLCanvasElement>;
-  @ViewChild('chartV4') chartV4Ref!: ElementRef<HTMLCanvasElement>;
-  @ViewChild('chartV5') chartV5Ref!: ElementRef<HTMLCanvasElement>;
-  @ViewChild('chartV6') chartV6Ref!: ElementRef<HTMLCanvasElement>;
-  @ViewChild('chartV7') chartV7Ref!: ElementRef<HTMLCanvasElement>;
-  @ViewChild('chartV8') chartV8Ref!: ElementRef<HTMLCanvasElement>;
-  @ViewChild('chartV9') chartV9Ref!: ElementRef<HTMLCanvasElement>;
-  @ViewChild('chartV10') chartV10Ref!: ElementRef<HTMLCanvasElement>;
-  @ViewChild('chartV11') chartV11Ref!: ElementRef<HTMLCanvasElement>;
-  @ViewChild('chartV12') chartV12Ref!: ElementRef<HTMLCanvasElement>;
+export class BarChartSizingComponent {
+  //#region Chart Configs
+  public chart1Config: ChartConfiguration<'bar'>;
+  public chart2Config: ChartConfiguration<'bar'>;
+  public chart3Config: ChartConfiguration<'bar'>;
+  public chart4Config: ChartConfiguration<'bar'>;
+  public chart5Config: ChartConfiguration<'bar'>;
+  public chart6Config: ChartConfiguration<'bar'>;
+  public chart7Config: ChartConfiguration<'bar'>;
+  public chart8Config: ChartConfiguration<'bar'>;
+  public chart9Config: ChartConfiguration<'bar'>;
+  public chart10Config: ChartConfiguration<'bar'>;
+  public chart11Config: ChartConfiguration<'bar'>;
+  public chart12Config: ChartConfiguration<'bar'>;
 
-  private chartInstances: Chart[] = [];
+  public chartV1Config: ChartConfiguration<'bar'>;
+  public chartV2Config: ChartConfiguration<'bar'>;
+  public chartV3Config: ChartConfiguration<'bar'>;
+  public chartV4Config: ChartConfiguration<'bar'>;
+  public chartV5Config: ChartConfiguration<'bar'>;
+  public chartV6Config: ChartConfiguration<'bar'>;
+  public chartV7Config: ChartConfiguration<'bar'>;
+  public chartV8Config: ChartConfiguration<'bar'>;
+  public chartV9Config: ChartConfiguration<'bar'>;
+  public chartV10Config: ChartConfiguration<'bar'>;
+  public chartV11Config: ChartConfiguration<'bar'>;
+  public chartV12Config: ChartConfiguration<'bar'>;
+  // #endregion
 
-  ngAfterViewInit() {
-    this.initializeCharts();
-  }
-
-  private initializeCharts() {
+  constructor() {
     const chartConfig = this.getChartConfiguration();
     const chartConfigByGender = this.getChartConfigurationByGender();
     const chartConfigByGradeGender = this.getChartConfigurationByGradeAndGender();
@@ -57,135 +55,60 @@ export class BarChartSizingComponent implements AfterViewInit {
     const chartConfigVerticalByGradeMetrics = this.getVerticalChartConfigurationByGradeMetrics();
 
     // Chart 1: Student Enrollment
-    if (this.chart1Ref) {
-      this.chartInstances.push(
-        new Chart(this.chart1Ref.nativeElement, chartConfig)
-      );
-    }
+    this.chart1Config = chartConfig;
 
     // Chart 2: Same as Chart 1
-    if (this.chart2Ref) {
-      this.chartInstances.push(
-        new Chart(this.chart2Ref.nativeElement, this.getChartConfiguration())
-      );
-    }
+    this.chart2Config = this.getChartConfiguration();
 
     // Chart 3: Same as Chart 1
-    if (this.chart3Ref) {
-      this.chartInstances.push(
-        new Chart(this.chart3Ref.nativeElement, this.getChartConfiguration())
-      );
-    }
+    this.chart3Config = this.getChartConfiguration();
 
     // Chart 4: Student Enrollment by Gender
-    if (this.chart4Ref) {
-      this.chartInstances.push(
-        new Chart(this.chart4Ref.nativeElement, chartConfigByGender)
-      );
-    }
+    this.chart4Config = chartConfigByGender;
 
     // Chart 5: Same as Chart 4
-    if (this.chart5Ref) {
-      this.chartInstances.push(
-        new Chart(this.chart5Ref.nativeElement, this.getChartConfigurationByGender())
-      );
-    }
+    this.chart5Config = this.getChartConfigurationByGender();
 
     // Chart 6: Same as Chart 4
-    if (this.chart6Ref) {
-      this.chartInstances.push(
-        new Chart(this.chart6Ref.nativeElement, this.getChartConfigurationByGender())
-      );
-    }
+    this.chart6Config = this.getChartConfigurationByGender();
 
     // Chart 7: Grade Level Enrollment by Gender
-    if (this.chart7Ref) {
-      this.chartInstances.push(
-        new Chart(this.chart7Ref.nativeElement, chartConfigByGradeGender)
-      );
-    }
+    this.chart7Config = chartConfigByGradeGender;
 
     // Chart 8: Same as Chart 7
-    if (this.chart8Ref) {
-      this.chartInstances.push(
-        new Chart(this.chart8Ref.nativeElement, this.getChartConfigurationByGradeAndGender())
-      );
-    }
+    this.chart8Config = this.getChartConfigurationByGradeAndGender();
 
     // Chart 9: Same as Chart 7
-    if (this.chart9Ref) {
-      this.chartInstances.push(
-        new Chart(this.chart9Ref.nativeElement, this.getChartConfigurationByGradeAndGender())
-      );
-    }
+    this.chart9Config = this.getChartConfigurationByGradeAndGender();
 
     // Chart 10: Grade Metrics (Absences, Tardies, Infractions, Awards)
-    if (this.chart10Ref) {
-      this.chartInstances.push(
-        new Chart(this.chart10Ref.nativeElement, chartConfigByGradeMetrics)
-      );
-    }
+    this.chart10Config = chartConfigByGradeMetrics;
 
     // Chart 11: Same as Chart 10
-    if (this.chart11Ref) {
-      this.chartInstances.push(
-        new Chart(this.chart11Ref.nativeElement, this.getChartConfigurationByGradeMetrics())
-      );
-    }
+    this.chart11Config = this.getChartConfigurationByGradeMetrics();
 
     // Chart 12: Same as Chart 10
-    if (this.chart12Ref) {
-      this.chartInstances.push(
-        new Chart(this.chart12Ref.nativeElement, this.getChartConfigurationByGradeMetrics())
-      );
-    }
+    this.chart12Config = this.getChartConfigurationByGradeMetrics();
 
     // Vertical tab charts
-    if (this.chartV1Ref) {
-      this.chartInstances.push(new Chart(this.chartV1Ref.nativeElement, chartConfigVertical));
-    }
-    if (this.chartV2Ref) {
-      this.chartInstances.push(new Chart(this.chartV2Ref.nativeElement, this.getVerticalChartConfiguration()));
-    }
-    if (this.chartV3Ref) {
-      this.chartInstances.push(new Chart(this.chartV3Ref.nativeElement, this.getVerticalChartConfiguration()));
-    }
-
-    if (this.chartV4Ref) {
-      this.chartInstances.push(new Chart(this.chartV4Ref.nativeElement, chartConfigVerticalByGender));
-    }
-    if (this.chartV5Ref) {
-      this.chartInstances.push(new Chart(this.chartV5Ref.nativeElement, this.getVerticalChartConfigurationByGender()));
-    }
-    if (this.chartV6Ref) {
-      this.chartInstances.push(new Chart(this.chartV6Ref.nativeElement, this.getVerticalChartConfigurationByGender()));
-    }
-
-    if (this.chartV7Ref) {
-      this.chartInstances.push(new Chart(this.chartV7Ref.nativeElement, chartConfigVerticalByGradeGender));
-    }
-    if (this.chartV8Ref) {
-      this.chartInstances.push(new Chart(this.chartV8Ref.nativeElement, this.getVerticalChartConfigurationByGradeAndGender()));
-    }
-    if (this.chartV9Ref) {
-      this.chartInstances.push(new Chart(this.chartV9Ref.nativeElement, this.getVerticalChartConfigurationByGradeAndGender()));
-    }
-
-    if (this.chartV10Ref) {
-      this.chartInstances.push(new Chart(this.chartV10Ref.nativeElement, chartConfigVerticalByGradeMetrics));
-    }
-    if (this.chartV11Ref) {
-      this.chartInstances.push(new Chart(this.chartV11Ref.nativeElement, this.getVerticalChartConfigurationByGradeMetrics()));
-    }
-    if (this.chartV12Ref) {
-      this.chartInstances.push(new Chart(this.chartV12Ref.nativeElement, this.getVerticalChartConfigurationByGradeMetrics()));
-    }
+    this.chartV1Config = chartConfigVertical;
+    this.chartV2Config = this.getVerticalChartConfiguration();
+    this.chartV3Config = this.getVerticalChartConfiguration();
+    this.chartV4Config = chartConfigVerticalByGender;
+    this.chartV5Config = this.getVerticalChartConfigurationByGender();
+    this.chartV6Config = this.getVerticalChartConfigurationByGender();
+    this.chartV7Config = chartConfigVerticalByGradeGender;
+    this.chartV8Config = this.getVerticalChartConfigurationByGradeAndGender();
+    this.chartV9Config = this.getVerticalChartConfigurationByGradeAndGender();
+    this.chartV10Config = chartConfigVerticalByGradeMetrics;
+    this.chartV11Config = this.getVerticalChartConfigurationByGradeMetrics();
+    this.chartV12Config = this.getVerticalChartConfigurationByGradeMetrics();
   }
 
   private getChartConfiguration(): ChartConfiguration<'bar'> {
     const colors = skyuxChartStyles.series;
     const borderColor = skyuxChartStyles.barBorderColor;
-    
+
     return {
       type: 'bar',
       data: {
@@ -217,7 +140,7 @@ export class BarChartSizingComponent implements AfterViewInit {
   private getChartConfigurationByGender(): ChartConfiguration<'bar'> {
     const colors = skyuxChartStyles.series;
     const borderColor = skyuxChartStyles.barBorderColor;
-    
+
     return {
       type: 'bar',
       data: {
@@ -256,7 +179,7 @@ export class BarChartSizingComponent implements AfterViewInit {
   private getChartConfigurationByGradeAndGender(): ChartConfiguration<'bar'> {
     const colors = skyuxChartStyles.series;
     const borderColor = skyuxChartStyles.barBorderColor;
-    
+
     return {
       type: 'bar',
       data: {
@@ -548,10 +471,5 @@ export class BarChartSizingComponent implements AfterViewInit {
         }),
       } as any,
     };
-  }
-
-  ngOnDestroy() {
-    // Clean up chart instances
-    this.chartInstances.forEach((chart) => chart.destroy());
   }
 }
