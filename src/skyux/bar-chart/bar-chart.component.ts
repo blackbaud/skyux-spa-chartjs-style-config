@@ -8,7 +8,10 @@ import {
   NgZone,
   OnDestroy,
   inject,
-  input, viewChild
+  input,
+  viewChild,
+  effect,
+  EffectRef,
 } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { SkyDropdownModule } from '@skyux/popovers';
@@ -64,8 +67,23 @@ export class SkyBarChartComponent implements AfterViewInit, OnDestroy {
   // #endregion
 
   #chart: Chart<'bar'> | undefined;
+  #configEffectRef: EffectRef | undefined;
+  #viewReady = false;
+
+  constructor() {
+    // React to config input changes and re-render the chart
+    this.#configEffectRef = effect(() => {
+      // Establish dependency on the input signal
+      const _cfg = this.config();
+      if (this.#viewReady) {
+        this.#renderChart();
+        this.#changeDetector.markForCheck();
+      }
+    });
+  }
 
   public ngAfterViewInit(): void {
+    this.#viewReady = true;
     this.#renderChart();
 
     /* istanbul ignore else */
@@ -81,6 +99,9 @@ export class SkyBarChartComponent implements AfterViewInit, OnDestroy {
       this.#chart.destroy();
       this.#chart = undefined;
     }
+
+    // Cleanup effect watching config changes
+    this.#configEffectRef?.destroy();
   }
 
   protected onViewDataTable(): void {
@@ -126,11 +147,15 @@ export class SkyBarChartComponent implements AfterViewInit, OnDestroy {
     }
 
     const canvasContext = this.#getCanvasContext();
+    if (!canvasContext) {
+      return;
+    }
+
     const config = this.#getChartConfig();
 
-    this.#zone.runOutsideAngular(
-      () => (this.#chart = new Chart(canvasContext, config)),
-    );
+    this.#zone.runOutsideAngular(() => {
+      this.#chart = new Chart(canvasContext, config);
+    });
   }
 
   #updateChart(mode?: UpdateMode): void {
@@ -139,15 +164,9 @@ export class SkyBarChartComponent implements AfterViewInit, OnDestroy {
     }
   }
 
-  #getCanvasContext(): CanvasRenderingContext2D {
+  #getCanvasContext(): CanvasRenderingContext2D | null {
     const canvasEle = this.canvasRef().nativeElement;
-    const canvasContext = canvasEle.getContext('2d');
-
-    if (!canvasContext) {
-      throw new Error('Cannot create chart without a canvas');
-    }
-
-    return canvasContext;
+    return canvasEle.getContext('2d');
   }
 
   #getChartConfig(): ChartConfiguration<'bar'> {
