@@ -4,4 +4,11 @@
   <sky-page-content>
     <sky-tile-dashboard [(config)]="dashboardConfig" />
   </sky-page-content>
+
+  <!-- Hidden references to satisfy Angular's template usage analysis for imported standalone tiles -->
+  <ng-template>
+    <app-tile-prospect-management></app-tile-prospect-management>
+    <app-tile-prospect-management-2></app-tile-prospect-management-2>
+    <app-tile-prospect-management-3></app-tile-prospect-management-3>
+  </ng-template>
 </sky-page>
