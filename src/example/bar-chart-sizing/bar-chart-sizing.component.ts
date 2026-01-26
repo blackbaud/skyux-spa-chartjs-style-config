@@ -1,7 +1,9 @@
 import { Component } from '@angular/core';
+import { FormsModule } from '@angular/forms';
 import { SkyBoxModule, SkyFluidGridModule } from '@skyux/layout';
 import { SkyPageModule } from '@skyux/pages';
 import { SkyTabsModule } from '@skyux/tabs';
+import { SkyInputBoxModule } from '@skyux/forms';
 import { Chart, ChartConfiguration, registerables } from 'chart.js';
 import { getSkyuxBarChartConfig } from '../chartjs-config/bar-chart.config';
 import { skyuxChartStyles } from '../chartjs-config/global-chart.config';
@@ -13,38 +15,51 @@ Chart.register(...registerables);
   selector: 'app-bar-chart-sizing',
   standalone: true,
   templateUrl: './bar-chart-sizing.component.html',
-  imports: [SkyBoxModule, SkyFluidGridModule, SkyPageModule, SkyTabsModule, SkyBarChartComponent],
+  imports: [FormsModule, SkyBoxModule, SkyFluidGridModule, SkyPageModule, SkyTabsModule, SkyInputBoxModule, SkyBarChartComponent],
 })
 export class BarChartSizingComponent {
-  //#region Chart Configs
-  public chart1Config: ChartConfiguration<'bar'>;
-  public chart2Config: ChartConfiguration<'bar'>;
-  public chart3Config: ChartConfiguration<'bar'>;
-  public chart4Config: ChartConfiguration<'bar'>;
-  public chart5Config: ChartConfiguration<'bar'>;
-  public chart6Config: ChartConfiguration<'bar'>;
-  public chart7Config: ChartConfiguration<'bar'>;
-  public chart8Config: ChartConfiguration<'bar'>;
-  public chart9Config: ChartConfiguration<'bar'>;
-  public chart10Config: ChartConfiguration<'bar'>;
-  public chart11Config: ChartConfiguration<'bar'>;
-  public chart12Config: ChartConfiguration<'bar'>;
+  //#region Chart Configuration Options
+  protected barPercentage = 0.66;
+  protected barThickness = 'flex';
+  protected maxBarThickness!: number;
+  protected borderWidth = 1;
+  protected borderRadius = 2;
+  protected categoryPercentage = 0.8;
+  // #endregion
 
-  public chartV1Config: ChartConfiguration<'bar'>;
-  public chartV2Config: ChartConfiguration<'bar'>;
-  public chartV3Config: ChartConfiguration<'bar'>;
-  public chartV4Config: ChartConfiguration<'bar'>;
-  public chartV5Config: ChartConfiguration<'bar'>;
-  public chartV6Config: ChartConfiguration<'bar'>;
-  public chartV7Config: ChartConfiguration<'bar'>;
-  public chartV8Config: ChartConfiguration<'bar'>;
-  public chartV9Config: ChartConfiguration<'bar'>;
-  public chartV10Config: ChartConfiguration<'bar'>;
-  public chartV11Config: ChartConfiguration<'bar'>;
-  public chartV12Config: ChartConfiguration<'bar'>;
+  //#region Chart Configs
+  public chart1Config!: ChartConfiguration<'bar'>;
+  public chart2Config!: ChartConfiguration<'bar'>;
+  public chart3Config!: ChartConfiguration<'bar'>;
+  public chart4Config!: ChartConfiguration<'bar'>;
+  public chart5Config!: ChartConfiguration<'bar'>;
+  public chart6Config!: ChartConfiguration<'bar'>;
+  public chart7Config!: ChartConfiguration<'bar'>;
+  public chart8Config!: ChartConfiguration<'bar'>;
+  public chart9Config!: ChartConfiguration<'bar'>;
+  public chart10Config!: ChartConfiguration<'bar'>;
+  public chart11Config!: ChartConfiguration<'bar'>;
+  public chart12Config!: ChartConfiguration<'bar'>;
+
+  public chartV1Config!: ChartConfiguration<'bar'>;
+  public chartV2Config!: ChartConfiguration<'bar'>;
+  public chartV3Config!: ChartConfiguration<'bar'>;
+  public chartV4Config!: ChartConfiguration<'bar'>;
+  public chartV5Config!: ChartConfiguration<'bar'>;
+  public chartV6Config!: ChartConfiguration<'bar'>;
+  public chartV7Config!: ChartConfiguration<'bar'>;
+  public chartV8Config!: ChartConfiguration<'bar'>;
+  public chartV9Config!: ChartConfiguration<'bar'>;
+  public chartV10Config!: ChartConfiguration<'bar'>;
+  public chartV11Config!: ChartConfiguration<'bar'>;
+  public chartV12Config!: ChartConfiguration<'bar'>;
   // #endregion
 
   constructor() {
+    this.initializeCharts();
+  }
+
+  private initializeCharts(): void {
     const chartConfig = this.getChartConfiguration();
     const chartConfigByGender = this.getChartConfigurationByGender();
     const chartConfigByGradeGender = this.getChartConfigurationByGradeAndGender();
@@ -103,6 +118,57 @@ export class BarChartSizingComponent {
     this.chartV10Config = chartConfigVerticalByGradeMetrics;
     this.chartV11Config = this.getVerticalChartConfigurationByGradeMetrics();
     this.chartV12Config = this.getVerticalChartConfigurationByGradeMetrics();
+
+    // Apply bar options to all configs
+    const allConfigs = [
+      this.chart1Config, this.chart2Config, this.chart3Config,
+      this.chart4Config, this.chart5Config, this.chart6Config,
+      this.chart7Config, this.chart8Config, this.chart9Config,
+      this.chart10Config, this.chart11Config, this.chart12Config,
+      this.chartV1Config, this.chartV2Config, this.chartV3Config,
+      this.chartV4Config, this.chartV5Config, this.chartV6Config,
+      this.chartV7Config, this.chartV8Config, this.chartV9Config,
+      this.chartV10Config, this.chartV11Config, this.chartV12Config,
+    ];
+
+    allConfigs.forEach((config) => this.applyBarOptions(config));
+  }
+
+  protected onChartOptionsChanged(): void {
+    this.initializeCharts();
+  }
+
+  private applyBarOptions(config: ChartConfiguration<'bar'>): void {
+    // Parse barThickness value
+    const barThicknessValue = this.barThickness === 'flex' ? 'flex' : parseInt(this.barThickness as string, 10);
+    
+    // Update dataset properties
+    if (config.data?.datasets) {
+      config.data.datasets.forEach((dataset: any) => {
+        dataset.borderWidth = this.borderWidth;
+        dataset.borderRadius = this.borderRadius;
+        dataset.barPercentage = this.barPercentage;
+        dataset.categoryPercentage = this.categoryPercentage;
+        dataset.barThickness = barThicknessValue;
+        if (this.maxBarThickness) {
+          dataset.maxBarThickness = this.maxBarThickness;
+        }
+      });
+    }
+
+    // Also set defaults in elements for consistency
+    if (config.options && typeof config.options === 'object') {
+      (config.options as any).elements = {
+        ...(config.options as any).elements,
+        bar: {
+          barPercentage: this.barPercentage,
+          barThickness: barThicknessValue,
+          borderRadius: this.borderRadius,
+          categoryPercentage: this.categoryPercentage,
+          ...(this.maxBarThickness && { maxBarThickness: this.maxBarThickness }),
+        },
+      };
+    }
   }
 
   private getChartConfiguration(): ChartConfiguration<'bar'> {

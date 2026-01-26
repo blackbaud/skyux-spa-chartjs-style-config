@@ -5,9 +5,6 @@ import { TileLineChartComponent } from './tile-line-chart.component';
 import { TileMyActionsComponent } from './tile-my-actions.component';
 import { TileOpportunitiesComponent } from './tile-opportunities.component';
 import { TileProjectBudgetsComponent } from './tile-project-budgets.component';
-import { TileProspectManagementComponent } from './tile-prospect-management.component';
-import { TileProspectManagement2Component } from './tile-prospect-management-2.component';
-import { TileProspectManagement3Component } from './tile-prospect-management-3.component';
 import { TileUpdatesComponent } from './tile-updates.component';
 
 @Component({
@@ -29,18 +26,6 @@ export class HomePageContentComponent {
       {
         id: 'tile-project-budgets',
         componentType: TileProjectBudgetsComponent,
-      },
-      {
-        id: 'tile-prospect-management-2',
-        componentType: TileProspectManagement2Component,
-      },
-      {
-        id: 'tile-prospect-management',
-        componentType: TileProspectManagementComponent,
-      },
-      {
-        id: 'tile-prospect-management-3',
-        componentType: TileProspectManagement3Component,
       },
       {
         id: 'tile-line-chart',
@@ -67,18 +52,6 @@ export class HomePageContentComponent {
             isCollapsed: false,
           },
           {
-            id: 'tile-prospect-management-2',
-            isCollapsed: false,
-          },
-          {
-            id: 'tile-prospect-management',
-            isCollapsed: false,
-          },
-          {
-            id: 'tile-prospect-management-3',
-            isCollapsed: false,
-          },
-          {
             id: 'tile-line-chart',
             isCollapsed: false,
           },
@@ -97,18 +70,6 @@ export class HomePageContentComponent {
             },
             {
               id: 'tile-project-budgets',
-              isCollapsed: false,
-            },
-            {
-              id: 'tile-prospect-management-2',
-              isCollapsed: false,
-            },
-            {
-              id: 'tile-prospect-management',
-              isCollapsed: false,
-            },
-            {
-              id: 'tile-prospect-management-3',
               isCollapsed: false,
             },
           ],

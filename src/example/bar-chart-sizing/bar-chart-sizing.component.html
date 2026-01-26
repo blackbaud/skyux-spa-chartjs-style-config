@@ -1,5 +1,94 @@
 <sky-page layout="fit">
-  <sky-page-header pageTitle="Bar chart sizing and place" />
+  <sky-page-header pageTitle="Bar chart sizing and place">
+    <sky-page-header-details>
+      <div style="display: flex; gap: 20px; align-items: flex-end; flex-wrap: wrap;">
+        <div>
+          <label for="categoryPercentage" class="sky-form-group-label">Category Percentage</label>
+          <sky-input-box>
+            <input
+              id="categoryPercentage"
+              type="number"
+              step="0.01"
+              min="0"
+              max="1"
+              [(ngModel)]="categoryPercentage"
+              (blur)="onChartOptionsChanged()"
+            />
+          </sky-input-box>
+        </div>
+
+        <div>
+          <label for="barPercentage" class="sky-form-group-label">Bar Percentage</label>
+          <sky-input-box>
+            <input
+              id="barPercentage"
+              type="number"
+              step="0.01"
+              min="0"
+              max="1"
+              [(ngModel)]="barPercentage"
+              (blur)="onChartOptionsChanged()"
+            />
+          </sky-input-box>
+        </div>
+
+        <div>
+          <label for="maxBarThickness" class="sky-form-group-label">Max Bar Thickness</label>
+          <sky-input-box>
+            <input
+              id="maxBarThickness"
+              type="number"
+              min="0"
+              [(ngModel)]="maxBarThickness"
+              (blur)="onChartOptionsChanged()"
+            />
+          </sky-input-box>
+        </div>
+
+        <div>
+          <label for="barThickness" class="sky-form-group-label">Bar Thickness</label>
+          <sky-input-box>
+            <input
+              id="barThickness"
+              type="text"
+              [(ngModel)]="barThickness"
+              (blur)="onChartOptionsChanged()"
+              placeholder="flex or number"
+            />
+          </sky-input-box>
+        </div>
+
+        <div>
+          <label for="borderWidth" class="sky-form-group-label">Border Width</label>
+          <sky-input-box>
+            <input
+              id="borderWidth"
+              type="number"
+              min="0"
+              max="10"
+              [(ngModel)]="borderWidth"
+              (blur)="onChartOptionsChanged()"
+            />
+          </sky-input-box>
+        </div>
+
+        <div>
+          <label for="borderRadius" class="sky-form-group-label">Border Radius</label>
+          <sky-input-box>
+            <input
+              id="borderRadius"
+              type="number"
+              min="0"
+              max="20"
+              [(ngModel)]="borderRadius"
+              (blur)="onChartOptionsChanged()"
+              class="sky-form-control"
+            />
+          </sky-input-box>
+        </div>
+      </div>
+    </sky-page-header-details>
+  </sky-page-header>
 
   <sky-page-content>
     <sky-tabset>

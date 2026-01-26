@@ -1,0 +1,72 @@
+<sky-tile tileName="Prospect management">
+  <sky-tile-title>Prospect management</sky-tile-title>
+  <sky-tile-content>
+          <sky-toolbar>
+        <sky-toolbar-section>
+          <button
+            type="button"
+            class="sky-btn sky-btn-default"
+            (click)="onEdit()"
+          >
+            <sky-icon iconName="edit" />
+            Edit
+          </button>
+        </sky-toolbar-section>
+      </sky-toolbar>
+    <sky-tile-content-section>
+      <div class="sky-margin-stacked-sm">
+        <sky-key-info class="sky-margin-inline-xxl">
+          <sky-key-info-value class="sky-font-display-3">{{ currentStatus }}</sky-key-info-value>
+          <sky-key-info-label class="sky-padding-inline-left-none">Current status</sky-key-info-label>
+        </sky-key-info>
+        <sky-key-info class="sky-margin-inline-xxl">
+          <sky-key-info-value class="sky-font-display-3">{{ daysInStatus }} days</sky-key-info-value>
+          <sky-key-info-label class="sky-padding-inline-left-none">Time in status</sky-key-info-label>
+        </sky-key-info>
+        <sky-key-info class="sky-margin-inline-xxl">
+          <sky-key-info-value class="sky-font-display-3">{{ classification }}</sky-key-info-value>
+          <sky-key-info-label class="sky-padding-inline-left-none">Classification</sky-key-info-label>
+        </sky-key-info>
+      </div>
+      <div class="sky-margin-stacked-xl">
+        <a
+          href="javascript:void(0);"
+          class="sky-btn sky-btn-link-inline"
+          (click)="onViewStatusHistory()"
+        >
+          View status history
+        </a>
+      </div>
+
+      <h3 class="sky-font-heading-3 sky-margin-stacked-xs">Financial information summary</h3>
+      <div class="sky-margin-stacked-sm">
+      <sky-key-info>
+        <sky-key-info-value class="sky-font-display-4">{{ formatCurrency(totalAssets) }}</sky-key-info-value>
+        <sky-key-info-label>Total estimated assets</sky-key-info-label>
+      </sky-key-info>
+</div>      <div class="sky-margin-stacked-md" style="text-align: right;">
+        <sky-dropdown buttonType="context-menu">
+          <sky-dropdown-menu>
+            <sky-dropdown-item>
+              <button type="button">
+                View data table
+              </button>
+            </sky-dropdown-item>
+          </sky-dropdown-menu>
+        </sky-dropdown>
+      </div>      <div class="chart-container sky-margin-stacked-xl">
+        <canvas #assetChart></canvas>
+      </div>
+
+      <h3 class="sky-font-heading-3 sky-margin-stacked-xs">Contributions</h3>
+      <p class="sky-font-deemphasized sky-margin-stacked-xl">
+        No contributions found
+      </p>
+
+      <h3 class="sky-font-heading-3 sky-margin-stacked-xs">Giving preferences</h3>
+      <p class="sky-font-deemphasized">
+        No giving preferences found
+      </p>
+    </sky-tile-content-section>
+  </sky-tile-content>
+</sky-tile>
