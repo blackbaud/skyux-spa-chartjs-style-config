@@ -1,0 +1,187 @@
+<sky-page layout="fit">
+  <sky-page-header pageTitle="Bar chart styles"></sky-page-header>
+
+  <sky-page-content>
+    <sky-tabset>
+      <sky-tab tabHeading="Horizontal" layout="blocks">
+        <h2 class="sky-section-heading">Option A</h2>
+        <sky-fluid-grid gutterSize="medium" [disableMargin]="true">
+          <sky-row>
+            <sky-column [screenSmall]="4">
+              <sky-box class="sky-margin-stacked-xl" headingText="Student Enrollment by School">
+                <sky-box-content>
+                  <sky-bar-chart [chartHeight]="300" [config]="chartEnrollmentSchoolsConfig" />
+                </sky-box-content>
+              </sky-box>
+            </sky-column>
+            <sky-column [screenSmall]="4">
+              <sky-box class="sky-margin-stacked-xl" headingText="Student Enrollment by School and Gender">
+                <sky-box-content>
+                  <sky-bar-chart [chartHeight]="300" [config]="chartEnrollmentSchoolsByGenderConfig" />
+                </sky-box-content>
+              </sky-box>
+            </sky-column>
+            <sky-column [screenSmall]="4">
+              <sky-box class="sky-margin-stacked-xl" headingText="Student Enrollment by Grade">
+                <sky-box-content>
+                  <sky-bar-chart [chartHeight]="300" [config]="chartEnrollmentByGradeConfig" />
+                </sky-box-content>
+              </sky-box>
+            </sky-column>
+          </sky-row>
+
+          <sky-row>
+            <sky-column [screenSmall]="6">
+              <sky-box class="sky-margin-stacked-xl" headingText="Student Enrollment">
+                <sky-box-content>
+                  <sky-bar-chart [chartHeight]="225" [config]="chartEnrollmentConfig" />
+                </sky-box-content>
+              </sky-box>
+            </sky-column>
+            <sky-column [screenSmall]="6">
+              <sky-box class="sky-margin-stacked-xl" headingText="Student Enrollment by Gender">
+                <sky-box-content>
+                  <sky-bar-chart [chartHeight]="225" [config]="chartEnrollmentByGenderConfig" />
+                </sky-box-content>
+              </sky-box>
+            </sky-column>
+          </sky-row>
+        </sky-fluid-grid>
+
+        <h2 class="sky-section-heading">Option B</h2>
+        <sky-fluid-grid gutterSize="medium" [disableMargin]="true">
+          <sky-row>
+            <sky-column [screenSmall]="4">
+              <sky-box class="sky-margin-stacked-xl" headingText="Student Enrollment by School">
+                <sky-box-content>
+                  <sky-bar-chart [chartHeight]="300" [config]="chartEnrollmentSchoolsConfigB" />
+                </sky-box-content>
+              </sky-box>
+            </sky-column>
+            <sky-column [screenSmall]="4">
+              <sky-box class="sky-margin-stacked-xl" headingText="Student Enrollment by School and Gender">
+                <sky-box-content>
+                  <sky-bar-chart [chartHeight]="300" [config]="chartEnrollmentSchoolsByGenderConfigB" />
+                </sky-box-content>
+              </sky-box>
+            </sky-column>
+            <sky-column [screenSmall]="4">
+              <sky-box class="sky-margin-stacked-xl" headingText="Student Enrollment by Grade">
+                <sky-box-content>
+                  <sky-bar-chart [chartHeight]="300" [config]="chartEnrollmentByGradeConfigB" />
+                </sky-box-content>
+              </sky-box>
+            </sky-column>
+          </sky-row>
+
+          <sky-row>
+            <sky-column [screenSmall]="6">
+              <sky-box class="sky-margin-stacked-xl" headingText="Student Enrollment">
+                <sky-box-content>
+                  <sky-bar-chart [chartHeight]="225" [config]="chartEnrollmentConfigB" />
+                </sky-box-content>
+              </sky-box>
+            </sky-column>
+            <sky-column [screenSmall]="6">
+              <sky-box class="sky-margin-stacked-xl" headingText="Student Enrollment by Gender">
+                <sky-box-content>
+                  <sky-bar-chart [chartHeight]="225" [config]="chartEnrollmentByGenderConfigB" />
+                </sky-box-content>
+              </sky-box>
+            </sky-column>
+          </sky-row>
+        </sky-fluid-grid>
+      </sky-tab>
+
+      <sky-tab tabHeading="Vertical" layout="blocks">
+        <h2 class="sky-section-heading">Option A</h2>
+        <sky-fluid-grid gutterSize="medium" [disableMargin]="true">
+          <sky-row>
+            <sky-column [screenSmall]="4">
+              <sky-box class="sky-margin-stacked-xl" headingText="Student Enrollment by School">
+                <sky-box-content>
+                  <sky-bar-chart [chartHeight]="300" [config]="chartEnrollmentSchoolsVerticalConfig" />
+                </sky-box-content>
+              </sky-box>
+            </sky-column>
+            <sky-column [screenSmall]="4">
+              <sky-box class="sky-margin-stacked-xl" headingText="Student Enrollment by School and Gender">
+                <sky-box-content>
+                  <sky-bar-chart [chartHeight]="300" [config]="chartEnrollmentSchoolsByGenderVerticalConfig" />
+                </sky-box-content>
+              </sky-box>
+            </sky-column>
+            <sky-column [screenSmall]="4">
+              <sky-box class="sky-margin-stacked-xl" headingText="Student Enrollment by Grade">
+                <sky-box-content>
+                  <sky-bar-chart [chartHeight]="300" [config]="chartEnrollmentByGradeVerticalConfig" />
+                </sky-box-content>
+              </sky-box>
+            </sky-column>
+          </sky-row>
+
+          <sky-row>
+            <sky-column [screenSmall]="6">
+              <sky-box class="sky-margin-stacked-xl" headingText="Student Enrollment">
+                <sky-box-content>
+                  <sky-bar-chart [chartHeight]="225" [config]="chartEnrollmentVerticalConfig" />
+                </sky-box-content>
+              </sky-box>
+            </sky-column>
+            <sky-column [screenSmall]="6">
+              <sky-box class="sky-margin-stacked-xl" headingText="Student Enrollment by Gender">
+                <sky-box-content>
+                  <sky-bar-chart [chartHeight]="225" [config]="chartEnrollmentByGenderVerticalConfig" />
+                </sky-box-content>
+              </sky-box>
+            </sky-column>
+          </sky-row>
+        </sky-fluid-grid>
+
+        <h2 class="sky-section-heading">Option B</h2>
+        <sky-fluid-grid gutterSize="medium" [disableMargin]="true">
+          <sky-row>
+            <sky-column [screenSmall]="4">
+              <sky-box class="sky-margin-stacked-xl" headingText="Student Enrollment by School">
+                <sky-box-content>
+                  <sky-bar-chart [chartHeight]="300" [config]="chartEnrollmentSchoolsVerticalConfigB" />
+                </sky-box-content>
+              </sky-box>
+            </sky-column>
+            <sky-column [screenSmall]="4">
+              <sky-box class="sky-margin-stacked-xl" headingText="Student Enrollment by School and Gender">
+                <sky-box-content>
+                  <sky-bar-chart [chartHeight]="300" [config]="chartEnrollmentSchoolsByGenderVerticalConfigB" />
+                </sky-box-content>
+              </sky-box>
+            </sky-column>
+            <sky-column [screenSmall]="4">
+              <sky-box class="sky-margin-stacked-xl" headingText="Student Enrollment by Grade">
+                <sky-box-content>
+                  <sky-bar-chart [chartHeight]="300" [config]="chartEnrollmentByGradeVerticalConfigB" />
+                </sky-box-content>
+              </sky-box>
+            </sky-column>
+          </sky-row>
+
+          <sky-row>
+            <sky-column [screenSmall]="6">
+              <sky-box class="sky-margin-stacked-xl" headingText="Student Enrollment">
+                <sky-box-content>
+                  <sky-bar-chart [chartHeight]="225" [config]="chartEnrollmentVerticalConfigB" />
+                </sky-box-content>
+              </sky-box>
+            </sky-column>
+            <sky-column [screenSmall]="6">
+              <sky-box class="sky-margin-stacked-xl" headingText="Student Enrollment by Gender">
+                <sky-box-content>
+                  <sky-bar-chart [chartHeight]="225" [config]="chartEnrollmentByGenderVerticalConfigB" />
+                </sky-box-content>
+              </sky-box>
+            </sky-column>
+          </sky-row>
+        </sky-fluid-grid>
+      </sky-tab>
+    </sky-tabset>
+  </sky-page-content>
+</sky-page>

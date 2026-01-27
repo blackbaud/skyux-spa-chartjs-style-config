@@ -10,6 +10,7 @@ import { provideInitialTheme } from '@skyux/theme';
 import { provideRouter, Routes } from '@angular/router';
 import { AppComponent } from './app.component';
 import { BarChartSizingComponent } from './example/bar-chart-sizing/bar-chart-sizing.component';
+import { BarChartStylesComponent } from './example/bar-chart-styles/bar-chart-styles.component';
 import { DonutChartSizingComponent } from './example/donut-chart-sizing/donut-chart-sizing.component';
 import { PagesPageHomePageBlocksLayoutExampleComponent } from './example/example.component';
 
@@ -17,6 +18,7 @@ import { ExampleHelpService } from './help.service';
 
 const routes: Routes = [
   { path: '', component: PagesPageHomePageBlocksLayoutExampleComponent },
+  { path: 'bar-chart-styles', component: BarChartStylesComponent },
   { path: 'bar-chart-sizing', component: BarChartSizingComponent },
   { path: 'donut-chart-sizing', component: DonutChartSizingComponent },
   { path: '**', redirectTo: '' },
