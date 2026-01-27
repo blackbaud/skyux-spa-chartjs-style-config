@@ -211,7 +211,8 @@ export class BarChartStylesComponent {
     options.plugins.legend.labels = {
       font: {
         size: 13,
-        weight: 'semibold'
+        weight: '400',
+        family: 'BLKB Sans, Arial, sans-serif'
       },
       color: this.resolveCssVariableToHex('--sky-color-text-default')
     };
@@ -222,7 +223,7 @@ export class BarChartStylesComponent {
         labels: ['Elementary School', 'Middle School', 'High School'],
         datasets: [
           {
-            label: 'Total Students',
+            label: 'Total Students 400',
             data: [845, 620, 1210],
             backgroundColor: colors[0],
             borderColor: borderColor,
@@ -318,7 +319,7 @@ export class BarChartStylesComponent {
         labels: ['Elementary School', 'Middle School', 'High School'],
         datasets: [
           {
-            label: 'Male Students',
+            label: 'Male Students 500',
             data: [420, 305, 590],
             backgroundColor: colors[0],
             borderColor: borderColor,
@@ -326,7 +327,7 @@ export class BarChartStylesComponent {
             borderRadius: 2,
           },
           {
-            label: 'Female Students',
+            label: 'Female Students 500',
             data: [425, 315, 620],
             backgroundColor: colors[1],
             borderColor: borderColor,
@@ -410,7 +411,7 @@ export class BarChartStylesComponent {
     options.plugins.legend.labels = {
       font: {
         size: 13,
-        weight: '500',
+        weight: '600',
         family: 'BLKB Sans, Arial, sans-serif'
       },
       color: this.resolveCssVariableToHex('--sky-color-text-default')
@@ -422,7 +423,7 @@ export class BarChartStylesComponent {
         labels: ['Kindergarten', '1st Grade', '2nd Grade', '3rd Grade', '4th Grade', '5th Grade'],
         datasets: [
           {
-            label: 'Male Students',
+            label: 'Male Students 600',
             data: [68, 72, 70, 75, 68, 67],
             backgroundColor: colors[0],
             borderColor: borderColor,
@@ -430,7 +431,7 @@ export class BarChartStylesComponent {
             borderRadius: 2,
           },
           {
-            label: 'Female Students',
+            label: 'Female Students 600',
             data: [70, 68, 73, 72, 70, 72],
             backgroundColor: colors[1],
             borderColor: borderColor,
@@ -526,7 +527,7 @@ export class BarChartStylesComponent {
         labels: ['Lower School', 'Upper School'],
         datasets: [
           {
-            label: 'Total Students',
+            label: 'Total Students 600',
             data: [1245, 1890],
             backgroundColor: colors[0],
             borderColor: borderColor,
@@ -610,7 +611,7 @@ export class BarChartStylesComponent {
     options.plugins.legend.labels = {
       font: {
         size: 13,
-        weight: '600',
+        weight: '500',
         family: 'BLKB Sans, Arial, sans-serif'
       },
       color: this.resolveCssVariableToHex('--sky-color-text-default')
@@ -622,7 +623,7 @@ export class BarChartStylesComponent {
         labels: ['Lower School', 'Upper School'],
         datasets: [
           {
-            label: 'Male Students',
+            label: 'Male Students 500',
             data: [610, 920],
             backgroundColor: colors[0],
             borderColor: borderColor,
@@ -630,7 +631,7 @@ export class BarChartStylesComponent {
             borderRadius: 2,
           },
           {
-            label: 'Female Students',
+            label: 'Female Students 500',
             data: [635, 970],
             backgroundColor: colors[1],
             borderColor: borderColor,
