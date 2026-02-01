@@ -17,45 +17,23 @@ Chart.register(...registerables);
 })
 export class BarChartStylesComponent {
   //#region Chart Configs - Horizontal (Top Row)
-  public chartEnrollmentSchoolsConfig!: ChartConfiguration<'bar'>;
-  public chartEnrollmentSchoolsByGenderConfig!: ChartConfiguration<'bar'>;
-  public chartEnrollmentByGradeConfig!: ChartConfiguration<'bar'>;
-  // #endregion
-
-  //#region Chart Configs - Horizontal (Bottom Row)
-  public chartEnrollmentConfig!: ChartConfiguration<'bar'>;
-  public chartEnrollmentByGenderConfig!: ChartConfiguration<'bar'>;
-  // #endregion
-
-  //#region Chart Configs - Vertical (Top Row)
-  public chartEnrollmentSchoolsVerticalConfig!: ChartConfiguration<'bar'>;
-  public chartEnrollmentSchoolsByGenderVerticalConfig!: ChartConfiguration<'bar'>;
-  public chartEnrollmentByGradeVerticalConfig!: ChartConfiguration<'bar'>;
-  // #endregion
-
-  //#region Chart Configs - Vertical (Bottom Row)
-  public chartEnrollmentVerticalConfig!: ChartConfiguration<'bar'>;
-  public chartEnrollmentByGenderVerticalConfig!: ChartConfiguration<'bar'>;
-  // #endregion
-
-  //#region Chart Configs - Option B - Horizontal (Top Row)
   public chartEnrollmentSchoolsConfigB!: ChartConfiguration<'bar'>;
   public chartEnrollmentSchoolsByGenderConfigB!: ChartConfiguration<'bar'>;
   public chartEnrollmentByGradeConfigB!: ChartConfiguration<'bar'>;
   // #endregion
 
-  //#region Chart Configs - Option B - Horizontal (Bottom Row)
+  //#region Chart Configs - Horizontal (Bottom Row)
   public chartEnrollmentConfigB!: ChartConfiguration<'bar'>;
   public chartEnrollmentByGenderConfigB!: ChartConfiguration<'bar'>;
   // #endregion
 
-  //#region Chart Configs - Option B - Vertical (Top Row)
+  //#region Chart Configs - Vertical (Top Row)
   public chartEnrollmentSchoolsVerticalConfigB!: ChartConfiguration<'bar'>;
   public chartEnrollmentSchoolsByGenderVerticalConfigB!: ChartConfiguration<'bar'>;
   public chartEnrollmentByGradeVerticalConfigB!: ChartConfiguration<'bar'>;
   // #endregion
 
-  //#region Chart Configs - Option B - Vertical (Bottom Row)
+  //#region Chart Configs - Vertical (Bottom Row)
   public chartEnrollmentVerticalConfigB!: ChartConfiguration<'bar'>;
   public chartEnrollmentByGenderVerticalConfigB!: ChartConfiguration<'bar'>;
   // #endregion
@@ -65,83 +43,26 @@ export class BarChartStylesComponent {
   }
 
   private initializeCharts(): void {
-    // Horizontal charts - Top Row - Option A styling
-    this.chartEnrollmentSchoolsConfig = this.getChartConfigurationSchools(true);
-    this.chartEnrollmentSchoolsByGenderConfig = this.getChartConfigurationSchoolsByGender(true);
-    this.chartEnrollmentByGradeConfig = this.getChartConfigurationByGrade(true);
-
-    // Horizontal charts - Bottom Row - Option A styling
-    this.chartEnrollmentConfig = this.getChartConfiguration(true);
-    this.chartEnrollmentByGenderConfig = this.getChartConfigurationByGender(true);
-
-    // Vertical charts - Top Row - Option A styling
-    this.chartEnrollmentSchoolsVerticalConfig = this.getVerticalChartConfigurationSchools(true);
-    this.chartEnrollmentSchoolsByGenderVerticalConfig = this.getVerticalChartConfigurationSchoolsByGender(true);
-    this.chartEnrollmentByGradeVerticalConfig = this.getVerticalChartConfigurationByGrade(true);
-
-    // Vertical charts - Bottom Row - Option A styling
-    this.chartEnrollmentVerticalConfig = this.getVerticalChartConfiguration(true);
-    this.chartEnrollmentByGenderVerticalConfig = this.getVerticalChartConfigurationByGender(true);
-
-    // Option B - Horizontal charts - Top Row
+    // Horizontal charts - Top Row
     this.chartEnrollmentSchoolsConfigB = this.getChartConfigurationSchools();
     this.chartEnrollmentSchoolsByGenderConfigB = this.getChartConfigurationSchoolsByGender();
     this.chartEnrollmentByGradeConfigB = this.getChartConfigurationByGrade();
 
-    // Option B - Horizontal charts - Bottom Row
+    // Horizontal charts - Bottom Row
     this.chartEnrollmentConfigB = this.getChartConfiguration();
     this.chartEnrollmentByGenderConfigB = this.getChartConfigurationByGender();
 
-    // Option B - Vertical charts - Top Row
+    // Vertical charts - Top Row
     this.chartEnrollmentSchoolsVerticalConfigB = this.getVerticalChartConfigurationSchools();
     this.chartEnrollmentSchoolsByGenderVerticalConfigB = this.getVerticalChartConfigurationSchoolsByGender();
     this.chartEnrollmentByGradeVerticalConfigB = this.getVerticalChartConfigurationByGrade();
 
-    // Option B - Vertical charts - Bottom Row
+    // Vertical charts - Bottom Row
     this.chartEnrollmentVerticalConfigB = this.getVerticalChartConfiguration();
     this.chartEnrollmentByGenderVerticalConfigB = this.getVerticalChartConfigurationByGender();
   }
 
-  /**
-   * Resolve CSS custom property to a hex color value
-   * Similar to the approach used in global-chart.config.ts
-   */
-  private resolveCssVariableToHex(varName: string): string {
-    if (typeof document === 'undefined') {
-      return '#cccccc'; // Fallback for SSR
-    }
-
-    // Try to get from body first (where theme classes are typically applied)
-    let value = getComputedStyle(document.body)
-      .getPropertyValue(varName)
-      .trim();
-
-    // Fallback to document element
-    if (!value) {
-      value = getComputedStyle(document.documentElement)
-        .getPropertyValue(varName)
-        .trim();
-    }
-
-    // If it's already a hex value, return it
-    if (value.startsWith('#')) {
-      return value;
-    }
-
-    // If it's an RGB value, convert to hex
-    const rgbMatch = value.match(/rgb\((\d+),\s*(\d+),\s*(\d+)\)/);
-    if (rgbMatch) {
-      const r = parseInt(rgbMatch[1]).toString(16).padStart(2, '0');
-      const g = parseInt(rgbMatch[2]).toString(16).padStart(2, '0');
-      const b = parseInt(rgbMatch[3]).toString(16).padStart(2, '0');
-      return `#${r}${g}${b}`;
-    }
-
-    // Fallback if unable to resolve
-    return '#cccccc';
-  }
-
-  private getChartConfigurationSchools(optionA: boolean = false): ChartConfiguration<'bar'> {
+  private getChartConfigurationSchools(): ChartConfiguration<'bar'> {
     const colors = skyuxChartStyles.series;
     const borderColor = skyuxChartStyles.barBorderColor;
     const options: any = getSkyuxBarChartConfig({
@@ -150,6 +71,19 @@ export class BarChartStylesComponent {
         x: {
           beginAtZero: true,
           max: 1200,
+          title: {
+            display: true,
+            text: '# of students',
+            font: {
+              size: skyuxChartStyles.scaleTitleFontSize,
+              family: skyuxChartStyles.scaleTitleFontFamily
+            },
+            color: skyuxChartStyles.scaleTitleColor,
+            padding: {
+              top: skyuxChartStyles.scaleXTitlePaddingTop,
+              bottom: skyuxChartStyles.scaleXTitlePaddingBottom
+            }
+          },
         },
         y: {
           grid: {
@@ -159,71 +93,13 @@ export class BarChartStylesComponent {
       },
     });
 
-    if (optionA) {
-      const gray200 = this.resolveCssVariableToHex('--bb-color-gray-200');
-      const gray300 = this.resolveCssVariableToHex('--bb-color-gray-300');
-      options.scales = options.scales || {};
-      options.scales.x = options.scales.x || {};
-      options.scales.y = options.scales.y || {};
-      options.scales.x.grid = {
-        ...(options.scales.x.grid || {}),
-        display: true,
-        drawOnChartArea: true,
-        drawTicks: true,
-        color: gray200,
-        tickColor: gray200,
-        // borderDash: [1, 1],
-        // tickBorderDash: [1, 1],
-        tickLength: 16,
-      };
-      options.scales.y.grid = {
-        ...(options.scales.y.grid || {}),
-        display: true,
-        drawOnChartArea: true,
-        drawTicks: true,
-        color: gray200,
-        tickColor: gray200,
-        // borderDash: [1, 1],
-        // tickBorderDash: [1, 1],
-        tickLength: 16,
-      };
-      // Top and right borders
-      options.scales.xTop = {
-        type: 'linear',
-        position: 'top',
-        grid: { display: false, drawOnChartArea: false },
-        ticks: { display: false },
-        border: { display: true, color: gray200 }
-      };
-      options.scales.yRight = {
-        type: 'category',
-        position: 'right',
-        grid: { display: false, drawOnChartArea: false },
-        ticks: { display: false },
-        border: { display: true, color: gray200 }
-      };
-      options.scales.x.border = { ...(options.scales.x.border || {}), color: gray300 };
-      options.scales.y.border = { ...(options.scales.y.border || {}), color: gray300 };
-    }
-
-    options.plugins = options.plugins || {};
-    options.plugins.legend = options.plugins.legend || {};
-    options.plugins.legend.labels = {
-      font: {
-        size: 13,
-        weight: '400',
-        family: 'BLKB Sans, Arial, sans-serif'
-      },
-      color: this.resolveCssVariableToHex('--sky-color-text-default')
-    };
-
     return {
       type: 'bar',
       data: {
         labels: ['Elementary School', 'Middle School', 'High School'],
         datasets: [
           {
-            label: 'Total Students 400',
+            label: 'Total Students',
             data: [845, 620, 1210],
             backgroundColor: colors[0],
             borderColor: borderColor,
@@ -236,7 +112,7 @@ export class BarChartStylesComponent {
     };
   }
 
-  private getChartConfigurationSchoolsByGender(optionA: boolean = false): ChartConfiguration<'bar'> {
+  private getChartConfigurationSchoolsByGender(): ChartConfiguration<'bar'> {
     const colors = skyuxChartStyles.series;
     const borderColor = skyuxChartStyles.barBorderColor;
 
@@ -246,6 +122,19 @@ export class BarChartStylesComponent {
         x: {
           beginAtZero: true,
           max: 1200,
+          title: {
+            display: true,
+            text: '# of students',
+            font: {
+              size: skyuxChartStyles.scaleTitleFontSize,
+              family: skyuxChartStyles.scaleTitleFontFamily
+            },
+            color: skyuxChartStyles.scaleTitleColor,
+            padding: {
+              top: skyuxChartStyles.scaleXTitlePaddingTop,
+              bottom: skyuxChartStyles.scaleXTitlePaddingBottom
+            }
+          },
         },
         y: {
           grid: {
@@ -255,71 +144,13 @@ export class BarChartStylesComponent {
       },
     });
 
-    if (optionA) {
-      const gray200 = this.resolveCssVariableToHex('--bb-color-gray-200');
-      const gray300 = this.resolveCssVariableToHex('--bb-color-gray-300');
-      options.scales = options.scales || {};
-      options.scales.x = options.scales.x || {};
-      options.scales.y = options.scales.y || {};
-      options.scales.x.grid = {
-        ...(options.scales.x.grid || {}),
-        display: true,
-        drawOnChartArea: true,
-        drawTicks: true,
-        color: gray200,
-        tickColor: gray200,
-        // borderDash: [1, 1],
-        // tickBorderDash: [1, 1],
-        tickLength: 16,
-      };
-      options.scales.y.grid = {
-        ...(options.scales.y.grid || {}),
-        display: true,
-        drawOnChartArea: true,
-        drawTicks: true,
-        color: gray200,
-        tickColor: gray200,
-        // borderDash: [1, 1],
-        // tickBorderDash: [1, 1],
-        tickLength: 16,
-      };
-      // Top and right borders
-      options.scales.xTop = {
-        type: 'linear',
-        position: 'top',
-        grid: { display: false, drawOnChartArea: false },
-        ticks: { display: false },
-        border: { display: true, color: gray200 }
-      };
-      options.scales.yRight = {
-        type: 'category',
-        position: 'right',
-        grid: { display: false, drawOnChartArea: false },
-        ticks: { display: false },
-        border: { display: true, color: gray200 }
-      };
-      options.scales.x.border = { ...(options.scales.x.border || {}), color: gray300 };
-      options.scales.y.border = { ...(options.scales.y.border || {}), color: gray300 };
-    }
-
-    options.plugins = options.plugins || {};
-    options.plugins.legend = options.plugins.legend || {};
-    options.plugins.legend.labels = {
-      font: {
-        size: 13,
-        weight: '500',
-        family: 'BLKB Sans, Arial, sans-serif'
-      },
-      color: this.resolveCssVariableToHex('--sky-color-text-default')
-    };
-
     return {
       type: 'bar',
       data: {
-        labels: ['Elementary School', 'Middle School', 'High School'],
+        labels: ['Kindergarten', '1st Grade', '2nd Grade'],
         datasets: [
           {
-            label: 'Male Students 500',
+            label: 'Male Students',
             data: [420, 305, 590],
             backgroundColor: colors[0],
             borderColor: borderColor,
@@ -327,7 +158,7 @@ export class BarChartStylesComponent {
             borderRadius: 2,
           },
           {
-            label: 'Female Students 500',
+            label: 'Female Students',
             data: [425, 315, 620],
             backgroundColor: colors[1],
             borderColor: borderColor,
@@ -340,7 +171,7 @@ export class BarChartStylesComponent {
     };
   }
 
-  private getChartConfigurationByGrade(optionA: boolean = false): ChartConfiguration<'bar'> {
+  private getChartConfigurationByGrade(): ChartConfiguration<'bar'> {
     const colors = skyuxChartStyles.series;
     const borderColor = skyuxChartStyles.barBorderColor;
 
@@ -350,6 +181,19 @@ export class BarChartStylesComponent {
         x: {
           beginAtZero: true,
           max: 120,
+          title: {
+            display: true,
+            text: '# of students',
+            font: {
+              size: skyuxChartStyles.scaleTitleFontSize,
+              family: skyuxChartStyles.scaleTitleFontFamily
+            },
+            color: skyuxChartStyles.scaleTitleColor,
+            padding: {
+              top: skyuxChartStyles.scaleXTitlePaddingTop,
+              bottom: skyuxChartStyles.scaleXTitlePaddingBottom
+            }
+          },
         },
         y: {
           grid: {
@@ -359,71 +203,13 @@ export class BarChartStylesComponent {
       },
     });
 
-    if (optionA) {
-      const gray200 = this.resolveCssVariableToHex('--bb-color-gray-200');
-      const gray300 = this.resolveCssVariableToHex('--bb-color-gray-300');
-      options.scales = options.scales || {};
-      options.scales.x = options.scales.x || {};
-      options.scales.y = options.scales.y || {};
-      options.scales.x.grid = {
-        ...(options.scales.x.grid || {}),
-        display: true,
-        drawOnChartArea: true,
-        drawTicks: true,
-        color: gray200,
-        tickColor: gray200,
-        // borderDash: [1, 1],
-        // tickBorderDash: [1, 1],
-        tickLength: 16,
-      };
-      options.scales.y.grid = {
-        ...(options.scales.y.grid || {}),
-        display: true,
-        drawOnChartArea: true,
-        drawTicks: true,
-        color: gray200,
-        tickColor: gray200,
-        // borderDash: [1, 1],
-        // tickBorderDash: [1, 1],
-        tickLength: 16,
-      };
-      // Top and right borders
-      options.scales.xTop = {
-        type: 'linear',
-        position: 'top',
-        grid: { display: false, drawOnChartArea: false },
-        ticks: { display: false },
-        border: { display: true, color: gray200 }
-      };
-      options.scales.yRight = {
-        type: 'category',
-        position: 'right',
-        grid: { display: false, drawOnChartArea: false },
-        ticks: { display: false },
-        border: { display: true, color: gray200 }
-      };
-      options.scales.x.border = { ...(options.scales.x.border || {}), color: gray300 };
-      options.scales.y.border = { ...(options.scales.y.border || {}), color: gray300 };
-    }
-
-    options.plugins = options.plugins || {};
-    options.plugins.legend = options.plugins.legend || {};
-    options.plugins.legend.labels = {
-      font: {
-        size: 13,
-        weight: '600',
-        family: 'BLKB Sans, Arial, sans-serif'
-      },
-      color: this.resolveCssVariableToHex('--sky-color-text-default')
-    };
-
     return {
       type: 'bar',
       data: {
         labels: ['Kindergarten', '1st Grade', '2nd Grade', '3rd Grade', '4th Grade', '5th Grade'],
         datasets: [
           {
-            label: 'Male Students 600',
+            label: 'Male Students',
             data: [68, 72, 70, 75, 68, 67],
             backgroundColor: colors[0],
             borderColor: borderColor,
@@ -431,7 +217,7 @@ export class BarChartStylesComponent {
             borderRadius: 2,
           },
           {
-            label: 'Female Students 600',
+            label: 'Female Students',
             data: [70, 68, 73, 72, 70, 72],
             backgroundColor: colors[1],
             borderColor: borderColor,
@@ -444,7 +230,7 @@ export class BarChartStylesComponent {
     };
   }
 
-  private getChartConfiguration(optionA: boolean = false): ChartConfiguration<'bar'> {
+  private getChartConfiguration(): ChartConfiguration<'bar'> {
     const colors = skyuxChartStyles.series;
     const borderColor = skyuxChartStyles.barBorderColor;
 
@@ -454,6 +240,19 @@ export class BarChartStylesComponent {
         x: {
           beginAtZero: true,
           max: 2500,
+          title: {
+            display: true,
+            text: '# of students',
+            font: {
+              size: skyuxChartStyles.scaleTitleFontSize,
+              family: skyuxChartStyles.scaleTitleFontFamily
+            },
+            color: skyuxChartStyles.scaleTitleColor,
+            padding: {
+              top: skyuxChartStyles.scaleXTitlePaddingTop,
+              bottom: skyuxChartStyles.scaleXTitlePaddingBottom
+            }
+          },
         },
         y: {
           grid: {
@@ -463,71 +262,13 @@ export class BarChartStylesComponent {
       },
     });
 
-    if (optionA) {
-      const gray200 = this.resolveCssVariableToHex('--bb-color-gray-200');
-      const gray300 = this.resolveCssVariableToHex('--bb-color-gray-300');
-      options.scales = options.scales || {};
-      options.scales.x = options.scales.x || {};
-      options.scales.y = options.scales.y || {};
-      options.scales.x.grid = {
-        ...(options.scales.x.grid || {}),
-        display: true,
-        drawOnChartArea: true,
-        drawTicks: true,
-        color: gray200,
-        tickColor: gray200,
-        // borderDash: [1, 1],
-        // tickBorderDash: [1, 1],
-        tickLength: 16,
-      };
-      options.scales.y.grid = {
-        ...(options.scales.y.grid || {}),
-        display: true,
-        drawOnChartArea: true,
-        drawTicks: true,
-        color: gray200,
-        tickColor: gray200,
-        // borderDash: [1, 1],
-        // tickBorderDash: [1, 1],
-        tickLength: 16,
-      };
-      // Top and right borders
-      options.scales.xTop = {
-        type: 'linear',
-        position: 'top',
-        grid: { display: false, drawOnChartArea: false },
-        ticks: { display: false },
-        border: { display: true, color: gray300 }
-      };
-      options.scales.yRight = {
-        type: 'category',
-        position: 'right',
-        grid: { display: false, drawOnChartArea: false },
-        ticks: { display: false },
-        border: { display: true, color: gray300 }
-      };
-      options.scales.x.border = { ...(options.scales.x.border || {}), color: gray300 };
-      options.scales.y.border = { ...(options.scales.y.border || {}), color: gray300 };
-    }
-
-    options.plugins = options.plugins || {};
-    options.plugins.legend = options.plugins.legend || {};
-    options.plugins.legend.labels = {
-      font: {
-        size: 13,
-        weight: '600',
-        family: 'BLKB Sans, Arial, sans-serif'
-      },
-      color: this.resolveCssVariableToHex('--sky-color-text-default')
-    };
-
     return {
       type: 'bar',
       data: {
         labels: ['Lower School', 'Upper School'],
         datasets: [
           {
-            label: 'Total Students 600',
+            label: 'Total Students',
             data: [1245, 1890],
             backgroundColor: colors[0],
             borderColor: borderColor,
@@ -540,7 +281,7 @@ export class BarChartStylesComponent {
     };
   }
 
-  private getChartConfigurationByGender(optionA: boolean = false): ChartConfiguration<'bar'> {
+  private getChartConfigurationByGender(): ChartConfiguration<'bar'> {
     const colors = skyuxChartStyles.series;
     const borderColor = skyuxChartStyles.barBorderColor;
 
@@ -550,6 +291,19 @@ export class BarChartStylesComponent {
         x: {
           beginAtZero: true,
           max: 2500,
+          title: {
+            display: true,
+            text: '# of students',
+            font: {
+              size: skyuxChartStyles.scaleTitleFontSize,
+              family: skyuxChartStyles.scaleTitleFontFamily
+            },
+            color: skyuxChartStyles.scaleTitleColor,
+            padding: {
+              top: skyuxChartStyles.scaleXTitlePaddingTop,
+              bottom: skyuxChartStyles.scaleXTitlePaddingBottom
+            }
+          },
         },
         y: {
           grid: {
@@ -559,71 +313,13 @@ export class BarChartStylesComponent {
       },
     });
 
-    if (optionA) {
-      const gray200 = this.resolveCssVariableToHex('--bb-color-gray-200');
-      const gray300 = this.resolveCssVariableToHex('--bb-color-gray-300');
-      options.scales = options.scales || {};
-      options.scales.x = options.scales.x || {};
-      options.scales.y = options.scales.y || {};
-      options.scales.x.grid = {
-        ...(options.scales.x.grid || {}),
-        display: true,
-        drawOnChartArea: true,
-        drawTicks: true,
-        color: gray200,
-        tickColor: gray200,
-        // borderDash: [1, 1],
-        // tickBorderDash: [1, 1],
-        tickLength: 16,
-      };
-      options.scales.y.grid = {
-        ...(options.scales.y.grid || {}),
-        display: true,
-        drawOnChartArea: true,
-        drawTicks: true,
-        color: gray200,
-        tickColor: gray200,
-        // borderDash: [1, 1],
-        // tickBorderDash: [1, 1],
-        tickLength: 16,
-      };
-      // Top and right borders
-      options.scales.xTop = {
-        type: 'linear',
-        position: 'top',
-        grid: { display: false, drawOnChartArea: false },
-        ticks: { display: false },
-        border: { display: true, color: gray300 }
-      };
-      options.scales.yRight = {
-        type: 'category',
-        position: 'right',
-        grid: { display: false, drawOnChartArea: false },
-        ticks: { display: false },
-        border: { display: true, color: gray300 }
-      };
-      options.scales.x.border = { ...(options.scales.x.border || {}), color: gray300 };
-      options.scales.y.border = { ...(options.scales.y.border || {}), color: gray300 };
-    }
-
-    options.plugins = options.plugins || {};
-    options.plugins.legend = options.plugins.legend || {};
-    options.plugins.legend.labels = {
-      font: {
-        size: 13,
-        weight: '500',
-        family: 'BLKB Sans, Arial, sans-serif'
-      },
-      color: this.resolveCssVariableToHex('--sky-color-text-default')
-    };
-
     return {
       type: 'bar',
       data: {
         labels: ['Lower School', 'Upper School'],
         datasets: [
           {
-            label: 'Male Students 500',
+            label: 'Male Students',
             data: [610, 920],
             backgroundColor: colors[0],
             borderColor: borderColor,
@@ -631,7 +327,7 @@ export class BarChartStylesComponent {
             borderRadius: 2,
           },
           {
-            label: 'Female Students 500',
+            label: 'Female Students',
             data: [635, 970],
             backgroundColor: colors[1],
             borderColor: borderColor,
@@ -644,7 +340,7 @@ export class BarChartStylesComponent {
     };
   }
 
-  private getVerticalChartConfiguration(optionA: boolean = false): ChartConfiguration<'bar'> {
+  private getVerticalChartConfiguration(): ChartConfiguration<'bar'> {
     const colors = skyuxChartStyles.series;
     const borderColor = skyuxChartStyles.barBorderColor;
 
@@ -665,53 +361,6 @@ export class BarChartStylesComponent {
         },
       },
     });
-
-    if (optionA) {
-      const gray200 = this.resolveCssVariableToHex('--bb-color-gray-200');
-      const gray300 = this.resolveCssVariableToHex('--bb-color-gray-300');
-      options.scales = options.scales || {};
-      options.scales.x = options.scales.x || {};
-      options.scales.y = options.scales.y || {};
-      options.scales.x.grid = {
-        ...(options.scales.x.grid || {}),
-        display: true,
-        drawOnChartArea: true,
-        drawTicks: true,
-        color: gray200,
-        tickColor: gray200,
-        // borderDash: [1, 1],
-        // tickBorderDash: [1, 1],
-        tickLength: 16,
-      };
-      options.scales.y.grid = {
-        ...(options.scales.y.grid || {}),
-        display: true,
-        drawOnChartArea: true,
-        drawTicks: true,
-        color: gray200,
-        tickColor: gray200,
-        // borderDash: [1, 1],
-        // tickBorderDash: [1, 1],
-        tickLength: 16,
-      };
-      // Top and right borders
-      options.scales.xTop = {
-        type: 'category',
-        position: 'top',
-        grid: { display: false, drawOnChartArea: false },
-        ticks: { display: false },
-        border: { display: true, color: gray300 }
-      };
-      options.scales.yRight = {
-        type: 'linear',
-        position: 'right',
-        grid: { display: false, drawOnChartArea: false },
-        ticks: { display: false },
-        border: { display: true, color: gray300 }
-      };
-      options.scales.x.border = { ...(options.scales.x.border || {}), color: gray300 };
-      options.scales.y.border = { ...(options.scales.y.border || {}), color: gray300 };
-    }
 
     return {
       type: 'bar',
@@ -732,7 +381,7 @@ export class BarChartStylesComponent {
     };
   }
 
-  private getVerticalChartConfigurationByGender(optionA: boolean = false): ChartConfiguration<'bar'> {
+  private getVerticalChartConfigurationByGender(): ChartConfiguration<'bar'> {
     const colors = skyuxChartStyles.series;
     const borderColor = skyuxChartStyles.barBorderColor;
 
@@ -753,53 +402,6 @@ export class BarChartStylesComponent {
         },
       },
     });
-
-    if (optionA) {
-      const gray200 = this.resolveCssVariableToHex('--bb-color-gray-200');
-      const gray300 = this.resolveCssVariableToHex('--bb-color-gray-300');
-      options.scales = options.scales || {};
-      options.scales.x = options.scales.x || {};
-      options.scales.y = options.scales.y || {};
-      options.scales.x.grid = {
-        ...(options.scales.x.grid || {}),
-        display: true,
-        drawOnChartArea: true,
-        drawTicks: true,
-        color: gray200,
-        tickColor: gray200,
-        // borderDash: [1, 1],
-        // tickBorderDash: [1, 1],
-        tickLength: 16,
-      };
-      options.scales.y.grid = {
-        ...(options.scales.y.grid || {}),
-        display: true,
-        drawOnChartArea: true,
-        drawTicks: true,
-        color: gray200,
-        tickColor: gray200,
-        // borderDash: [1, 1],
-        // tickBorderDash: [1, 1],
-        tickLength: 16,
-      };
-      // Top and right borders
-      options.scales.xTop = {
-        type: 'category',
-        position: 'top',
-        grid: { display: false, drawOnChartArea: false },
-        ticks: { display: false },
-        border: { display: true, color: gray300 }
-      };
-      options.scales.yRight = {
-        type: 'linear',
-        position: 'right',
-        grid: { display: false, drawOnChartArea: false },
-        ticks: { display: false },
-        border: { display: true, color: gray300 }
-      };
-      options.scales.x.border = { ...(options.scales.x.border || {}), color: gray300 };
-      options.scales.y.border = { ...(options.scales.y.border || {}), color: gray300 };
-    }
 
     return {
       type: 'bar',
@@ -828,7 +430,7 @@ export class BarChartStylesComponent {
     };
   }
 
-  private getVerticalChartConfigurationSchools(optionA: boolean = false): ChartConfiguration<'bar'> {
+  private getVerticalChartConfigurationSchools(): ChartConfiguration<'bar'> {
     const colors = skyuxChartStyles.series;
     const borderColor = skyuxChartStyles.barBorderColor;
 
@@ -850,53 +452,6 @@ export class BarChartStylesComponent {
       },
     });
 
-    if (optionA) {
-      const gray200 = this.resolveCssVariableToHex('--bb-color-gray-200');
-      const gray300 = this.resolveCssVariableToHex('--bb-color-gray-300');
-      options.scales = options.scales || {};
-      options.scales.x = options.scales.x || {};
-      options.scales.y = options.scales.y || {};
-      options.scales.x.grid = {
-        ...(options.scales.x.grid || {}),
-        display: true,
-        drawOnChartArea: true,
-        drawTicks: true,
-        color: gray200,
-        tickColor: gray200,
-        // borderDash: [1, 1],
-        // tickBorderDash: [1, 1],
-        tickLength: 16,
-      };
-      options.scales.y.grid = {
-        ...(options.scales.y.grid || {}),
-        display: true,
-        drawOnChartArea: true,
-        drawTicks: true,
-        color: gray200,
-        tickColor: gray200,
-        // borderDash: [1, 1],
-        // tickBorderDash: [1, 1],
-        tickLength: 16,
-      };
-      // Top and right borders
-      options.scales.xTop = {
-        type: 'category',
-        position: 'top',
-        grid: { display: false, drawOnChartArea: false },
-        ticks: { display: false },
-        border: { display: true, color: gray200 }
-      };
-      options.scales.yRight = {
-        type: 'linear',
-        position: 'right',
-        grid: { display: false, drawOnChartArea: false },
-        ticks: { display: false },
-        border: { display: true, color: gray200 }
-      };
-      options.scales.x.border = { ...(options.scales.x.border || {}), color: gray300 };
-      options.scales.y.border = { ...(options.scales.y.border || {}), color: gray300 };
-    }
-
     return {
       type: 'bar',
       data: {
@@ -916,7 +471,7 @@ export class BarChartStylesComponent {
     };
   }
 
-  private getVerticalChartConfigurationSchoolsByGender(optionA: boolean = false): ChartConfiguration<'bar'> {
+  private getVerticalChartConfigurationSchoolsByGender(): ChartConfiguration<'bar'> {
     const colors = skyuxChartStyles.series;
     const borderColor = skyuxChartStyles.barBorderColor;
 
@@ -937,53 +492,6 @@ export class BarChartStylesComponent {
         },
       },
     });
-
-    if (optionA) {
-      const gray200 = this.resolveCssVariableToHex('--bb-color-gray-200');
-      const gray300 = this.resolveCssVariableToHex('--bb-color-gray-300');
-      options.scales = options.scales || {};
-      options.scales.x = options.scales.x || {};
-      options.scales.y = options.scales.y || {};
-      options.scales.x.grid = {
-        ...(options.scales.x.grid || {}),
-        display: true,
-        drawOnChartArea: true,
-        drawTicks: true,
-        color: gray200,
-        tickColor: gray200,
-        // borderDash: [1, 1],
-        // tickBorderDash: [1, 1],
-        tickLength: 16,
-      };
-      options.scales.y.grid = {
-        ...(options.scales.y.grid || {}),
-        display: true,
-        drawOnChartArea: true,
-        drawTicks: true,
-        color: gray200,
-        tickColor: gray200,
-        // borderDash: [1, 1],
-        // tickBorderDash: [1, 1],
-        tickLength: 16,
-      };
-      // Top and right borders
-      options.scales.xTop = {
-        type: 'category',
-        position: 'top',
-        grid: { display: false, drawOnChartArea: false },
-        ticks: { display: false },
-        border: { display: true, color: gray200 }
-      };
-      options.scales.yRight = {
-        type: 'linear',
-        position: 'right',
-        grid: { display: false, drawOnChartArea: false },
-        ticks: { display: false },
-        border: { display: true, color: gray200 }
-      };
-      options.scales.x.border = { ...(options.scales.x.border || {}), color: gray300 };
-      options.scales.y.border = { ...(options.scales.y.border || {}), color: gray300 };
-    }
 
     return {
       type: 'bar',
@@ -1012,7 +520,7 @@ export class BarChartStylesComponent {
     };
   }
 
-  private getVerticalChartConfigurationByGrade(optionA: boolean = false): ChartConfiguration<'bar'> {
+  private getVerticalChartConfigurationByGrade(): ChartConfiguration<'bar'> {
     const colors = skyuxChartStyles.series;
     const borderColor = skyuxChartStyles.barBorderColor;
 
@@ -1033,53 +541,6 @@ export class BarChartStylesComponent {
         },
       },
     });
-
-    if (optionA) {
-      const gray200 = this.resolveCssVariableToHex('--bb-color-gray-200');
-      const gray300 = this.resolveCssVariableToHex('--bb-color-gray-300');
-      options.scales = options.scales || {};
-      options.scales.x = options.scales.x || {};
-      options.scales.y = options.scales.y || {};
-      options.scales.x.grid = {
-        ...(options.scales.x.grid || {}),
-        display: true,
-        drawOnChartArea: true,
-        drawTicks: true,
-        color: gray200,
-        tickColor: gray200,
-        // borderDash: [1, 1],
-        // tickBorderDash: [1, 1],
-        tickLength: 16,
-      };
-      options.scales.y.grid = {
-        ...(options.scales.y.grid || {}),
-        display: true,
-        drawOnChartArea: true,
-        drawTicks: true,
-        color: gray200,
-        tickColor: gray200,
-        // borderDash: [1, 1],
-        // tickBorderDash: [1, 1],
-        tickLength: 16,
-      };
-      // Top and right borders
-      options.scales.xTop = {
-        type: 'category',
-        position: 'top',
-        grid: { display: false, drawOnChartArea: false },
-        ticks: { display: false },
-        border: { display: true, color: gray200 }
-      };
-      options.scales.yRight = {
-        type: 'linear',
-        position: 'right',
-        grid: { display: false, drawOnChartArea: false },
-        ticks: { display: false },
-        border: { display: true, color: gray200 }
-      };
-      options.scales.x.border = { ...(options.scales.x.border || {}), color: gray300 };
-      options.scales.y.border = { ...(options.scales.y.border || {}), color: gray300 };
-    }
 
     return {
       type: 'bar',

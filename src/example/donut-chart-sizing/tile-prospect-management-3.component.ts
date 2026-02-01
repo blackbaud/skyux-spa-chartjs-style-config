@@ -184,6 +184,14 @@ export class TileProspectManagement3Component implements AfterViewInit {
         legend: {
           display: true,
           position: 'right',
+          labels: {
+            font: {
+              size: 13,
+              weight: 'bold',
+              family: 'BLKB Sans, Arial, sans-serif'
+            },
+            color: 'var(--sky-color-text-deemphasized)'
+          }
         },
         tooltip: {
           callbacks: {

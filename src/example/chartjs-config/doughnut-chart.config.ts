@@ -27,6 +27,10 @@ function getBaseDoughnutChartConfig(): Partial<ChartOptions<'doughnut'>> {
     responsive: true,
     maintainAspectRatio: false,
     
+    layout: {
+      padding: skyuxChartStyles.chartPadding,
+    },
+    
     datasets: {
       doughnut: {
         borderWidth: 2,
@@ -41,15 +45,15 @@ function getBaseDoughnutChartConfig(): Partial<ChartOptions<'doughnut'>> {
         labels: {
           usePointStyle: true,
           pointStyle: 'circle',
-          padding: 12,
+          padding: skyuxChartStyles.legendLabelsPadding,
           font: {
             size: fontSize,
             family: fontFamily,
             weight: fontWeight,
           },
-          color: textColor,
-          boxWidth: 12,
-          boxHeight: 12,
+          color: 'var(--sky-color-text-deemphasized)',
+          boxWidth: skyuxChartStyles.legendPointSize,
+          boxHeight: skyuxChartStyles.legendPointSize,
         },
       },
       tooltip: {
@@ -96,11 +100,13 @@ export const skyuxDoughnutChartConfig: Partial<ChartOptions<'doughnut'>> = {
       position: 'right',
       labels: {
         usePointStyle: true,
+        pointStyle: 'circle',
         padding: 10,
         font: {
           size: 11,
           family: 'Blackbaud Sans, Arial, sans-serif',
         },
+        color: 'var(--sky-color-text-deemphasized)',
       },
     },
     tooltip: {

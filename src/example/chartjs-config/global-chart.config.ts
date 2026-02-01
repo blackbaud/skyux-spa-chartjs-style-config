@@ -33,6 +33,11 @@ function getSkyuxGlobalChartConfig(): Partial<ChartOptions> {
     responsive: true,
     maintainAspectRatio: false,
     
+    // Layout padding
+    layout: {
+      padding: skyuxChartStyles.chartPadding,
+    },
+    
     // Interaction options
     interaction: {
       mode: 'nearest' as InteractionMode,
@@ -53,11 +58,16 @@ function getSkyuxGlobalChartConfig(): Partial<ChartOptions> {
         position: 'bottom',
         labels: {
           usePointStyle: true,
-          padding: 10,
+          pointStyle: 'circle',
+          boxWidth: skyuxChartStyles.legendPointSize,
+          boxHeight: skyuxChartStyles.legendPointSize,
+          padding: skyuxChartStyles.legendLabelsPadding,
           font: {
-            family: 'Blackbaud Sans, Arial, sans-serif',
-            size: 11,
+            family: skyuxChartStyles.legendFontFamily,
+            size: skyuxChartStyles.legendFontSize,
+            weight: skyuxChartStyles.legendFontWeight as any,
           },
+          color: skyuxChartStyles.legendTextColor,
         },
       },
       
@@ -123,6 +133,36 @@ function resolveCssVariable(varName: string): string {
 }
 
 /**
+ * Convert CSS color value (rgb, rgba, or hex) to hex format
+ */
+function colorToHex(color: string): string {
+  // If already hex, return as-is
+  if (color.startsWith('#')) {
+    return color;
+  }
+  
+  // Handle rgb/rgba format
+  const rgbMatch = color.match(/rgba?\((\d+),\s*(\d+),\s*(\d+)/);
+  if (rgbMatch) {
+    const r = parseInt(rgbMatch[1]).toString(16).padStart(2, '0');
+    const g = parseInt(rgbMatch[2]).toString(16).padStart(2, '0');
+    const b = parseInt(rgbMatch[3]).toString(16).padStart(2, '0');
+    return `#${r}${g}${b}`;
+  }
+  
+  // Fallback to original color
+  return color;
+}
+
+/**
+ * Resolve CSS custom property and convert to hex value
+ */
+function resolveCssVariableToHex(varName: string): string {
+  const colorValue = resolveCssVariable(varName);
+  return colorToHex(colorValue);
+}
+
+/**
  * Get SKY UX visualization category colors
  * Resolves CSS custom properties at runtime
  */
@@ -169,13 +209,12 @@ export const skyuxChartStyles = {
   get axisLineColor(): string {
     const color = resolveCssVariable('--sky-theme-color-viz-axis');
     console.log('SKY UX Axis Line Color:', color);
-    return color || '#85888d'; // Fallback to gray-500
+    return color || '#85888d'; // Fallback to gray-250
   },
   
   get axisGridlineColor(): string {
-    const color = resolveCssVariable('--sky-theme-color-viz-gridline');
-    console.log('SKY UX Axis Gridline Color:', color);
-    return color || '#e0e1e2'; // Fallback to gray-200
+    // Hardcoded to specific color instead of theme variable
+    return '#d5d6d8';
   },
   
   get axisTickColor(): string {
@@ -196,14 +235,138 @@ export const skyuxChartStyles = {
     return weight || '400'; // Fallback
   },
   
-  get axisTickPadding(): number {
+  get axisTickPaddingX(): number {
     const space = resolveCssVariable('--sky-space-gap-label-m');
-    console.log('SKY UX Axis Tick Padding:', space);
+    console.log('SKY UX Axis Tick Padding (X):', space);
     return remToPixels(space || '0.5rem'); // Fallback to 8px
+  },
+  
+  get axisTickPaddingY(): number {
+    const space = resolveCssVariable('--sky-space-gap-label-m');
+    console.log('SKY UX Axis Tick Padding (Y):', space);
+    return remToPixels(space || '0.5rem'); // Fallback to 8px
+  },
+  
+  get axisTickLengthX(): number {
+    return 12;
+  },
+  
+  get axisTickLengthY(): number {
+    return 12;
+  },
+  
+  get axisTickLengthXHidden(): number {
+    return 0;
+  },
+  
+  get axisTickLengthYHidden(): number {
+    return 0;
+  },
+  
+  // =============================================================================
+  // LEGEND
+  // =============================================================================
+  
+  get legendTextColor(): string {
+    return resolveCssVariableToHex('--sky-color-text-deemphasized');
+  },
+  
+  // Legend label styling for chart style demonstrations
+  get legendLabelFontSize(): number {
+    return 13;
+  },
+  
+  get legendLabelFontWeight(): string {
+    return '400';
+  },
+  
+  get legendLabelFontFamily(): string {
+    return 'BLKB Sans, Arial, sans-serif';
+  },
+  
+  get legendLabelColor(): string {
+    return '#51555C';
+  },
+  
+  get legendPointSize(): number {
+    const size = resolveCssVariable('--sky-size-icon-xs');
+    console.log('SKY UX Legend Point Size:', size);
+    return remToPixels(size || '12px'); // Fallback
+  },
+  
+  get legendLabelsPadding(): number {
+    const space = resolveCssVariable('--sky-space-stacked-s');
+    console.log('SKY UX Legend Labels Padding:', space);
+    return remToPixels(space || '4px'); // Fallback
+  },
+  
+  get legendFontSize(): number {
+    const size = resolveCssVariable('--sky-font-size-body-s');
+    console.log('SKY UX Legend Font Size:', size);
+    return remToPixels(size || '13px'); // Fallback
+  },
+  
+  get legendFontWeight(): string {
+    const weight = resolveCssVariable('--sky-font-style-body-s');
+    console.log('SKY UX Legend Font Weight:', weight);
+    return weight || '400'; // Fallback
+  },
+  
+  get legendFontFamily(): string {
+    const family = resolveCssVariable('--sky-font-family-primary');
+    console.log('SKY UX Legend Font Family:', family);
+    return family || 'Blackbaud Sans, Arial, sans-serif'; // Fallback
+  },
+  
+  // =============================================================================
+  // SCALE TITLES (Axis Labels)
+  // =============================================================================
+  
+  get scaleTitleFontSize(): number {
+    return 13;
+  },
+  
+  get scaleTitleFontFamily(): string {
+    return 'BLKB Sans, Arial, sans-serif';
+  },
+  
+  get scaleTitleColor(): string {
+    return '#51555C';
+  },
+  
+  get scaleTitlePaddingTop(): number {
+    return 0;
+  },
+  
+  // X-axis title padding (top and bottom)
+  get scaleXTitlePaddingTop(): number {
+    const space = resolveCssVariable('--sky-space-stacked-0');
+    console.log('SKY UX Scale X Title Padding Top:', space);
+    return remToPixels(space || '0px'); // Fallback
+  },
+  
+  get scaleXTitlePaddingBottom(): number {
+    const space = resolveCssVariable('--sky-space-stacked-l');
+    console.log('SKY UX Scale X Title Padding Bottom:', space);
+    return remToPixels(space || '16px'); // Fallback
+  },
+  
+  // Y-axis title padding (right and left)
+  get scaleYTitlePaddingRight(): number {
+    const space = resolveCssVariable('--sky-space-inline-0');
+    console.log('SKY UX Scale Y Title Padding Right:', space);
+    return remToPixels(space || '0px'); // Fallback
+  },
+  
+  get scaleYTitlePaddingLeft(): number {
+    const space = resolveCssVariable('--sky-space-inline-l');
+    console.log('SKY UX Scale Y Title Padding Left:', space);
+    return remToPixels(space || '16px'); // Fallback
   },
   
   // =============================================================================
   // BAR/CHART ELEMENTS
+  // =============================================================================
   // =============================================================================
   
   get barBorderColor(): string {
@@ -375,6 +538,16 @@ export const skyuxChartStyles = {
   get markerColor(): string {
     const color = resolveCssVariable('--sky-theme-color-viz-marker');
     return color || '#252b33'; // Fallback to gray-900
+  },
+  
+  // =============================================================================
+  // LAYOUT/CHART PADDING
+  // =============================================================================
+  
+  get chartPadding(): number {
+    const space = resolveCssVariable('--sky-space-inset-balanced-none');
+    console.log('SKY UX Chart Padding:', space);
+    return remToPixels(space || '4px'); // Fallback to 4px
   },
 };
 
