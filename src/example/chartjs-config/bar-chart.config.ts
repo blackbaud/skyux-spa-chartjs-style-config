@@ -21,7 +21,10 @@ function getBaseBarChartConfig(): Partial<ChartOptions<'bar'>> {
   const fontSize = skyuxChartStyles.axisTickFontSize;
   const fontFamily = skyuxChartStyles.fontFamily;
   const fontWeight = skyuxChartStyles.axisTickFontWeight as any;
-  const labelPadding = skyuxChartStyles.axisTickPadding;
+  const labelPaddingX = skyuxChartStyles.axisTickPaddingX;
+  const labelPaddingY = skyuxChartStyles.axisTickPaddingY;
+  const tickLengthX = skyuxChartStyles.axisTickLengthX;
+  const tickLengthY = skyuxChartStyles.axisTickLengthY;
   
   console.log('Base config axis color:', axisColor);
   console.log('Base config gridline color:', gridlineColor);
@@ -31,12 +34,17 @@ function getBaseBarChartConfig(): Partial<ChartOptions<'bar'>> {
   console.log('Base config font size:', fontSize);
   console.log('Base config font family:', fontFamily);
   console.log('Base config font weight:', fontWeight);
-  console.log('Base config label padding:', labelPadding);
+  console.log('Base config label padding (X):', labelPaddingX);
+  console.log('Base config label padding (Y):', labelPaddingY);
   
   return {
     indexAxis: 'x',
     responsive: true,
     maintainAspectRatio: false,
+    
+    layout: {
+      padding: skyuxChartStyles.chartPadding,
+    },
     
     datasets: {
       bar: {
@@ -58,7 +66,9 @@ function getBaseBarChartConfig(): Partial<ChartOptions<'bar'>> {
         grid: {
           display: true,
           color: gridlineColor,
-          drawTicks: false,
+          tickColor: gridlineColor,
+          drawTicks: true,
+          tickLength: tickLengthX,
         },
         border: {
           display: true,
@@ -71,7 +81,7 @@ function getBaseBarChartConfig(): Partial<ChartOptions<'bar'>> {
             family: fontFamily,
             weight: fontWeight,
           },
-          padding: labelPadding,
+          padding: labelPaddingX,
         },
       },
       y: {
@@ -79,7 +89,9 @@ function getBaseBarChartConfig(): Partial<ChartOptions<'bar'>> {
         grid: {
           display: true,
           color: gridlineColor,
-          drawTicks: false,
+          tickColor: gridlineColor,
+          drawTicks: true,
+          tickLength: tickLengthY,
         },
         border: {
           display: true,
@@ -92,7 +104,7 @@ function getBaseBarChartConfig(): Partial<ChartOptions<'bar'>> {
             family: fontFamily,
             weight: fontWeight,
           },
-          padding: labelPadding,
+          padding: labelPaddingY,
         },
       },
     },
@@ -103,11 +115,16 @@ function getBaseBarChartConfig(): Partial<ChartOptions<'bar'>> {
         position: 'bottom',
         labels: {
           usePointStyle: true,
-          padding: 10,
+          pointStyle: 'circle',
+          boxWidth: skyuxChartStyles.legendPointSize,
+          boxHeight: skyuxChartStyles.legendPointSize,
+          padding: skyuxChartStyles.legendLabelsPadding,
           font: {
-            size: 11,
-            family: 'Blackbaud Sans, Arial, sans-serif',
+            size: skyuxChartStyles.legendFontSize,
+            weight: skyuxChartStyles.legendFontWeight as any,
+            family: skyuxChartStyles.legendFontFamily,
           },
+          color: skyuxChartStyles.legendLabelColor,
         },
       },
       tooltip: {
@@ -193,11 +210,13 @@ export const skyuxBarChartConfig: Partial<ChartOptions<'bar'>> = {
       position: 'bottom',
       labels: {
         usePointStyle: true,
+        pointStyle: 'circle',
         padding: 10,
         font: {
           size: 11,
           family: 'BLKB Sans, Arial, sans-serif',
         },
+        color: 'var(--sky-color-text-deemphasized)',
       },
     },
     tooltip: {
@@ -294,6 +313,28 @@ export function getSkyuxBarChartConfig(
       };
     });
   }
+  
+  // Normalize tick lengths per axis and reduce when ticks are hidden
+  Object.keys(mergedScales).forEach((scaleKey) => {
+    const scale = mergedScales[scaleKey] || {};
+    const grid = scale.grid || {};
+    const isXAxis = scaleKey.toLowerCase().startsWith('x');
+    const isYAxis = scaleKey.toLowerCase().startsWith('y');
+    const defaultTickLength = isXAxis
+      ? skyuxChartStyles.axisTickLengthX
+      : skyuxChartStyles.axisTickLengthY;
+    const hiddenTickLength = isXAxis
+      ? skyuxChartStyles.axisTickLengthXHidden
+      : skyuxChartStyles.axisTickLengthYHidden;
+    const ticksHidden = grid.display === false || grid.drawTicks === false || grid.tickColor === 'transparent';
+    if (isXAxis || isYAxis) {
+      scale.grid = {
+        ...grid,
+        tickLength: ticksHidden ? hiddenTickLength : (grid.tickLength ?? defaultTickLength),
+      };
+      mergedScales[scaleKey] = scale;
+    }
+  });
   
   // Deep merge plugins configuration, especially tooltip
   const mergedPlugins: any = {

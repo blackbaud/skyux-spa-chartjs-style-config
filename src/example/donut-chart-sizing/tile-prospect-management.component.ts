@@ -4,14 +4,14 @@ import { SkyDropdownModule } from '@skyux/popovers';
 import { SkyToolbarModule } from '@skyux/layout';
 import { SkyIconModule } from '@skyux/icon';
 import { SkyKeyInfoModule } from '@skyux/indicators';
-import { Chart, ChartConfiguration, registerables } from 'chart.js';
+import { Chart, ChartConfiguration, registerables, Plugin } from 'chart.js';
 import ChartDataLabels from 'chartjs-plugin-datalabels';
 import { getSkyuxDoughnutChartConfig, getSkyuxDoughnutDatasetBorder, skyuxChartStyles } from '../chartjs-config';
 
 Chart.register(...registerables);
 
 // Plugin to add box shadow and accent border to tooltips (matches SKY UX popover style)
-const tooltipShadowPlugin = {
+const tooltipShadowPlugin: Plugin<'doughnut'> = {
   id: 'tooltipShadow',
   beforeTooltipDraw: (chart: any) => {
     const tooltip = chart.tooltip;
@@ -239,7 +239,7 @@ export class TileProspectManagementComponent implements AfterViewInit {
         ],
       },
       options: baseConfig,
-      plugins: [tooltipShadowPlugin, ChartDataLabels],
+      plugins: [tooltipShadowPlugin, ChartDataLabels as Plugin<'doughnut'>],
     };
 
     this.chart = new Chart(ctx, config);
