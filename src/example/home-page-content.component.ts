@@ -6,6 +6,7 @@ import { TileMyActionsComponent } from './tile-my-actions.component';
 import { TileOpportunitiesComponent } from './tile-opportunities.component';
 import { TileProjectBudgetsComponent } from './tile-project-budgets.component';
 import { TileUpdatesComponent } from './tile-updates.component';
+import { TileStackedBarChartComponent } from './tile-stacked-bar-chart.component';
 
 @Component({
   selector: 'app-home-page-content',
@@ -35,6 +36,10 @@ export class HomePageContentComponent {
         id: 'tile-opportunities',
         componentType: TileOpportunitiesComponent,
       },
+      {
+        id: 'tile-stacked-bar-chart',
+        componentType: TileStackedBarChartComponent,
+      },
     ],
     layout: {
       singleColumn: {
@@ -57,6 +62,10 @@ export class HomePageContentComponent {
           },
           {
             id: 'tile-opportunities',
+            isCollapsed: false,
+          },
+          {
+            id: 'tile-stacked-bar-chart',
             isCollapsed: false,
           },
         ],
@@ -86,6 +95,10 @@ export class HomePageContentComponent {
             },
             {
               id: 'tile-opportunities',
+              isCollapsed: false,
+            },
+            {
+              id: 'tile-stacked-bar-chart',
               isCollapsed: false,
             },
           ],

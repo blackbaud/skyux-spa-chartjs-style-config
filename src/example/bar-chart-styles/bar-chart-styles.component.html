@@ -45,6 +45,66 @@
               </sky-box>
             </sky-column>
           </sky-row>
+
+          <sky-row>
+            <sky-column [screenSmall]="12">
+              <sky-box class="sky-margin-stacked-xl" headingText="ChartJS style config">
+                <sky-box-content>
+                  <h4 class="sky-margin-stacked-sm">Global chart config</h4>
+                  <table class="sky-table sky-margin-stacked-lg">
+                    <thead>
+                      <tr>
+                        <th>Section</th>
+                        <th>Option</th>
+                        <th>Value</th>
+                        <th>SKY UX Custom Property</th>
+                        <th>Source</th>
+                        <th>File</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      @for (row of globalConfigRows; track row.option) {
+                        <tr>
+                          <td>{{ row.section }}</td>
+                          <td>{{ row.option }}</td>
+                          <td>{{ row.value }}</td>
+                          <td>{{ row.skyuxCustomProperty }}</td>
+                          <td>{{ row.source }}</td>
+                          <td>{{ row.file }}</td>
+                        </tr>
+                      }
+                    </tbody>
+                  </table>
+
+                  <h4 class="sky-margin-stacked-sm">Bar chart config</h4>
+                  <table class="sky-table">
+                    <thead>
+                      <tr>
+                        <th>Section</th>
+                        <th>Option</th>
+                        <th>Value</th>
+                        <th>SKY UX Custom Property</th>
+                        <th>Source</th>
+                        <th>File</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      @for (row of barConfigRows; track row.option) {
+                        <tr>
+                          <td>{{ row.section }}</td>
+                          <td>{{ row.option }}</td>
+                          <td>{{ row.value }}</td>
+                          <td>{{ row.skyuxCustomProperty }}</td>
+                          <td>{{ row.source }}</td>
+                          <td>{{ row.file }}</td>
+                        </tr>
+                      }
+                    </tbody>
+                  </table>
+                </sky-box-content>
+              </sky-box>
+            </sky-column>
+          </sky-row>
         </sky-fluid-grid>
       </sky-tab>
 
@@ -86,6 +146,66 @@
               <sky-box class="sky-margin-stacked-xl" headingText="Student Enrollment by Gender">
                 <sky-box-content>
                   <sky-bar-chart [chartHeight]="225" [config]="chartEnrollmentByGenderVerticalConfigB" />
+                </sky-box-content>
+              </sky-box>
+            </sky-column>
+          </sky-row>
+
+          <sky-row>
+            <sky-column [screenSmall]="12">
+              <sky-box class="sky-margin-stacked-xl" headingText="ChartJS style config">
+                <sky-box-content>
+                  <h4 class="sky-margin-stacked-sm">Global chart config</h4>
+                  <table class="sky-table sky-margin-stacked-lg">
+                    <thead>
+                      <tr>
+                        <th>Section</th>
+                        <th>Option</th>
+                        <th>Value</th>
+                        <th>SKY UX Custom Property</th>
+                        <th>Source</th>
+                        <th>File</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      @for (row of globalConfigRows; track row.option) {
+                        <tr>
+                          <td>{{ row.section }}</td>
+                          <td>{{ row.option }}</td>
+                          <td>{{ row.value }}</td>
+                          <td>{{ row.skyuxCustomProperty }}</td>
+                          <td>{{ row.source }}</td>
+                          <td>{{ row.file }}</td>
+                        </tr>
+                      }
+                    </tbody>
+                  </table>
+
+                  <h4 class="sky-margin-stacked-sm">Bar chart config</h4>
+                  <table class="sky-table">
+                    <thead>
+                      <tr>
+                        <th>Section</th>
+                        <th>Option</th>
+                        <th>Value</th>
+                        <th>SKY UX Custom Property</th>
+                        <th>Source</th>
+                        <th>File</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      @for (row of barConfigRows; track row.option) {
+                        <tr>
+                          <td>{{ row.section }}</td>
+                          <td>{{ row.option }}</td>
+                          <td>{{ row.value }}</td>
+                          <td>{{ row.skyuxCustomProperty }}</td>
+                          <td>{{ row.source }}</td>
+                          <td>{{ row.file }}</td>
+                        </tr>
+                      }
+                    </tbody>
+                  </table>
                 </sky-box-content>
               </sky-box>
             </sky-column>

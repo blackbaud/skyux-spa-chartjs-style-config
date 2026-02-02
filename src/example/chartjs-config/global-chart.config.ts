@@ -27,6 +27,8 @@ function remToPixels(remValue: string): number {
 function getSkyuxGlobalChartConfig(): Partial<ChartOptions> {
   const tooltipBgColor = skyuxChartStyles.tooltipBackgroundColor;
   const tooltipTextColor = skyuxChartStyles.tooltipBodyColor;
+  const tooltipBorderColor = skyuxChartStyles.tooltipBorderColor;
+  const tooltipBorderWidth = skyuxChartStyles.tooltipBorderWidth;
   
   return {
     // Responsiveness
@@ -66,6 +68,7 @@ function getSkyuxGlobalChartConfig(): Partial<ChartOptions> {
             family: skyuxChartStyles.legendFontFamily,
             size: skyuxChartStyles.legendFontSize,
             weight: skyuxChartStyles.legendFontWeight as any,
+            lineHeight: skyuxChartStyles.legendFontLineHeight,
           },
           color: skyuxChartStyles.legendTextColor,
         },
@@ -79,8 +82,8 @@ function getSkyuxGlobalChartConfig(): Partial<ChartOptions> {
         backgroundColor: tooltipBgColor,
         titleColor: skyuxChartStyles.tooltipTitleColor,
         bodyColor: tooltipTextColor,
-        borderColor: 'transparent',
-        borderWidth: 0,
+        borderColor: tooltipBorderColor,
+        borderWidth: tooltipBorderWidth,
         padding: skyuxChartStyles.tooltipPadding || 16,
         // Hide default caret since we draw our own colored one
         displayColors: true,
@@ -295,9 +298,9 @@ export const skyuxChartStyles = {
   },
   
   get legendLabelsPadding(): number {
-    const space = resolveCssVariable('--sky-space-stacked-s');
+    const space = resolveCssVariable('--sky-space-gap-action_group-l');
     console.log('SKY UX Legend Labels Padding:', space);
-    return remToPixels(space || '4px'); // Fallback
+    return remToPixels(space || '8px'); // Fallback
   },
   
   get legendFontSize(): number {
@@ -316,6 +319,12 @@ export const skyuxChartStyles = {
     const family = resolveCssVariable('--sky-font-family-primary');
     console.log('SKY UX Legend Font Family:', family);
     return family || 'Blackbaud Sans, Arial, sans-serif'; // Fallback
+  },
+  
+  get legendFontLineHeight(): string {
+    const lineHeight = resolveCssVariable('--sky-font-line_height-body-s');
+    console.log('SKY UX Legend Font Line Height:', lineHeight);
+    return lineHeight || '1.5'; // Fallback
   },
   
   // =============================================================================
@@ -376,9 +385,9 @@ export const skyuxChartStyles = {
   },
   
   get barBorderRadius(): number {
-    const radius = resolveCssVariable('--sky-border-radius-small');
+    const radius = resolveCssVariable('--sky-border-radius-xs');
     console.log('SKY UX Bar Border Radius:', radius);
-    return remToPixels(radius || '4px'); // Fallback
+    return remToPixels(radius || '2px'); // Fallback
   },
   
   // =============================================================================
@@ -412,15 +421,23 @@ export const skyuxChartStyles = {
   // =============================================================================
   
   get tooltipBackgroundColor(): string {
-    const color = resolveCssVariable('--sky-color-background-container-dimmed');
+    const color = resolveCssVariable('--sky-color-background-container-base');
     console.log('SKY UX Tooltip Background Color:', color);
     return color || '#ffffff'; // Fallback to white
   },
   
   get tooltipBorderColor(): string {
-    const color = resolveCssVariable('--sky-theme-color-viz-axis');
+    const color = resolveCssVariable('--sky-color-border-container-base');
     console.log('SKY UX Tooltip Border Color:', color);
     return color || '#c2c4c6'; // Fallback to gray-300
+  },
+
+  get tooltipBorderWidth(): number {
+    const width = resolveCssVariable('--sky-border-width-emphasized');
+    console.log('SKY UX Tooltip Border Width:', width);
+    // Convert border width string (like "1px") to number
+    const numWidth = parseInt(width) || 1;
+    return numWidth; // Fallback to 1px
   },
   
   get tooltipAccentBorderColor(): string {
@@ -448,9 +465,9 @@ export const skyuxChartStyles = {
   },
   
   get tooltipPadding(): number {
-    const space = resolveCssVariable('--sky-space-inset-balanced-l');
+    const space = resolveCssVariable('--sky-space-inset-balanced-m');
     console.log('SKY UX Tooltip Padding:', space);
-    return remToPixels(space || '16px'); // Fallback
+    return remToPixels(space || '8px'); // Fallback
   },
   
   get tooltipTitleMarginBottom(): number {
@@ -496,7 +513,7 @@ export const skyuxChartStyles = {
   },
   
   get tooltipBoxPadding(): number {
-    const space = resolveCssVariable('--sky-space-gap-label-xs');
+    const space = resolveCssVariable('--sky-space-gap-label-s');
     console.log('SKY UX Tooltip Box Padding:', space);
     return remToPixels(space || '4px'); // Fallback
   },
@@ -555,9 +572,9 @@ export const skyuxChartStyles = {
  * Helper function to merge global config with chart-specific config
  * Colors are resolved at runtime for proper theme support
  */
-export function mergeChartConfig<T extends ChartOptions>(
-  chartSpecificConfig: Partial<T>
-): Partial<T> {
+export function mergeChartConfig(
+  chartSpecificConfig: any
+): any {
   const globalConfig = getSkyuxGlobalChartConfig();
   
   return {
@@ -566,10 +583,20 @@ export function mergeChartConfig<T extends ChartOptions>(
     plugins: {
       ...globalConfig.plugins,
       ...chartSpecificConfig.plugins,
+      // Deep merge tooltip to ensure global tooltip config is preserved
+      tooltip: {
+        ...globalConfig.plugins?.tooltip,
+        ...chartSpecificConfig.plugins?.tooltip,
+      },
+      // Deep merge legend to ensure global legend config is preserved
+      legend: {
+        ...globalConfig.plugins?.legend,
+        ...chartSpecificConfig.plugins?.legend,
+      },
     },
     elements: {
       ...globalConfig.elements,
       ...chartSpecificConfig.elements,
     },
-  } as Partial<T>;
+  };
 }

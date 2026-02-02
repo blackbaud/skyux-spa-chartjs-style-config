@@ -218,7 +218,6 @@ export class TileProjectBudgetsComponent {
         ],
       },
       options: baseConfig,
-      plugins: [tooltipShadowPlugin],
     };
 
     return config;

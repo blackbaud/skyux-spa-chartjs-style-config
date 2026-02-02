@@ -113,36 +113,10 @@ function getBaseLineChartConfig(): Partial<ChartOptions<'line'>> {
             size: skyuxChartStyles.legendFontSize,
             weight: skyuxChartStyles.legendFontWeight as any,
             family: skyuxChartStyles.legendFontFamily,
+            lineHeight: skyuxChartStyles.legendFontLineHeight,
           },
           color: skyuxChartStyles.legendLabelColor,
         },
-      },
-      tooltip: {
-        enabled: true,
-        mode: 'index',
-        intersect: false,
-        backgroundColor: skyuxChartStyles.tooltipBackgroundColor,
-        titleColor: skyuxChartStyles.tooltipTitleColor,
-        bodyColor: skyuxChartStyles.tooltipBodyColor,
-        borderColor: 'transparent',
-        borderWidth: 0,
-        padding: skyuxChartStyles.tooltipPadding,
-        titleMarginBottom: skyuxChartStyles.tooltipTitleMarginBottom,
-        bodySpacing: skyuxChartStyles.tooltipBodySpacing,
-        caretSize: skyuxChartStyles.tooltipCaretSize,
-        boxPadding: skyuxChartStyles.tooltipBoxPadding,
-        titleFont: {
-          size: skyuxChartStyles.tooltipTitleFontSize,
-          family: fontFamily,
-          weight: skyuxChartStyles.tooltipTitleFontWeight as any,
-        },
-        bodyFont: {
-          size: skyuxChartStyles.tooltipBodyFontSize,
-          family: fontFamily,
-          weight: skyuxChartStyles.tooltipBodyFontWeight as any,
-        },
-        displayColors: true,
-        multiKeyBackground: 'transparent',
       },
     },
     
@@ -241,11 +215,13 @@ export function getSkyuxLineChartConfig(
     });
   }
   
-  // Merge everything together
-  return {
+  // Merge everything together and apply global config
+  const finalConfig = mergeChartConfig({
     ...baseConfig,
     ...customConfig,
     scales: mergedScales,
     plugins: mergedPlugins,
-  };
+  });
+  
+  return finalConfig;
 }

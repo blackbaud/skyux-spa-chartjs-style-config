@@ -123,40 +123,9 @@ function getBaseBarChartConfig(): Partial<ChartOptions<'bar'>> {
             size: skyuxChartStyles.legendFontSize,
             weight: skyuxChartStyles.legendFontWeight as any,
             family: skyuxChartStyles.legendFontFamily,
+            lineHeight: skyuxChartStyles.legendFontLineHeight,
           },
           color: skyuxChartStyles.legendLabelColor,
-        },
-      },
-      tooltip: {
-        enabled: true,
-        mode: 'index',
-        intersect: false,
-        backgroundColor: skyuxChartStyles.tooltipBackgroundColor,
-        titleColor: skyuxChartStyles.tooltipTitleColor,
-        bodyColor: skyuxChartStyles.tooltipBodyColor,
-        borderColor: 'transparent',
-        borderWidth: 0,
-        padding: skyuxChartStyles.tooltipPadding,
-        // Hide default caret since we draw our own colored one
-        displayColors: true,
-        // @ts-ignore - multiKeyBackground sets caret color
-        multiKeyBackground: 'transparent',
-        bodySpacing: skyuxChartStyles.tooltipBodySpacing,
-        titleMarginBottom: skyuxChartStyles.tooltipTitleMarginBottom,
-        caretSize: skyuxChartStyles.tooltipCaretSize,
-        boxPadding: skyuxChartStyles.tooltipBoxPadding,
-        // @ts-ignore - caretPadding is a valid Chart.js option
-        caretPadding: 4,
-        usePointStyle: true,
-        titleFont: {
-          family: skyuxChartStyles.fontFamily,
-          size: skyuxChartStyles.tooltipTitleFontSize,
-          weight: skyuxChartStyles.tooltipTitleFontWeight as any,
-        },
-        bodyFont: {
-          family: skyuxChartStyles.fontFamily,
-          size: skyuxChartStyles.tooltipBodyFontSize,
-          weight: skyuxChartStyles.tooltipBodyFontWeight as any,
         },
       },
     },
@@ -365,10 +334,13 @@ export function getSkyuxBarChartConfig(
     });
   }
   
-  return {
+  // Merge with global config to ensure tooltip and other global settings are applied
+  const finalConfig = mergeChartConfig({
     ...baseConfig,
     ...customConfig,
     scales: mergedScales,
     plugins: mergedPlugins,
-  };
+  });
+  
+  return finalConfig;
 }

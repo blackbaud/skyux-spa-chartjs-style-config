@@ -50,37 +50,11 @@ function getBaseDoughnutChartConfig(): Partial<ChartOptions<'doughnut'>> {
             size: fontSize,
             family: fontFamily,
             weight: fontWeight,
+            lineHeight: skyuxChartStyles.legendFontLineHeight,
           },
           color: 'var(--sky-color-text-deemphasized)',
           boxWidth: skyuxChartStyles.legendPointSize,
           boxHeight: skyuxChartStyles.legendPointSize,
-        },
-      },
-      tooltip: {
-        enabled: true,
-        backgroundColor: skyuxChartStyles.tooltipBackgroundColor,
-        titleColor: skyuxChartStyles.tooltipTitleColor,
-        bodyColor: skyuxChartStyles.tooltipBodyColor,
-        borderColor: 'transparent',
-        borderWidth: 0,
-        padding: skyuxChartStyles.tooltipPadding,
-        displayColors: true,
-        multiKeyBackground: 'transparent',
-        bodySpacing: skyuxChartStyles.tooltipBodySpacing,
-        titleMarginBottom: skyuxChartStyles.tooltipTitleMarginBottom,
-        caretSize: skyuxChartStyles.tooltipCaretSize,
-        boxPadding: skyuxChartStyles.tooltipBoxPadding,
-        caretPadding: 4,
-        usePointStyle: true,
-        titleFont: {
-          family: skyuxChartStyles.fontFamily,
-          size: skyuxChartStyles.tooltipTitleFontSize,
-          weight: skyuxChartStyles.tooltipTitleFontWeight as any,
-        },
-        bodyFont: {
-          family: skyuxChartStyles.fontFamily,
-          size: skyuxChartStyles.tooltipBodyFontSize,
-          weight: skyuxChartStyles.tooltipBodyFontWeight as any,
         },
       },
     },
@@ -168,11 +142,14 @@ export function getSkyuxDoughnutChartConfig(
     });
   }
   
-  return {
+  // Merge with global config to ensure tooltip and other global settings are applied
+  const finalConfig = mergeChartConfig({
     ...baseConfig,
     ...customConfig,
     plugins: mergedPlugins,
-  };
+  });
+  
+  return finalConfig;
 }
 
 /**
