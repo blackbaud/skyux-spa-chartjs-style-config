@@ -17,6 +17,7 @@ function getBaseBarChartConfig(): Partial<ChartOptions<'bar'>> {
   const gridlineColor = skyuxChartStyles.axisGridlineColor;
   const textColor = skyuxChartStyles.axisTickColor;
   const barBorderColor = skyuxChartStyles.barBorderColor;
+  const barBorderWidth = skyuxChartStyles.barBorderWidth;
   const barBorderRadius = skyuxChartStyles.barBorderRadius;
   const fontSize = skyuxChartStyles.axisTickFontSize;
   const fontFamily = skyuxChartStyles.fontFamily;
@@ -55,7 +56,7 @@ function getBaseBarChartConfig(): Partial<ChartOptions<'bar'>> {
     
     elements: {
       bar: {
-        borderWidth: 2,
+        borderWidth: barBorderWidth,
         borderColor: barBorderColor,
         borderRadius: barBorderRadius,
       },
@@ -83,6 +84,18 @@ function getBaseBarChartConfig(): Partial<ChartOptions<'bar'>> {
           },
           padding: labelPaddingX,
         },
+        title: {
+          display: false,
+          font: {
+            size: skyuxChartStyles.scaleTitleFontSize,
+            family: skyuxChartStyles.scaleTitleFontFamily,
+          },
+          color: skyuxChartStyles.scaleTitleColor,
+          padding: {
+            top: skyuxChartStyles.scaleXTitlePaddingTop,
+            bottom: skyuxChartStyles.scaleXTitlePaddingBottom,
+          },
+        },
       },
       y: {
         beginAtZero: true,
@@ -105,6 +118,18 @@ function getBaseBarChartConfig(): Partial<ChartOptions<'bar'>> {
             weight: fontWeight,
           },
           padding: labelPaddingY,
+        },
+        title: {
+          display: false,
+          font: {
+            size: skyuxChartStyles.scaleTitleFontSize,
+            family: skyuxChartStyles.scaleTitleFontFamily,
+          },
+          color: skyuxChartStyles.scaleTitleColor,
+          padding: {
+            top: skyuxChartStyles.scaleYTitlePaddingLeft,
+            bottom: skyuxChartStyles.scaleYTitlePaddingRight,
+          },
         },
       },
     },
@@ -264,23 +289,57 @@ export function getSkyuxBarChartConfig(
       const customScale = (customConfig.scales as any)[scaleKey];
       const baseScale = mergedScales[scaleKey] || {};
       
+      // Extract nested objects that need deep merging
+      const { grid: customGrid, border: customBorder, ticks: customTicks, title: customTitle, ...customRest } = customScale;
+      const { grid: baseGrid, border: baseBorder, ticks: baseTicks, title: baseTitle, ...baseRest } = baseScale;
+      
       mergedScales[scaleKey] = {
-        ...baseScale,
-        ...customScale,
+        ...baseRest,
+        ...customRest,
         grid: {
-          ...(baseScale.grid || {}),
-          ...(customScale.grid || {}),
+          ...(baseGrid || {}),
+          ...(customGrid || {}),
         },
         border: {
-          ...(baseScale.border || {}),
-          ...(customScale.border || {}),
+          ...(baseBorder || {}),
+          ...(customBorder || {}),
         },
         ticks: {
-          ...(baseScale.ticks || {}),
-          ...(customScale.ticks || {}),
+          ...(baseTicks || {}),
+          ...(customTicks || {}),
+        },
+        title: {
+          ...(baseTitle || {}),
+          ...(customTitle || {}),
+          font: {
+            ...(baseTitle?.font || {}),
+            ...(customTitle?.font || {}),
+          },
+          padding: {
+            ...(baseTitle?.padding || {}),
+            ...(customTitle?.padding || {}),
+          },
         },
       };
     });
+  }
+
+  // Remove gridlines on the category axis (horizontal: y, vertical: x)
+  const resolvedIndexAxis = customConfig?.indexAxis ?? baseConfig.indexAxis ?? 'x';
+  const categoryAxisKey = resolvedIndexAxis === 'y' ? 'y' : 'x';
+  if (mergedScales[categoryAxisKey]) {
+    const categoryScale = mergedScales[categoryAxisKey];
+    const categoryGrid = categoryScale.grid || {};
+    mergedScales[categoryAxisKey] = {
+      ...categoryScale,
+      grid: {
+        ...categoryGrid,
+        display: false,
+        lineWidth: 0,
+        drawTicks: false,
+        tickLength: 0,
+      },
+    };
   }
   
   // Normalize tick lengths per axis and reduce when ticks are hidden
@@ -343,4 +402,230 @@ export function getSkyuxBarChartConfig(
   });
   
   return finalConfig;
+}
+
+/**
+ * Bar Sizing Configuration Interface
+ * Defines parameters for calculating optimal chart height
+ * All measurements in rem units (1rem = 16px)
+ */
+export interface BarSizingConfig {
+  /** Target bar width in rem (default: 1rem = 16px) */
+  idealBarWidth?: number;
+  /** Minimum bar width in rem (default: 0.75rem = 12px) */
+  minBarWidth?: number;
+  /** Maximum bar width in rem (default: 1.5rem = 24px) */
+  maxBarWidth?: number;
+  /** Space reserved for title/legend at top in pixels (default: 60px) */
+  paddingTop?: number;
+  /** Space reserved for x-axis labels at bottom in pixels (default: 40px) */
+  paddingBottom?: number;
+}
+
+/**
+ * Result of optimal bar settings calculation
+ */
+export interface BarSizingResult {
+  /** Calculated height in pixels */
+  height: number;
+  /** Optimal category percentage (0-1) */
+  categoryPercentage: number;
+  /** Optimal bar percentage (0-1) */
+  barPercentage: number;
+  /** Space between categories in rem */
+  spaceBetweenCategories: number;
+}
+
+// =============================================================================
+// BAR/CATEGORY SIZING TUNABLES
+// =============================================================================
+const BAR_CATEGORY_TUNING = {
+  // Overall density behavior
+  barDensityThreshold: 12,
+
+  // Bar thickness behavior
+  idealBarWidthRem: 1, // 1rem = 16px
+  barPercentage: 1,
+
+  // Sparse layouts (<= threshold)
+  sparse: {
+    baseSpacingRem: 1,
+    minSpacingRem: 0.15,
+    categoryPercentageCap: 0.75,
+    verticalPaddingPerCategoryRem: 0.5,
+  },
+
+  // Dense layouts (> threshold)
+  dense: {
+    baseSpacingRem: 0.4,
+    minSpacingRem: 0.125,
+    categoryPercentageCap: 0.85,
+    datasetSpacingReductionDivisor: 4,
+  },
+};
+
+/**
+ * Calculate optimal categoryPercentage and barPercentage for horizontal bar charts
+ * Based on total bar density (numCategories × numDatasets) to ensure consistent bar widths
+ * 
+ * Uses relative rem units for calculations (1rem = 16px in most browsers):
+ * - Ideal bar width: 1rem (16px)
+ * - Base inter-category spacing: 0.2rem (3.2px) for sparse charts, 0.25rem (4px) for dense
+ * - Minimum spacing: 0.125rem (2px)
+ * - Bar density threshold: 12 total bars (numCategories × numDatasets)
+ * 
+ * @param numCategories - Number of categories in the chart
+ * @param numDatasets - Number of datasets (grouped bars per category, or 1 for stacked)
+ * @returns Optimal categoryPercentage and barPercentage values
+ */
+export function calculateOptimalBarSettings(numCategories: number, numDatasets: number): { categoryPercentage: number; barPercentage: number; spaceBetweenCategories: number } {
+  const totalBars = numCategories * numDatasets;
+  const { barDensityThreshold, idealBarWidthRem, barPercentage, sparse, dense } = BAR_CATEGORY_TUNING;
+  
+  // Calculate space per bar
+  const spacePerBar = idealBarWidthRem / barPercentage;
+  const spaceForAllBars = spacePerBar * numDatasets;
+  
+  // Determine spacing and cap based on bar density
+  let spaceBetweenCategories: number;
+  let categoryPercentageCap: number;
+  
+  if (totalBars <= barDensityThreshold) {
+    // Sparse chart: prioritize wide bars (1rem) with more spacing for clarity
+    // Scale spacing inversely with category count to prevent accumulation from making bars appear narrower
+    spaceBetweenCategories = Math.max(sparse.minSpacingRem, sparse.baseSpacingRem / Math.sqrt(numCategories));
+    categoryPercentageCap = sparse.categoryPercentageCap;
+  } else {
+    // Dense chart: reduce spacing and apply lower cap
+    spaceBetweenCategories = dense.baseSpacingRem;
+    categoryPercentageCap = dense.categoryPercentageCap;
+    
+    // For very dense charts (4+ datasets), further reduce spacing
+    if (numDatasets > 3) {
+      const excessDatasets = numDatasets - 3;
+      const reductionPerDataset = idealBarWidthRem / dense.datasetSpacingReductionDivisor;
+      const totalReduction = Math.min(excessDatasets * reductionPerDataset, idealBarWidthRem);
+      spaceBetweenCategories = Math.max(dense.minSpacingRem, spaceBetweenCategories - totalReduction);
+    }
+  }
+  
+  // Calculate category percentage: space for bars / (space for bars + spacing)
+  const totalCategorySpace = spaceForAllBars + spaceBetweenCategories;
+  const categoryPercentage = spaceForAllBars / totalCategorySpace;
+  
+  return {
+    categoryPercentage: Math.min(categoryPercentageCap, Math.max(0.5, categoryPercentage)),
+    barPercentage,
+    spaceBetweenCategories
+  };
+}
+
+/**
+ * Calculate optimal chart height for horizontal bar charts
+ * Ensures bars render at consistent width across different data sizes
+ * 
+ * Uses relative rem units for calculations (1rem = 16px):
+ * - Ideal bar width: 1rem (16px)
+ * - Min bar width: 0.875rem (14px)
+ * - Max bar width: 1.5rem (24px)
+ * - Base spacing: 0.25rem (4px)
+ * - Converts to pixels for ChartJS height requirement
+ * 
+ * Algorithm determines optimal categoryPercentage based on number of datasets:
+ * - Reduces inter-category spacing from 0.25rem base to minimum 0.125rem as datasets increase
+ * - For 4+ datasets, reduces spacing by up to one full bar width to maximize bar space
+ * 
+ * @param numCategories - Number of categories (bars) in the chart
+ * @param numDatasets - Number of datasets (grouped bars per category, or 1 for stacked)
+ * @param config - Configuration for bar sizing parameters (in rem units)
+ * @returns Object with calculated height (in pixels) and optimal bar settings
+ * 
+ * @example
+ * // For 5 categories with 2 grouped datasets
+ * const result = calculateHorizontalBarChartHeight(5, 2, {
+ *   idealBarWidth: 1,
+ *   minBarWidth: 0.875
+ * });
+ * // result = { height: 200, categoryPercentage: 0.96, barPercentage: 0.9 }
+ * 
+ * @example
+ * // For stacked bar chart with 4 categories
+ * const result = calculateHorizontalBarChartHeight(4, 1);
+ * // result = { height: 160, categoryPercentage: 0.98, barPercentage: 0.9 }
+ */
+export function calculateHorizontalBarChartHeight(
+  numCategories: number,
+  numDatasets: number,
+  config: BarSizingConfig = {}
+): BarSizingResult {
+  // Convert rem values to pixels for calculations (1rem = 16px)
+  const pxPerRem = 16;
+  const heightRoundingIncrement = 0.5 * pxPerRem;
+  
+  // ---------------------------------------------------------------------------
+  // BAR/CATEGORY SIZING OPTIONS (OVERRIDABLE VIA config)
+  // ---------------------------------------------------------------------------
+  const {
+    idealBarWidth = BAR_CATEGORY_TUNING.idealBarWidthRem,
+    minBarWidth = 0.875,
+    maxBarWidth = 1.25,
+    paddingTop = 60,
+    paddingBottom = 40,
+  } = config;
+
+  // Get optimal bar settings based on total bar density
+  const optimalSettings = calculateOptimalBarSettings(numCategories, numDatasets);
+  const barPercentage = optimalSettings.barPercentage;
+  const spaceBetweenCategoriesRem = optimalSettings.spaceBetweenCategories;
+
+  // Convert ideal bar width from rem to pixels for height calculation
+  const idealBarWidthPx = idealBarWidth * pxPerRem;
+  
+  // Calculate space needed per category to fit bars at ideal width
+  const spacePerBar = idealBarWidthPx / barPercentage;
+  
+  // Use spacing from optimal settings (in rem) and convert to pixels
+  const spaceBetweenCategories = spaceBetweenCategoriesRem * pxPerRem;
+  
+  // Category space includes all bars plus spacing between them
+  let spacePerCategory = (spacePerBar * numDatasets) + spaceBetweenCategories;
+  
+  // Add vertical padding for sparse layouts to increase breathing room
+  const totalBars = numCategories * numDatasets;
+  if (totalBars <= BAR_CATEGORY_TUNING.barDensityThreshold) {
+    const verticalPaddingPx = BAR_CATEGORY_TUNING.sparse.verticalPaddingPerCategoryRem * pxPerRem;
+    spacePerCategory += verticalPaddingPx;
+  }
+  
+  // Total chart area for all categories
+  const chartArea = spacePerCategory * numCategories;
+  
+  // Add padding for labels, title, legend
+  let totalHeight = chartArea + paddingTop + paddingBottom;
+  
+  // Apply constraints - calculate min/max heights based on bar width limits
+  const minBarWidthPx = minBarWidth * pxPerRem;
+  const maxBarWidthPx = maxBarWidth * pxPerRem;
+  
+  const minSpacePerBar = minBarWidthPx / barPercentage;
+  const maxSpacePerBar = maxBarWidthPx / barPercentage;
+  
+  const minSpacePerCategory = (minSpacePerBar * numDatasets) + spaceBetweenCategories;
+  const maxSpacePerCategory = (maxSpacePerBar * numDatasets) + spaceBetweenCategories;
+  
+  const minHeight = minSpacePerCategory * numCategories + paddingTop + paddingBottom;
+  const maxHeight = maxSpacePerCategory * numCategories + paddingTop + paddingBottom;
+  
+  // Clamp to reasonable bounds
+  totalHeight = Math.max(minHeight, Math.min(maxHeight, totalHeight));
+  
+  // Round to reasonable increments (40px for clean values)
+  const height = Math.round(totalHeight / heightRoundingIncrement) * heightRoundingIncrement;
+  
+  return {
+    height,
+    categoryPercentage: optimalSettings.categoryPercentage,
+    barPercentage: optimalSettings.barPercentage,
+    spaceBetweenCategories: spaceBetweenCategoriesRem
+  };
 }

@@ -2,7 +2,7 @@ import { Component } from '@angular/core';
 import { SkyTilesModule } from '@skyux/tiles';
 import { SkyDropdownModule } from '@skyux/popovers';
 import { Chart, ChartConfiguration, registerables } from 'chart.js';
-import { getSkyuxBarChartConfig, skyuxChartStyles } from './chartjs-config';
+import { getSkyuxBarChartConfig, skyuxChartStyles, calculateHorizontalBarChartHeight } from './chartjs-config';
 import { SkyBarChartComponent } from '../skyux/bar-chart/bar-chart.component';
 
 Chart.register(...registerables);
@@ -152,6 +152,7 @@ export class TileProjectBudgetsComponent {
     },
   ];
   protected readonly chartConfigs: ChartConfiguration<'bar'>[] = this.createChartConfigs();
+  protected readonly chartHeights: number[] = this.projects.map(() => calculateHorizontalBarChartHeight(2, 2).height);
 
   //#region Private
   private createChartConfigs(): ChartConfiguration<'bar'>[] {
@@ -160,6 +161,11 @@ export class TileProjectBudgetsComponent {
   }
 
   #getChartConfig(project: ProjectData): ChartConfiguration<'bar'> {
+    // Calculate optimal sizing settings
+    const numCategories = 2; // Revenue and Expenses
+    const numDatasets = 2; // Budget and Actuals
+    const sizingResult = calculateHorizontalBarChartHeight(numCategories, numDatasets);
+    
     // Get the base configuration for horizontal bar charts
     const baseConfig = getSkyuxBarChartConfig({
       indexAxis: 'y',
@@ -209,11 +215,15 @@ export class TileProjectBudgetsComponent {
             label: 'Budget',
             data: [project.revenueBudget, project.expensesBudget],
             backgroundColor: seriesColors[0] || '#06a39e', // Fallback to category 1 color (teal-500)
+            barPercentage: sizingResult.barPercentage,
+            categoryPercentage: sizingResult.categoryPercentage,
           },
           {
             label: 'Actuals',
             data: [project.revenueActuals, project.expensesActuals],
             backgroundColor: seriesColors[1] || '#6d3c96', // Fallback to category 2 color (purple-800)
+            barPercentage: sizingResult.barPercentage,
+            categoryPercentage: sizingResult.categoryPercentage,
           },
         ],
       },

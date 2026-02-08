@@ -4,7 +4,7 @@ import { SkyDropdownModule } from '@skyux/popovers';
 import { SkyKeyInfoModule } from '@skyux/indicators';
 import { Chart, ChartConfiguration, registerables, Plugin } from 'chart.js';
 import ChartDataLabels from 'chartjs-plugin-datalabels';
-import { getSkyuxBarChartConfig, skyuxChartStyles } from './chartjs-config';
+import { getSkyuxBarChartConfig, skyuxChartStyles, calculateHorizontalBarChartHeight } from './chartjs-config';
 import { SkyBarChartComponent } from '../skyux/bar-chart/bar-chart.component';
 
 Chart.register(...registerables);
@@ -41,6 +41,7 @@ export class TileOpportunitiesComponent {
     { stage: 'No status', count: 3, value: 350000 },
   ];
 
+  public chartHeight: number = 0;
   public chartConfig: ChartConfiguration<'bar'> = this.getChartConfiguration();
 
   protected formatCurrency(value: number): string {
@@ -53,30 +54,15 @@ export class TileOpportunitiesComponent {
   }
 
   private getChartConfiguration(): ChartConfiguration<'bar'> {
+    // Calculate optimal chart height based on all categories (including zero values)
+    const numCategories = this.opportunityStages.length; // All stages, including those with zero values
+    const numDatasets = 1; // Single dataset for values
+    const heightResult = calculateHorizontalBarChartHeight(numCategories, numDatasets);
+    this.chartHeight = heightResult.height;
+
     // Get the base configuration for horizontal bar charts
     const baseConfig = getSkyuxBarChartConfig({
       indexAxis: 'y',
-      scales: {
-        x: {
-          beginAtZero: true,
-          ticks: {
-            callback: (value: string | number) => {
-              const numValue = Number(value);
-              if (numValue >= 1000000) {
-                return '$' + (numValue / 1000000).toFixed(1) + 'M';
-              } else if (numValue >= 1000) {
-                return '$' + (numValue / 1000).toFixed(0) + 'K';
-              }
-              return '$' + numValue.toFixed(0);
-            },
-          },
-        },
-        y: {
-          grid: {
-            display: false, // Remove y-axis gridlines (vertical lines in horizontal chart)
-          },
-        },
-      },
       plugins: {
         legend: {
           display: false, // Hide legend since we only have one dataset
@@ -97,12 +83,6 @@ export class TileOpportunitiesComponent {
         datalabels: {
           anchor: 'end',
           align: 'end',
-          color: '#212327',
-          font: {
-            size: 11,
-            family: 'Blackbaud Sans, Arial, sans-serif',
-            weight: 400,
-          },
           formatter: (value: number) => {
             if (value === 0) return '';
             if (value >= 1000000) {
@@ -137,6 +117,8 @@ export class TileOpportunitiesComponent {
             label: 'Opportunity Value',
             data: data,
             backgroundColor: backgroundColor,
+            barPercentage: heightResult.barPercentage,
+            categoryPercentage: heightResult.categoryPercentage,
           },
         ],
       },

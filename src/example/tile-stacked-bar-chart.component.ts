@@ -1,64 +1,32 @@
-import { AfterViewInit, Component, ElementRef, ViewChild } from '@angular/core';
+import { Component } from '@angular/core';
 import { SkyTilesModule } from '@skyux/tiles';
 import { SkyDropdownModule } from '@skyux/popovers';
-import { Chart, ChartConfiguration, registerables } from 'chart.js';
-import { getSkyuxBarChartConfig, skyuxChartStyles } from './chartjs-config';
-
-Chart.register(...registerables);
+import { ChartConfiguration } from 'chart.js';
+import { getSkyuxBarChartConfig, skyuxChartStyles, calculateHorizontalBarChartHeight } from './chartjs-config';
+import { SkyBarChartComponent } from '../skyux/bar-chart/bar-chart.component';
 
 @Component({
   selector: 'app-tile-stacked-bar-chart',
-  styles: `
-    :host {
-      display: block;
-    }
-    .chart-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: flex-start;
-    }
-    .chart-heading {
-      display: flex;
-      flex-direction: column;
-      gap: 4px;
-    }
-    .chart-subtitle {
-      color: var(--sky-color-text-deemphasized, #686c73);
-      font-size: 15px;
-      line-height: 20px;
-    }
-    .chart-container {
-      height: 180px;
-      position: relative;
-    }
-  `,
+  styles: ``,
   templateUrl: './tile-stacked-bar-chart.component.html',
-  imports: [SkyTilesModule, SkyDropdownModule],
+  imports: [SkyTilesModule, SkyDropdownModule, SkyBarChartComponent],
 })
-export class TileStackedBarChartComponent implements AfterViewInit {
-  @ViewChild('stackedBarChartCanvas') stackedBarChartCanvas!: ElementRef<HTMLCanvasElement>;
+export class TileStackedBarChartComponent {
+  protected chartHeight: number = 0;
+  protected chartConfig: ChartConfiguration<'bar'> = this.getChartConfiguration();
 
-  private chart?: Chart<'bar'>;
+  private getChartConfiguration(): ChartConfiguration<'bar'> {
+    // Calculate optimal sizing
+    const numCategories = 2; // Oranges, Lemons
+    const numDatasets = 2; // Data series 1, Data series 2
+    const sizingResult = calculateHorizontalBarChartHeight(numCategories, numDatasets);
+    this.chartHeight = sizingResult.height;
 
-  ngAfterViewInit(): void {
-    this.createChart();
-  }
-
-  protected onViewDataTable(): void {
-    console.log('View data table clicked');
-  }
-
-  private createChart(): void {
-    const ctx = this.stackedBarChartCanvas.nativeElement.getContext('2d');
-    if (!ctx) {
-      return;
-    }
-
+    // Get the base configuration for horizontal bar charts with stacked option
     const baseConfig = getSkyuxBarChartConfig({
       indexAxis: 'y',
       scales: {
         x: {
-          beginAtZero: true,
           max: 600,
           stacked: true,
           ticks: {
@@ -67,34 +35,13 @@ export class TileStackedBarChartComponent implements AfterViewInit {
           title: {
             display: true,
             text: 'x Axis label',
-            font: {
-              size: skyuxChartStyles.scaleTitleFontSize,
-              family: skyuxChartStyles.scaleTitleFontFamily,
-            },
-            color: skyuxChartStyles.scaleTitleColor,
-            padding: {
-              top: skyuxChartStyles.scaleXTitlePaddingTop,
-              bottom: skyuxChartStyles.scaleXTitlePaddingBottom,
-            },
           },
         },
         y: {
           stacked: true,
-          grid: {
-            display: false,
-          },
           title: {
             display: true,
             text: 'y Axis label',
-            font: {
-              size: skyuxChartStyles.scaleTitleFontSize,
-              family: skyuxChartStyles.scaleTitleFontFamily,
-            },
-            color: skyuxChartStyles.scaleTitleColor,
-            padding: {
-              top: skyuxChartStyles.scaleTitlePaddingTop,
-              bottom: skyuxChartStyles.scaleTitlePaddingTop,
-            },
           },
         },
       },
@@ -111,21 +58,21 @@ export class TileStackedBarChartComponent implements AfterViewInit {
             label: 'Data series 1',
             data: [450, 300],
             backgroundColor: seriesColors[0],
-            borderColor: skyuxChartStyles.barBorderColor,
-            borderWidth: 1,
+            barPercentage: sizingResult.barPercentage,
+            categoryPercentage: sizingResult.categoryPercentage,
           },
           {
             label: 'Data series 2',
             data: [120, 100],
             backgroundColor: seriesColors[1],
-            borderColor: skyuxChartStyles.barBorderColor,
-            borderWidth: 1,
+            barPercentage: sizingResult.barPercentage,
+            categoryPercentage: sizingResult.categoryPercentage,
           },
         ],
       },
       options: baseConfig,
     };
 
-    this.chart = new Chart(ctx, config);
+    return config;
   }
 }

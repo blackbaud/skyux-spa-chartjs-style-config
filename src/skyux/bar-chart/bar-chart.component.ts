@@ -44,7 +44,7 @@ export class SkyBarChartComponent implements AfterViewInit, OnDestroy {
   // #region Inputs
   public readonly headingText = input<string | undefined>();
   
-  public readonly chartHeight = input.required<number>();
+  public readonly chartHeight = input<number | undefined>();
 
   /**
    * TODO: This isn't the final input model. Using ChartJS directly is a QOL for quick iteration.

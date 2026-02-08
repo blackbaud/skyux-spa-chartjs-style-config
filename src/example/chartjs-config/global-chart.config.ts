@@ -340,7 +340,7 @@ export const skyuxChartStyles = {
   },
   
   get scaleTitleColor(): string {
-    return '#51555C';
+    return resolveCssVariableToHex('--sky-color-text-deemphasized');
   },
   
   get scaleTitlePaddingTop(): number {
@@ -382,6 +382,12 @@ export const skyuxChartStyles = {
     const color = resolveCssVariable('--sky-color-background-container-base');
     console.log('SKY UX Bar Border Color:', color);
     return color || '#ffffff'; // Fallback to white
+  },
+
+  get barBorderWidth(): number {
+    const width = resolveCssVariable('--sky-border-width-default');
+    console.log('SKY UX Bar Border Width:', width);
+    return remToPixels(width || '1px'); // Fallback
   },
   
   get barBorderRadius(): number {

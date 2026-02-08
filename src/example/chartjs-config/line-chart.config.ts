@@ -73,6 +73,18 @@ function getBaseLineChartConfig(): Partial<ChartOptions<'line'>> {
           },
           padding: labelPaddingX,
         },
+        title: {
+          display: false,
+          font: {
+            size: skyuxChartStyles.scaleTitleFontSize,
+            family: skyuxChartStyles.scaleTitleFontFamily,
+          },
+          color: skyuxChartStyles.scaleTitleColor,
+          padding: {
+            top: skyuxChartStyles.scaleXTitlePaddingTop,
+            bottom: skyuxChartStyles.scaleXTitlePaddingBottom,
+          },
+        },
       },
       y: {
         beginAtZero: true,
@@ -95,6 +107,18 @@ function getBaseLineChartConfig(): Partial<ChartOptions<'line'>> {
             weight: fontWeight,
           },
           padding: labelPaddingY,
+        },
+        title: {
+          display: false,
+          font: {
+            size: skyuxChartStyles.scaleTitleFontSize,
+            family: skyuxChartStyles.scaleTitleFontFamily,
+          },
+          color: skyuxChartStyles.scaleTitleColor,
+          padding: {
+            top: skyuxChartStyles.scaleYTitlePaddingLeft,
+            bottom: skyuxChartStyles.scaleYTitlePaddingRight,
+          },
         },
       },
     },
@@ -153,20 +177,36 @@ export function getSkyuxLineChartConfig(
       const customScale = (customConfig.scales as any)[scaleKey];
       const baseScale = mergedScales[scaleKey] || {};
       
+      // Extract nested objects that need deep merging
+      const { grid: customGrid, border: customBorder, ticks: customTicks, title: customTitle, ...customRest } = customScale;
+      const { grid: baseGrid, border: baseBorder, ticks: baseTicks, title: baseTitle, ...baseRest } = baseScale;
+      
       mergedScales[scaleKey] = {
-        ...baseScale,
-        ...customScale,
+        ...baseRest,
+        ...customRest,
         grid: {
-          ...(baseScale.grid || {}),
-          ...(customScale.grid || {}),
+          ...(baseGrid || {}),
+          ...(customGrid || {}),
         },
         border: {
-          ...(baseScale.border || {}),
-          ...(customScale.border || {}),
+          ...(baseBorder || {}),
+          ...(customBorder || {}),
         },
         ticks: {
-          ...(baseScale.ticks || {}),
-          ...(customScale.ticks || {}),
+          ...(baseTicks || {}),
+          ...(customTicks || {}),
+        },
+        title: {
+          ...(baseTitle || {}),
+          ...(customTitle || {}),
+          font: {
+            ...(baseTitle?.font || {}),
+            ...(customTitle?.font || {}),
+          },
+          padding: {
+            ...(baseTitle?.padding || {}),
+            ...(customTitle?.padding || {}),
+          },
         },
       };
     });

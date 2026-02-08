@@ -2,23 +2,10 @@
   <sky-tile-title> Stacked bar chart </sky-tile-title>
   <sky-tile-content>
     <sky-tile-content-section>
-      <div class="chart-header sky-margin-stacked-sm">
-        <div class="chart-heading">
-          <h3 class="sky-margin-stacked-xs">Chart title</h3>
-          <div class="chart-subtitle">Subtitle</div>
-        </div>
-        <sky-dropdown buttonType="context-menu">
-          <sky-dropdown-menu>
-            <sky-dropdown-item>
-              <button type="button" (click)="onViewDataTable()">View data table</button>
-            </sky-dropdown-item>
-          </sky-dropdown-menu>
-        </sky-dropdown>
-      </div>
-
-      <div class="chart-container">
-        <canvas #stackedBarChartCanvas></canvas>
-      </div>
+      <sky-bar-chart 
+        headingText="Chart title" 
+        [chartHeight]="chartHeight" 
+        [config]="chartConfig" />
     </sky-tile-content-section>
   </sky-tile-content>
 </sky-tile>

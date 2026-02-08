@@ -4,7 +4,7 @@
   <sky-tile-content>
     <sky-tile-content-section>
       @for (chartConfig of chartConfigs; track $index) {
-        <sky-bar-chart [headingText]="projects[$index].name"  [chartHeight]="180" [config]="chartConfig" />
+        <sky-bar-chart [headingText]="projects[$index].name"  [chartHeight]="chartHeights[$index]" [config]="chartConfig" />
       }
     </sky-tile-content-section>
   </sky-tile-content>

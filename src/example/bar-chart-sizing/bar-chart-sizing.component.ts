@@ -1,21 +1,29 @@
 import { Component } from '@angular/core';
+import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { SkyBoxModule, SkyFluidGridModule } from '@skyux/layout';
 import { SkyPageModule } from '@skyux/pages';
 import { SkyTabsModule } from '@skyux/tabs';
 import { SkyInputBoxModule } from '@skyux/forms';
 import { Chart, ChartConfiguration, registerables } from 'chart.js';
-import { getSkyuxBarChartConfig } from '../chartjs-config/bar-chart.config';
+import { getSkyuxBarChartConfig, calculateHorizontalBarChartHeight, BarSizingResult } from '../chartjs-config/bar-chart.config';
 import { skyuxChartStyles } from '../chartjs-config/global-chart.config';
 import { SkyBarChartComponent } from '../../skyux/bar-chart/bar-chart.component';
 
 Chart.register(...registerables);
 
+export interface ChartMetrics {
+  categoryPercentage: number;
+  barPercentage: number;
+  actualBarWidth: number;
+  borderWidth: number;
+}
+
 @Component({
   selector: 'app-bar-chart-sizing',
   standalone: true,
   templateUrl: './bar-chart-sizing.component.html',
-  imports: [FormsModule, SkyBoxModule, SkyFluidGridModule, SkyPageModule, SkyTabsModule, SkyInputBoxModule, SkyBarChartComponent],
+  imports: [CommonModule, FormsModule, SkyBoxModule, SkyFluidGridModule, SkyPageModule, SkyTabsModule, SkyInputBoxModule, SkyBarChartComponent],
 })
 export class BarChartSizingComponent {
   //#region Chart Configuration Options
@@ -25,6 +33,7 @@ export class BarChartSizingComponent {
   protected borderWidth = 1;
   protected borderRadius = 2;
   protected categoryPercentage = 0.8;
+  protected useCustomOptions = false; // Control whether custom options are applied
   // #endregion
 
   //#region Chart Configs
@@ -53,6 +62,41 @@ export class BarChartSizingComponent {
   public chartV10Config!: ChartConfiguration<'bar'>;
   public chartV11Config!: ChartConfiguration<'bar'>;
   public chartV12Config!: ChartConfiguration<'bar'>;
+
+  public chartStackedConfig!: ChartConfiguration<'bar'>;
+  public chartStackedVerticalConfig!: ChartConfiguration<'bar'>;
+  // #endregion
+
+  //#region Calculated Heights for Horizontal Charts
+  public chart1Height!: number;
+  public chart2Height!: number;
+  public chart3Height!: number;
+  public chart4Height!: number;
+  public chart5Height!: number;
+  public chart6Height!: number;
+  public chart7Height!: number;
+  public chart8Height!: number;
+  public chart9Height!: number;
+  public chart10Height!: number;
+  public chart11Height!: number;
+  public chart12Height!: number;
+  public chartStackedHeight!: number;
+  // #endregion
+
+  //#region Chart Metrics for Display
+  public chart1Metrics!: ChartMetrics;
+  public chart2Metrics!: ChartMetrics;
+  public chart3Metrics!: ChartMetrics;
+  public chart4Metrics!: ChartMetrics;
+  public chart5Metrics!: ChartMetrics;
+  public chart6Metrics!: ChartMetrics;
+  public chart7Metrics!: ChartMetrics;
+  public chart8Metrics!: ChartMetrics;
+  public chart9Metrics!: ChartMetrics;
+  public chart10Metrics!: ChartMetrics;
+  public chart11Metrics!: ChartMetrics;
+  public chart12Metrics!: ChartMetrics;
+  public chartStackedMetrics!: ChartMetrics;
   // #endregion
 
   constructor() {
@@ -64,60 +108,120 @@ export class BarChartSizingComponent {
     const chartConfigByGender = this.getChartConfigurationByGender();
     const chartConfigByGradeGender = this.getChartConfigurationByGradeAndGender();
     const chartConfigByGradeMetrics = this.getChartConfigurationByGradeMetrics();
+    const chartConfigByGradeMetrics1 = this.getChartConfigurationByGradeMetrics1();
+    const chartConfigByGradeMetrics3 = this.getChartConfigurationByGradeMetrics3();
     const chartConfigVertical = this.getVerticalChartConfiguration();
     const chartConfigVerticalByGender = this.getVerticalChartConfigurationByGender();
     const chartConfigVerticalByGradeGender = this.getVerticalChartConfigurationByGradeAndGender();
     const chartConfigVerticalByGradeMetrics = this.getVerticalChartConfigurationByGradeMetrics();
+    const chartConfigVerticalByGradeMetrics1 = this.getVerticalChartConfigurationByGradeMetrics1();
+    const chartConfigVerticalByGradeMetrics3 = this.getVerticalChartConfigurationByGradeMetrics3();
 
     // Chart 1: Student Enrollment
     this.chart1Config = chartConfig;
 
-    // Chart 2: Same as Chart 1
-    this.chart2Config = this.getChartConfiguration();
+    // Chart 2: Student Enrollment with 1 extra category
+    this.chart2Config = this.getChartConfigurationEnrollment2();
 
-    // Chart 3: Same as Chart 1
-    this.chart3Config = this.getChartConfiguration();
+    // Chart 3: Student Enrollment with 3 extra categories
+    this.chart3Config = this.getChartConfigurationEnrollment3();
 
     // Chart 4: Student Enrollment by Gender
     this.chart4Config = chartConfigByGender;
 
-    // Chart 5: Same as Chart 4
-    this.chart5Config = this.getChartConfigurationByGender();
+    // Chart 5: Student Enrollment by Gender with 1 extra category
+    this.chart5Config = this.getChartConfigurationByGenderEnrollment2();
 
-    // Chart 6: Same as Chart 4
-    this.chart6Config = this.getChartConfigurationByGender();
+    // Chart 6: Student Enrollment by Gender with 3 extra categories
+    this.chart6Config = this.getChartConfigurationByGenderEnrollment3();
 
     // Chart 7: Grade Level Enrollment by Gender
     this.chart7Config = chartConfigByGradeGender;
 
-    // Chart 8: Same as Chart 7
-    this.chart8Config = this.getChartConfigurationByGradeAndGender();
+    // Chart 8: Grade Level Enrollment by Gender with 1 extra dataset
+    this.chart8Config = this.getChartConfigurationByGradeAndGender2();
 
-    // Chart 9: Same as Chart 7
-    this.chart9Config = this.getChartConfigurationByGradeAndGender();
+    // Chart 9: Grade Level Enrollment by Gender with 2 extra datasets
+    this.chart9Config = this.getChartConfigurationByGradeAndGender3();
 
-    // Chart 10: Grade Metrics (Absences, Tardies, Infractions, Awards)
-    this.chart10Config = chartConfigByGradeMetrics;
+    // Chart 10: Grade Metrics 1 (Absences, Tardies, Infractions, Awards) - fewer datasets
+    this.chart10Config = chartConfigByGradeMetrics1;
 
     // Chart 11: Same as Chart 10
     this.chart11Config = this.getChartConfigurationByGradeMetrics();
 
-    // Chart 12: Same as Chart 10
-    this.chart12Config = this.getChartConfigurationByGradeMetrics();
+    // Chart 12: Grade Metrics 3 (adds Grade 5 + one category)
+    this.chart12Config = chartConfigByGradeMetrics3;
 
     // Vertical tab charts
     this.chartV1Config = chartConfigVertical;
-    this.chartV2Config = this.getVerticalChartConfiguration();
-    this.chartV3Config = this.getVerticalChartConfiguration();
+    this.chartV2Config = this.getVerticalChartConfigurationEnrollment2();
+    this.chartV3Config = this.getVerticalChartConfigurationEnrollment3();
     this.chartV4Config = chartConfigVerticalByGender;
-    this.chartV5Config = this.getVerticalChartConfigurationByGender();
-    this.chartV6Config = this.getVerticalChartConfigurationByGender();
+    this.chartV5Config = this.getVerticalChartConfigurationByGenderEnrollment2();
+    this.chartV6Config = this.getVerticalChartConfigurationByGenderEnrollment3();
     this.chartV7Config = chartConfigVerticalByGradeGender;
-    this.chartV8Config = this.getVerticalChartConfigurationByGradeAndGender();
-    this.chartV9Config = this.getVerticalChartConfigurationByGradeAndGender();
-    this.chartV10Config = chartConfigVerticalByGradeMetrics;
+    this.chartV8Config = this.getVerticalChartConfigurationByGradeAndGender2();
+    this.chartV9Config = this.getVerticalChartConfigurationByGradeAndGender3();
+    this.chartV10Config = chartConfigVerticalByGradeMetrics1;
     this.chartV11Config = this.getVerticalChartConfigurationByGradeMetrics();
-    this.chartV12Config = this.getVerticalChartConfigurationByGradeMetrics();
+    this.chartV12Config = chartConfigVerticalByGradeMetrics3;
+
+    // Stacked bar charts
+    this.chartStackedConfig = this.getStackedEnrollmentChartConfiguration();
+    this.chartStackedVerticalConfig = this.getStackedEnrollmentChartConfiguration(true);
+
+    // Calculate optimal heights and settings for horizontal charts (indexAxis: 'y')
+    // Charts 1-3: 2, 3, and 5 categories, 1 dataset
+    const result1 = calculateHorizontalBarChartHeight(2, 1);
+    this.chart1Height = result1.height;
+    const result2 = calculateHorizontalBarChartHeight(3, 1);
+    this.chart2Height = result2.height;
+    const result3 = calculateHorizontalBarChartHeight(5, 1);
+    this.chart3Height = result3.height;
+    
+    // Charts 4-6: 2, 3, and 5 categories, 2 datasets (grouped)
+    const result4 = calculateHorizontalBarChartHeight(2, 2);
+    this.chart4Height = result4.height;
+    const result5 = calculateHorizontalBarChartHeight(3, 2);
+    this.chart5Height = result5.height;
+    const result6 = calculateHorizontalBarChartHeight(5, 2);
+    this.chart6Height = result6.height;
+    
+    // Charts 7-9: 7 categories (grades), 2/3/4 datasets (gender + additional)
+    const result7 = calculateHorizontalBarChartHeight(7, 2);
+    this.chart7Height = result7.height;
+    const result8 = calculateHorizontalBarChartHeight(7, 3);
+    this.chart8Height = result8.height;
+    const result9 = calculateHorizontalBarChartHeight(7, 4);
+    this.chart9Height = result9.height;
+    
+    // Charts 10-12: 4/4/5 categories (metrics), 5/7/8 datasets (grades)
+    const result10 = calculateHorizontalBarChartHeight(4, 5);
+    this.chart10Height = result10.height;
+    const result11 = calculateHorizontalBarChartHeight(4, 7);
+    this.chart11Height = result11.height;
+    const result12 = calculateHorizontalBarChartHeight(5, 8);
+    this.chart12Height = result12.height;
+    
+    // Stacked chart: 4 categories, 3 datasets (but stacked, so treat as 1 bar visually)
+    const resultStacked = calculateHorizontalBarChartHeight(4, 1);
+    this.chartStackedHeight = resultStacked.height;
+
+    // Calculate metrics for each chart using optimal settings from algorithm
+    this.chart1Metrics = this.calculateChartMetrics(2, 1, result1);
+    this.chart2Metrics = this.calculateChartMetrics(3, 1, result2);
+    this.chart3Metrics = this.calculateChartMetrics(5, 1, result3);
+    this.chart4Metrics = this.calculateChartMetrics(2, 2, result4);
+    this.chart5Metrics = this.calculateChartMetrics(3, 2, result5);
+    this.chart6Metrics = this.calculateChartMetrics(5, 2, result6);
+    this.chart7Metrics = this.calculateChartMetrics(7, 2, result7);
+    this.chart8Metrics = this.calculateChartMetrics(7, 3, result8);
+    this.chart9Metrics = this.calculateChartMetrics(7, 4, result9);
+    this.chart10Metrics = this.calculateChartMetrics(4, 5, result10);
+    this.chart11Metrics = this.calculateChartMetrics(4, 7, result11);
+    this.chart12Metrics = this.calculateChartMetrics(5, 8, result12);
+    this.chartStackedMetrics = this.calculateChartMetrics(4, 1, resultStacked);
 
     // Apply bar options to all configs
     const allConfigs = [
@@ -129,71 +233,187 @@ export class BarChartSizingComponent {
       this.chartV4Config, this.chartV5Config, this.chartV6Config,
       this.chartV7Config, this.chartV8Config, this.chartV9Config,
       this.chartV10Config, this.chartV11Config, this.chartV12Config,
+      this.chartStackedConfig, this.chartStackedVerticalConfig,
     ];
 
     allConfigs.forEach((config) => this.applyBarOptions(config));
   }
 
   protected onChartOptionsChanged(): void {
+    // Only reinitialize if custom options are enabled
+    if (this.useCustomOptions) {
+      this.initializeCharts();
+    }
+  }
+
+  protected applyCustomOptions(): void {
+    this.useCustomOptions = true;
     this.initializeCharts();
   }
 
+  private calculateChartMetrics(numCategories: number, numDatasets: number, optimalSettings: BarSizingResult): ChartMetrics {
+    // Use optimal settings from algorithm unless custom options are enabled
+    const categoryPercentage = this.useCustomOptions ? this.categoryPercentage : optimalSettings.categoryPercentage;
+    const barPercentage = this.useCustomOptions ? this.barPercentage : optimalSettings.barPercentage;
+    
+    // Calculate actual bar width based on settings
+    const idealBarWidth = 16;
+    const spacePerBar = idealBarWidth / barPercentage;
+    
+    // Calculate spacing between categories (matches algorithm)
+    let spaceBetweenCategories = 4;
+    if (numDatasets > 3) {
+      const excessDatasets = numDatasets - 3;
+      const reductionPerDataset = idealBarWidth / 4;
+      const totalReduction = Math.min(excessDatasets * reductionPerDataset, idealBarWidth);
+      spaceBetweenCategories = Math.max(2, spaceBetweenCategories - totalReduction);
+    }
+    
+    const spacePerCategory = (spacePerBar * numDatasets) + spaceBetweenCategories;
+    
+    // Approximate actual bar width within category space
+    const barSpacePerCategory = categoryPercentage * spacePerCategory;
+    const actualBarWidth = Math.round((barSpacePerCategory / numDatasets) * barPercentage);
+    
+    // Get actual borderWidth from base config (elements.bar.borderWidth)
+    const borderWidth = this.useCustomOptions ? this.borderWidth : skyuxChartStyles.barBorderWidth;
+    
+    return {
+      categoryPercentage: Number(categoryPercentage.toFixed(2)),
+      barPercentage: Number(barPercentage.toFixed(2)),
+      actualBarWidth,
+      borderWidth,
+    };
+  }
+
   private applyBarOptions(config: ChartConfiguration<'bar'>): void {
-    // Parse barThickness value
-    const barThicknessValue = this.barThickness === 'flex' ? 'flex' : parseInt(this.barThickness as string, 10);
+    // Determine which settings to use based on useCustomOptions flag
+    let categoryPercentage: number;
+    let barPercentage: number;
+    let borderWidth: number;
+    let borderRadius: number;
+    let barThicknessValue: number | 'flex';
+    let maxBarThickness: number | undefined;
+
+    if (this.useCustomOptions) {
+      // Use form input values
+      categoryPercentage = this.categoryPercentage;
+      barPercentage = this.barPercentage;
+      borderWidth = this.borderWidth;
+      borderRadius = this.borderRadius;
+      barThicknessValue = this.barThickness === 'flex' ? 'flex' : parseInt(this.barThickness as string, 10);
+      maxBarThickness = this.maxBarThickness;
+    } else {
+      // Use algorithm-calculated values from the config's associated metrics
+      // Extract dataset count from config to determine optimal settings
+      const numDatasets = config.data?.datasets?.length || 1;
+      const numCategories = config.data?.labels?.length || 1;
+      const optimalSettings = calculateHorizontalBarChartHeight(numCategories, numDatasets); // Use actual dimensions for settings
+      
+      categoryPercentage = optimalSettings.categoryPercentage;
+      barPercentage = optimalSettings.barPercentage;
+      // Don't set borderWidth/borderRadius - use values from base config
+      barThicknessValue = 'flex';
+      maxBarThickness = undefined;
+    }
     
     // Update dataset properties
     if (config.data?.datasets) {
       config.data.datasets.forEach((dataset: any) => {
-        dataset.borderWidth = this.borderWidth;
-        dataset.borderRadius = this.borderRadius;
-        dataset.barPercentage = this.barPercentage;
-        dataset.categoryPercentage = this.categoryPercentage;
+        // Only set border properties when using custom options
+        if (this.useCustomOptions) {
+          dataset.borderWidth = borderWidth;
+          dataset.borderRadius = borderRadius;
+        }
+        dataset.barPercentage = barPercentage;
+        dataset.categoryPercentage = categoryPercentage;
         dataset.barThickness = barThicknessValue;
-        if (this.maxBarThickness) {
-          dataset.maxBarThickness = this.maxBarThickness;
+        if (maxBarThickness) {
+          dataset.maxBarThickness = maxBarThickness;
         }
       });
     }
 
     // Also set defaults in elements for consistency
     if (config.options && typeof config.options === 'object') {
+      const existingElements = (config.options as any).elements || {};
+      const existingBar = existingElements.bar || {};
+      const elementBar: any = {
+        ...existingBar,
+        barPercentage: barPercentage,
+        barThickness: barThicknessValue,
+        categoryPercentage: categoryPercentage,
+      };
+      
+      // Only override border properties when using custom options
+      if (this.useCustomOptions) {
+        elementBar.borderRadius = this.borderRadius;
+        elementBar.borderWidth = this.borderWidth;
+      }
+      
+      if (maxBarThickness) {
+        elementBar.maxBarThickness = maxBarThickness;
+      }
+      
       (config.options as any).elements = {
-        ...(config.options as any).elements,
-        bar: {
-          barPercentage: this.barPercentage,
-          barThickness: barThicknessValue,
-          borderRadius: this.borderRadius,
-          categoryPercentage: this.categoryPercentage,
-          ...(this.maxBarThickness && { maxBarThickness: this.maxBarThickness }),
-        },
+        ...existingElements,
+        bar: elementBar,
       };
     }
   }
 
   private getChartConfiguration(): ChartConfiguration<'bar'> {
+    return this.getEnrollmentChartConfiguration(
+      ['Lower School', 'Upper School'],
+      [1245, 1890],
+      'y'
+    );
+  }
+
+  private getChartConfigurationEnrollment2(): ChartConfiguration<'bar'> {
+    return this.getEnrollmentChartConfiguration(
+      ['Lower School', 'Middle School', 'Upper School'],
+      [1245, 1560, 1890],
+      'y'
+    );
+  }
+
+  private getChartConfigurationEnrollment3(): ChartConfiguration<'bar'> {
+    return this.getEnrollmentChartConfiguration(
+      ['Lower School', 'Middle School', 'Upper School', 'High School', 'Advanced Placement'],
+      [1245, 1560, 1890, 1420, 980],
+      'y'
+    );
+  }
+
+  private getEnrollmentChartConfiguration(
+    labels: string[],
+    data: number[],
+    indexAxis: 'x' | 'y'
+  ): ChartConfiguration<'bar'> {
     const colors = skyuxChartStyles.series;
     const borderColor = skyuxChartStyles.barBorderColor;
+
+    const valueAxis = indexAxis === 'y' ? 'x' : 'y';
 
     return {
       type: 'bar',
       data: {
-        labels: ['Lower School', 'Upper School'],
+        labels,
         datasets: [
           {
             label: 'Total Students',
-            data: [1245, 1890],
+            data,
             backgroundColor: colors[0],
             borderColor: borderColor,
-            borderWidth: 2,
           },
         ],
       },
       options: {
         ...getSkyuxBarChartConfig({
-          indexAxis: 'y',
+          indexAxis,
           scales: {
-            x: {
+            [valueAxis]: {
               beginAtZero: true,
               max: 2500,
             },
@@ -204,35 +424,66 @@ export class BarChartSizingComponent {
   }
 
   private getChartConfigurationByGender(): ChartConfiguration<'bar'> {
+    return this.getEnrollmentByGenderChartConfiguration(
+      ['Lower School', 'Upper School'],
+      [610, 920],
+      [635, 970],
+      'y'
+    );
+  }
+
+  private getChartConfigurationByGenderEnrollment2(): ChartConfiguration<'bar'> {
+    return this.getEnrollmentByGenderChartConfiguration(
+      ['Lower School', 'Middle School', 'Upper School'],
+      [610, 780, 920],
+      [635, 820, 970],
+      'y'
+    );
+  }
+
+  private getChartConfigurationByGenderEnrollment3(): ChartConfiguration<'bar'> {
+    return this.getEnrollmentByGenderChartConfiguration(
+      ['Lower School', 'Middle School', 'Upper School', 'High School', 'Advanced Placement'],
+      [610, 780, 920, 690, 480],
+      [635, 820, 970, 730, 500],
+      'y'
+    );
+  }
+
+  private getEnrollmentByGenderChartConfiguration(
+    labels: string[],
+    maleData: number[],
+    femaleData: number[],
+    indexAxis: 'x' | 'y'
+  ): ChartConfiguration<'bar'> {
     const colors = skyuxChartStyles.series;
     const borderColor = skyuxChartStyles.barBorderColor;
+    const valueAxis = indexAxis === 'y' ? 'x' : 'y';
 
     return {
       type: 'bar',
       data: {
-        labels: ['Lower School', 'Upper School'],
+        labels,
         datasets: [
           {
             label: 'Male Students',
-            data: [610, 920],
+            data: maleData,
             backgroundColor: colors[0],
             borderColor: borderColor,
-            borderWidth: 2,
           },
           {
             label: 'Female Students',
-            data: [635, 970],
+            data: femaleData,
             backgroundColor: colors[1],
             borderColor: borderColor,
-            borderWidth: 2,
           },
         ],
       },
       options: {
         ...getSkyuxBarChartConfig({
-          indexAxis: 'y',
+          indexAxis,
           scales: {
-            x: {
+            [valueAxis]: {
               beginAtZero: true,
               max: 2500,
             },
@@ -243,35 +494,89 @@ export class BarChartSizingComponent {
   }
 
   private getChartConfigurationByGradeAndGender(): ChartConfiguration<'bar'> {
+    return this.getGradeDistributionByGenderChartConfiguration(
+      [
+        {
+          label: 'Male Students',
+          data: [145, 138, 142, 151, 148, 155, 165],
+        },
+        {
+          label: 'Female Students',
+          data: [152, 146, 148, 157, 159, 162, 172],
+        },
+      ],
+      'y'
+    );
+  }
+
+  private getChartConfigurationByGradeAndGender2(): ChartConfiguration<'bar'> {
+    return this.getGradeDistributionByGenderChartConfiguration(
+      [
+        {
+          label: 'Male Students',
+          data: [145, 138, 142, 151, 148, 155, 165],
+        },
+        {
+          label: 'Female Students',
+          data: [152, 146, 148, 157, 159, 162, 172],
+        },
+        {
+          label: 'Non-binary Students',
+          data: [6, 5, 6, 7, 6, 8, 9],
+        },
+      ],
+      'y'
+    );
+  }
+
+  private getChartConfigurationByGradeAndGender3(): ChartConfiguration<'bar'> {
+    return this.getGradeDistributionByGenderChartConfiguration(
+      [
+        {
+          label: 'Male Students',
+          data: [145, 138, 142, 151, 148, 155, 165],
+        },
+        {
+          label: 'Female Students',
+          data: [152, 146, 148, 157, 159, 162, 172],
+        },
+        {
+          label: 'Non-binary Students',
+          data: [6, 5, 6, 7, 6, 8, 9],
+        },
+        {
+          label: 'Unreported',
+          data: [3, 4, 3, 4, 3, 4, 5],
+        },
+      ],
+      'y'
+    );
+  }
+
+  private getGradeDistributionByGenderChartConfiguration(
+    datasets: Array<{ label: string; data: number[] }>,
+    indexAxis: 'x' | 'y'
+  ): ChartConfiguration<'bar'> {
     const colors = skyuxChartStyles.series;
     const borderColor = skyuxChartStyles.barBorderColor;
+    const valueAxis = indexAxis === 'y' ? 'x' : 'y';
 
     return {
       type: 'bar',
       data: {
         labels: ['Grade 6', 'Grade 7', 'Grade 8', 'Grade 9', 'Grade 10', 'Grade 11', 'Grade 12'],
-        datasets: [
-          {
-            label: 'Male Students',
-            data: [145, 138, 142, 151, 148, 155, 165],
-            backgroundColor: colors[0],
-            borderColor: borderColor,
-            borderWidth: 2,
-          },
-          {
-            label: 'Female Students',
-            data: [152, 146, 148, 157, 159, 162, 172],
-            backgroundColor: colors[1],
-            borderColor: borderColor,
-            borderWidth: 2,
-          },
-        ],
+        datasets: datasets.map((dataset, index) => ({
+          label: dataset.label,
+          data: dataset.data,
+          backgroundColor: colors[index % colors.length],
+          borderColor: borderColor,
+        })),
       },
       options: {
         ...getSkyuxBarChartConfig({
-          indexAxis: 'y',
+          indexAxis,
           scales: {
-            x: {
+            [valueAxis]: {
               beginAtZero: true,
               max: 200,
             },
@@ -282,70 +587,77 @@ export class BarChartSizingComponent {
   }
 
   private getChartConfigurationByGradeMetrics(): ChartConfiguration<'bar'> {
+    return this.getGradeMetricsChartConfiguration(
+      ['Absences', 'Tardies', 'Infractions', 'Awards'],
+      [
+        { label: 'Grade 6', data: [8, 14, 3, 5] },
+        { label: 'Grade 7', data: [9, 16, 4, 6] },
+        { label: 'Grade 8', data: [10, 15, 5, 6] },
+        { label: 'Grade 9', data: [11, 18, 6, 7] },
+        { label: 'Grade 10', data: [10, 17, 5, 8] },
+        { label: 'Grade 11', data: [9, 13, 4, 9] },
+        { label: 'Grade 12', data: [8, 12, 3, 10] },
+      ],
+      'y'
+    );
+  }
+
+  private getChartConfigurationByGradeMetrics1(): ChartConfiguration<'bar'> {
+    return this.getGradeMetricsChartConfiguration(
+      ['Absences', 'Tardies', 'Infractions', 'Awards'],
+      [
+        { label: 'Grade 6', data: [8, 14, 3, 5] },
+        { label: 'Grade 7', data: [9, 16, 4, 6] },
+        { label: 'Grade 8', data: [10, 15, 5, 6] },
+        { label: 'Grade 9', data: [11, 18, 6, 7] },
+        { label: 'Grade 10', data: [10, 17, 5, 8] },
+      ],
+      'y'
+    );
+  }
+
+  private getChartConfigurationByGradeMetrics3(): ChartConfiguration<'bar'> {
+    return this.getGradeMetricsChartConfiguration(
+      ['Absences', 'Tardies', 'Infractions', 'Awards', 'Detentions'],
+      [
+        { label: 'Grade 5', data: [7, 12, 3, 4, 2] },
+        { label: 'Grade 6', data: [8, 14, 3, 5, 3] },
+        { label: 'Grade 7', data: [9, 16, 4, 6, 3] },
+        { label: 'Grade 8', data: [10, 15, 5, 6, 4] },
+        { label: 'Grade 9', data: [11, 18, 6, 7, 4] },
+        { label: 'Grade 10', data: [10, 17, 5, 8, 5] },
+        { label: 'Grade 11', data: [9, 13, 4, 9, 5] },
+        { label: 'Grade 12', data: [8, 12, 3, 10, 6] },
+      ],
+      'y'
+    );
+  }
+
+  private getGradeMetricsChartConfiguration(
+    labels: string[],
+    datasets: Array<{ label: string; data: number[] }>,
+    indexAxis: 'x' | 'y'
+  ): ChartConfiguration<'bar'> {
     const colors = skyuxChartStyles.series;
     const borderColor = skyuxChartStyles.barBorderColor;
+    const valueAxis = indexAxis === 'y' ? 'x' : 'y';
 
     return {
       type: 'bar',
       data: {
-        labels: ['Absences', 'Tardies', 'Infractions', 'Awards'],
-        datasets: [
-          {
-            label: 'Grade 6',
-            data: [8, 14, 3, 5],
-            backgroundColor: colors[0],
-            borderColor,
-            borderWidth: 2,
-          },
-          {
-            label: 'Grade 7',
-            data: [9, 16, 4, 6],
-            backgroundColor: colors[1],
-            borderColor,
-            borderWidth: 2,
-          },
-          {
-            label: 'Grade 8',
-            data: [10, 15, 5, 6],
-            backgroundColor: colors[2],
-            borderColor,
-            borderWidth: 2,
-          },
-          {
-            label: 'Grade 9',
-            data: [11, 18, 6, 7],
-            backgroundColor: colors[3],
-            borderColor,
-            borderWidth: 2,
-          },
-          {
-            label: 'Grade 10',
-            data: [10, 17, 5, 8],
-            backgroundColor: colors[4],
-            borderColor,
-            borderWidth: 2,
-          },
-          {
-            label: 'Grade 11',
-            data: [9, 13, 4, 9],
-            backgroundColor: colors[5],
-            borderColor,
-            borderWidth: 2,
-          },
-          {
-            label: 'Grade 12',
-            data: [8, 12, 3, 10],
-            backgroundColor: colors[6],
-            borderColor,
-            borderWidth: 2,
-          },
-        ],
+        labels,
+        datasets: datasets.map((dataset, index) => ({
+          label: dataset.label,
+          data: dataset.data,
+          backgroundColor: colors[index % colors.length],
+          borderColor,
+        })),
       },
       options: {
         ...getSkyuxBarChartConfig({
-          indexAxis: 'y',
+          indexAxis,
           scales: {
-            x: {
+            [valueAxis]: {
               beginAtZero: true,
               max: 20,
             },
@@ -356,182 +668,221 @@ export class BarChartSizingComponent {
   }
 
   private getVerticalChartConfiguration(): ChartConfiguration<'bar'> {
-    const colors = skyuxChartStyles.series;
-    const borderColor = skyuxChartStyles.barBorderColor;
+    return this.getEnrollmentChartConfiguration(
+      ['Lower School', 'Upper School'],
+      [1245, 1890],
+      'x'
+    );
+  }
 
-    return {
-      type: 'bar',
-      data: {
-        labels: ['Lower School', 'Upper School'],
-        datasets: [
-          {
-            label: 'Total Students',
-            data: [1245, 1890],
-            backgroundColor: colors[0],
-            borderColor,
-            borderWidth: 2,
-          },
-        ],
-      },
-      options: {
-        ...getSkyuxBarChartConfig({
-          indexAxis: 'x',
-          scales: {
-            y: {
-              beginAtZero: true,
-              max: 2500,
-            },
-          },
-        }),
-      } as any,
-    };
+  private getVerticalChartConfigurationEnrollment2(): ChartConfiguration<'bar'> {
+    return this.getEnrollmentChartConfiguration(
+      ['Lower School', 'Middle School', 'Upper School'],
+      [1245, 1560, 1890],
+      'x'
+    );
+  }
+
+  private getVerticalChartConfigurationEnrollment3(): ChartConfiguration<'bar'> {
+    return this.getEnrollmentChartConfiguration(
+      ['Lower School', 'Middle School', 'Upper School', 'High School', 'Advanced Placement'],
+      [1245, 1560, 1890, 1420, 980],
+      'x'
+    );
   }
 
   private getVerticalChartConfigurationByGender(): ChartConfiguration<'bar'> {
-    const colors = skyuxChartStyles.series;
-    const borderColor = skyuxChartStyles.barBorderColor;
+    return this.getEnrollmentByGenderChartConfiguration(
+      ['Lower School', 'Upper School'],
+      [610, 920],
+      [635, 970],
+      'x'
+    );
+  }
 
-    return {
-      type: 'bar',
-      data: {
-        labels: ['Lower School', 'Upper School'],
-        datasets: [
-          {
-            label: 'Male Students',
-            data: [610, 920],
-            backgroundColor: colors[0],
-            borderColor,
-            borderWidth: 2,
-          },
-          {
-            label: 'Female Students',
-            data: [635, 970],
-            backgroundColor: colors[1],
-            borderColor,
-            borderWidth: 2,
-          },
-        ],
-      },
-      options: {
-        ...getSkyuxBarChartConfig({
-          indexAxis: 'x',
-          scales: {
-            y: {
-              beginAtZero: true,
-              max: 2500,
-            },
-          },
-        }),
-      } as any,
-    };
+  private getVerticalChartConfigurationByGenderEnrollment2(): ChartConfiguration<'bar'> {
+    return this.getEnrollmentByGenderChartConfiguration(
+      ['Lower School', 'Middle School', 'Upper School'],
+      [610, 780, 920],
+      [635, 820, 970],
+      'x'
+    );
+  }
+
+  private getVerticalChartConfigurationByGenderEnrollment3(): ChartConfiguration<'bar'> {
+    return this.getEnrollmentByGenderChartConfiguration(
+      ['Lower School', 'Middle School', 'Upper School', 'High School', 'Advanced Placement'],
+      [610, 780, 920, 690, 480],
+      [635, 820, 970, 730, 500],
+      'x'
+    );
   }
 
   private getVerticalChartConfigurationByGradeAndGender(): ChartConfiguration<'bar'> {
-    const colors = skyuxChartStyles.series;
-    const borderColor = skyuxChartStyles.barBorderColor;
+    return this.getGradeDistributionByGenderChartConfiguration(
+      [
+        {
+          label: 'Male Students',
+          data: [145, 138, 142, 151, 148, 155, 165],
+        },
+        {
+          label: 'Female Students',
+          data: [152, 146, 148, 157, 159, 162, 172],
+        },
+      ],
+      'x'
+    );
+  }
 
-    return {
-      type: 'bar',
-      data: {
-        labels: ['Grade 6', 'Grade 7', 'Grade 8', 'Grade 9', 'Grade 10', 'Grade 11', 'Grade 12'],
-        datasets: [
-          {
-            label: 'Male Students',
-            data: [145, 138, 142, 151, 148, 155, 165],
-            backgroundColor: colors[0],
-            borderColor,
-            borderWidth: 2,
-          },
-          {
-            label: 'Female Students',
-            data: [152, 146, 148, 157, 159, 162, 172],
-            backgroundColor: colors[1],
-            borderColor,
-            borderWidth: 2,
-          },
-        ],
-      },
-      options: {
-        ...getSkyuxBarChartConfig({
-          indexAxis: 'x',
-          scales: {
-            y: {
-              beginAtZero: true,
-              max: 200,
-            },
-          },
-        }),
-      } as any,
-    };
+  private getVerticalChartConfigurationByGradeAndGender2(): ChartConfiguration<'bar'> {
+    return this.getGradeDistributionByGenderChartConfiguration(
+      [
+        {
+          label: 'Male Students',
+          data: [145, 138, 142, 151, 148, 155, 165],
+        },
+        {
+          label: 'Female Students',
+          data: [152, 146, 148, 157, 159, 162, 172],
+        },
+        {
+          label: 'Non-binary Students',
+          data: [6, 5, 6, 7, 6, 8, 9],
+        },
+      ],
+      'x'
+    );
+  }
+
+  private getVerticalChartConfigurationByGradeAndGender3(): ChartConfiguration<'bar'> {
+    return this.getGradeDistributionByGenderChartConfiguration(
+      [
+        {
+          label: 'Male Students',
+          data: [145, 138, 142, 151, 148, 155, 165],
+        },
+        {
+          label: 'Female Students',
+          data: [152, 146, 148, 157, 159, 162, 172],
+        },
+        {
+          label: 'Non-binary Students',
+          data: [6, 5, 6, 7, 6, 8, 9],
+        },
+        {
+          label: 'Unreported',
+          data: [3, 4, 3, 4, 3, 4, 5],
+        },
+      ],
+      'x'
+    );
   }
 
   private getVerticalChartConfigurationByGradeMetrics(): ChartConfiguration<'bar'> {
+    return this.getGradeMetricsChartConfiguration(
+      ['Absences', 'Tardies', 'Infractions', 'Awards'],
+      [
+        { label: 'Grade 6', data: [8, 14, 3, 5] },
+        { label: 'Grade 7', data: [9, 16, 4, 6] },
+        { label: 'Grade 8', data: [10, 15, 5, 6] },
+        { label: 'Grade 9', data: [11, 18, 6, 7] },
+        { label: 'Grade 10', data: [10, 17, 5, 8] },
+        { label: 'Grade 11', data: [9, 13, 4, 9] },
+        { label: 'Grade 12', data: [8, 12, 3, 10] },
+      ],
+      'x'
+    );
+  }
+
+  private getVerticalChartConfigurationByGradeMetrics1(): ChartConfiguration<'bar'> {
+    return this.getGradeMetricsChartConfiguration(
+      ['Absences', 'Tardies', 'Infractions', 'Awards'],
+      [
+        { label: 'Grade 6', data: [8, 14, 3, 5] },
+        { label: 'Grade 7', data: [9, 16, 4, 6] },
+        { label: 'Grade 8', data: [10, 15, 5, 6] },
+        { label: 'Grade 9', data: [11, 18, 6, 7] },
+        { label: 'Grade 10', data: [10, 17, 5, 8] },
+      ],
+      'x'
+    );
+  }
+
+  private getVerticalChartConfigurationByGradeMetrics3(): ChartConfiguration<'bar'> {
+    return this.getGradeMetricsChartConfiguration(
+      ['Absences', 'Tardies', 'Infractions', 'Awards', 'Detentions'],
+      [
+        { label: 'Grade 5', data: [7, 12, 3, 4, 2] },
+        { label: 'Grade 6', data: [8, 14, 3, 5, 3] },
+        { label: 'Grade 7', data: [9, 16, 4, 6, 3] },
+        { label: 'Grade 8', data: [10, 15, 5, 6, 4] },
+        { label: 'Grade 9', data: [11, 18, 6, 7, 4] },
+        { label: 'Grade 10', data: [10, 17, 5, 8, 5] },
+        { label: 'Grade 11', data: [9, 13, 4, 9, 5] },
+        { label: 'Grade 12', data: [8, 12, 3, 10, 6] },
+      ],
+      'x'
+    );
+  }
+
+  private getStackedEnrollmentChartConfiguration(isVertical = false): ChartConfiguration<'bar'> {
     const colors = skyuxChartStyles.series;
     const borderColor = skyuxChartStyles.barBorderColor;
+
+    const programs = ['Elementary', 'Middle School', 'High School', 'Advanced Placement'];
+    const enrollmentData = {
+      'Current Year': [450, 320, 280, 150],
+      'Target': [480, 340, 300, 180],
+      'Previous Year': [420, 310, 270, 140],
+    };
 
     return {
       type: 'bar',
       data: {
-        labels: ['Absences', 'Tardies', 'Infractions', 'Awards'],
+        labels: programs,
         datasets: [
           {
-            label: 'Grade 6',
-            data: [8, 14, 3, 5],
+            label: 'Current Year',
+            data: enrollmentData['Current Year'],
             backgroundColor: colors[0],
             borderColor,
-            borderWidth: 2,
           },
           {
-            label: 'Grade 7',
-            data: [9, 16, 4, 6],
+            label: 'Target',
+            data: enrollmentData['Target'],
             backgroundColor: colors[1],
             borderColor,
-            borderWidth: 2,
           },
           {
-            label: 'Grade 8',
-            data: [10, 15, 5, 6],
+            label: 'Previous Year',
+            data: enrollmentData['Previous Year'],
             backgroundColor: colors[2],
             borderColor,
-            borderWidth: 2,
-          },
-          {
-            label: 'Grade 9',
-            data: [11, 18, 6, 7],
-            backgroundColor: colors[3],
-            borderColor,
-            borderWidth: 2,
-          },
-          {
-            label: 'Grade 10',
-            data: [10, 17, 5, 8],
-            backgroundColor: colors[4],
-            borderColor,
-            borderWidth: 2,
-          },
-          {
-            label: 'Grade 11',
-            data: [9, 13, 4, 9],
-            backgroundColor: colors[5],
-            borderColor,
-            borderWidth: 2,
-          },
-          {
-            label: 'Grade 12',
-            data: [8, 12, 3, 10],
-            backgroundColor: colors[6],
-            borderColor,
-            borderWidth: 2,
           },
         ],
       },
       options: {
         ...getSkyuxBarChartConfig({
-          indexAxis: 'x',
+          indexAxis: isVertical ? 'y' : 'x',
           scales: {
-            y: {
+            x: {
+              stacked: true,
               beginAtZero: true,
-              max: 20,
+            },
+            y: {
+              stacked: true,
+              beginAtZero: true,
+            },
+          },
+          plugins: {
+            tooltip: {
+              callbacks: {
+                label: (context: any) => {
+                  const label = context.dataset.label || '';
+                  const value = context.parsed.y || context.parsed.x;
+                  return `${label}: ${value} students`;
+                },
+              },
             },
           },
         }),
