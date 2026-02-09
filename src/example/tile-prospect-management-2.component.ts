@@ -9,96 +9,6 @@ import { getSkyuxDoughnutChartConfig, getSkyuxDoughnutDatasetBorder, skyuxChartS
 
 Chart.register(...registerables);
 
-// Plugin to add box shadow and accent border to tooltips (matches SKY UX popover style)
-const tooltipShadowPlugin = {
-  id: 'tooltipShadow',
-  beforeTooltipDraw: (chart: any) => {
-    const tooltip = chart.tooltip;
-    if (!tooltip || tooltip.opacity === 0) return;
-
-    const ctx = chart.ctx;
-    const shadow = skyuxChartStyles.tooltipShadow;
-    
-    const { x, y, width, height } = tooltip;
-    const borderRadius = 6;
-    
-    ctx.save();
-    
-    ctx.shadowColor = shadow.color;
-    ctx.shadowBlur = shadow.blur;
-    ctx.shadowOffsetX = shadow.offsetX;
-    ctx.shadowOffsetY = shadow.offsetY;
-    
-    ctx.fillStyle = skyuxChartStyles.tooltipBackgroundColor;
-    ctx.beginPath();
-    ctx.roundRect(x, y, width, height, borderRadius);
-    ctx.fill();
-    
-    ctx.restore();
-  },
-  afterTooltipDraw: (chart: any) => {
-    const tooltip = chart.tooltip;
-    if (!tooltip || tooltip.opacity === 0) return;
-
-    const ctx = chart.ctx;
-    const accentColor = skyuxChartStyles.tooltipAccentBorderColor;
-    const accentWidth = skyuxChartStyles.tooltipAccentBorderWidth;
-    
-    const { x, y, width, height, caretX, caretY } = tooltip;
-    const borderRadius = 6;
-    
-    ctx.save();
-    
-    const caretWidth = 20;
-    ctx.fillStyle = accentColor;
-    ctx.beginPath();
-    
-    if (caretX < x) {
-      ctx.moveTo(caretX, caretY);
-      ctx.lineTo(x, caretY - caretWidth / 2);
-      ctx.lineTo(x, caretY + caretWidth / 2);
-    } else if (caretX > x + width) {
-      ctx.moveTo(caretX, caretY);
-      ctx.lineTo(x + width, caretY - caretWidth / 2);
-      ctx.lineTo(x + width, caretY + caretWidth / 2);
-    } else if (caretY < y) {
-      ctx.moveTo(caretX, caretY);
-      ctx.lineTo(caretX - caretWidth / 2, y);
-      ctx.lineTo(caretX + caretWidth / 2, y);
-    } else {
-      ctx.moveTo(caretX, caretY);
-      ctx.lineTo(caretX - caretWidth / 2, y + height);
-      ctx.lineTo(caretX + caretWidth / 2, y + height);
-    }
-    
-    ctx.closePath();
-    ctx.fill();
-    
-    ctx.strokeStyle = accentColor;
-    ctx.lineWidth = accentWidth;
-    ctx.beginPath();
-    
-    const inset = accentWidth / 2;
-    
-    if (caretX < x) {
-      ctx.moveTo(x + inset, y + borderRadius);
-      ctx.lineTo(x + inset, y + height - borderRadius);
-    } else if (caretX > x + width) {
-      ctx.moveTo(x + width - inset, y + borderRadius);
-      ctx.lineTo(x + width - inset, y + height - borderRadius);
-    } else if (caretY < y) {
-      ctx.moveTo(x + borderRadius, y + inset);
-      ctx.lineTo(x + width - borderRadius, y + inset);
-    } else {
-      ctx.moveTo(x + borderRadius, y + height - inset);
-      ctx.lineTo(x + width - borderRadius, y + height - inset);
-    }
-    
-    ctx.stroke();
-    ctx.restore();
-  },
-};
-
 interface AssetCategory {
   name: string;
   value: number;
@@ -219,7 +129,6 @@ export class TileProspectManagement2Component implements AfterViewInit {
         ],
       },
       options: baseConfig,
-      plugins: [tooltipShadowPlugin],
     };
 
     this.chart = new Chart(ctx, config);

@@ -439,27 +439,15 @@ export const skyuxChartStyles = {
   },
 
   get tooltipBorderWidth(): number {
-    const width = resolveCssVariable('--sky-border-width-emphasized');
+    const width = resolveCssVariable('--sky-border-width-container-base');
     console.log('SKY UX Tooltip Border Width:', width);
     // Convert border width string (like "1px") to number
     const numWidth = parseInt(width) || 1;
     return numWidth; // Fallback to 1px
   },
   
-  get tooltipAccentBorderColor(): string {
-    const color = resolveCssVariable('--sky-color-border-info');
-    console.log('SKY UX Tooltip Accent Border Color:', color);
-    return color || '#00b4f1'; // Fallback to info blue
-  },
-  
-  get tooltipAccentBorderWidth(): number {
-    const width = resolveCssVariable('--sky-border-width-accent');
-    console.log('SKY UX Tooltip Accent Border Width:', width);
-    return remToPixels(width || '3px'); // Fallback
-  },
-  
   get tooltipTitleColor(): string {
-    const color = resolveCssVariable('--sky-color-text-heading');
+    const color = resolveCssVariable('--sky-color-text-default');
     console.log('SKY UX Tooltip Title Color:', color);
     return color || '#252b33'; // Fallback to gray-900
   },
@@ -477,13 +465,13 @@ export const skyuxChartStyles = {
   },
   
   get tooltipTitleMarginBottom(): number {
-    const space = resolveCssVariable('--sky-space-stacked-l');
+    const space = resolveCssVariable('--sky-space-stacked-xs');
     console.log('SKY UX Tooltip Title Margin Bottom:', space);
-    return remToPixels(space || '12px'); // Fallback
+    return remToPixels(space || '4px'); // Fallback
   },
   
   get tooltipBodySpacing(): number {
-    const space = resolveCssVariable('--sky-space-stacked-s');
+    const space = resolveCssVariable('--sky-space-stacked-xs');
     console.log('SKY UX Tooltip Body Spacing:', space);
     return remToPixels(space || '4px'); // Fallback
   },
@@ -495,13 +483,13 @@ export const skyuxChartStyles = {
   },
   
   get tooltipTitleFontSize(): number {
-    const size = resolveCssVariable('--sky-font-size-heading-4');
+    const size = resolveCssVariable('--sky-font-size-body-m');
     console.log('SKY UX Tooltip Title Font Size:', size);
     return remToPixels(size || '15px'); // Fallback
   },
   
   get tooltipTitleFontWeight(): string {
-    const weight = resolveCssVariable('--sky-font-style-heading-4');
+    const weight = resolveCssVariable('--sky-font-style-emphasized');
     console.log('SKY UX Tooltip Title Font Weight:', weight);
     return weight || '600'; // Fallback
   },
@@ -522,31 +510,6 @@ export const skyuxChartStyles = {
     const space = resolveCssVariable('--sky-space-gap-label-s');
     console.log('SKY UX Tooltip Box Padding:', space);
     return remToPixels(space || '4px'); // Fallback
-  },
-    get tooltipShadow(): { offsetX: number; offsetY: number; blur: number; color: string } {
-    const shadow = resolveCssVariable('--sky-elevation-overlay-100');
-    console.log('SKY UX Tooltip Shadow:', shadow);
-    
-    // Parse box-shadow format: "0px 2px 4px 0px rgba(0, 0, 0, 0.15)"
-    // Format: offset-x offset-y blur-radius spread-radius color
-    const match = shadow.match(/(-?[\d.]+)px\s+(-?[\d.]+)px\s+([\d.]+)px\s+[\d.]+px\s+(.+)/);
-    
-    if (match) {
-      return {
-        offsetX: parseFloat(match[1]),
-        offsetY: parseFloat(match[2]),
-        blur: parseFloat(match[3]),
-        color: match[4].trim(),
-      };
-    }
-    
-    // Fallback values
-    return {
-      offsetX: 0,
-      offsetY: 2,
-      blur: 4,
-      color: 'rgba(0, 0, 0, 0.15)',
-    };
   },
     // =============================================================================
   // SHARED/GENERAL
