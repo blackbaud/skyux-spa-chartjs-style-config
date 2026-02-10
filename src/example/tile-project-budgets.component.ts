@@ -94,6 +94,8 @@ export class TileProjectBudgetsComponent {
     // Get SKY UX visualization category colors for the series
     const seriesColors = skyuxChartStyles.series;
 
+    const isProjectBeta = project.name === 'Project Beta';
+
     const config: ChartConfiguration<'bar'> = {
       type: 'bar',
       data: {
@@ -105,6 +107,7 @@ export class TileProjectBudgetsComponent {
             backgroundColor: seriesColors[0] || '#06a39e', // Fallback to category 1 color (teal-500)
             barPercentage: sizingResult.barPercentage,
             categoryPercentage: sizingResult.categoryPercentage,
+            ...(isProjectBeta && { borderRadius: 0 }),
           },
           {
             label: 'Actuals',
@@ -112,6 +115,7 @@ export class TileProjectBudgetsComponent {
             backgroundColor: seriesColors[1] || '#6d3c96', // Fallback to category 2 color (purple-800)
             barPercentage: sizingResult.barPercentage,
             categoryPercentage: sizingResult.categoryPercentage,
+            ...(isProjectBeta && { borderRadius: 0 }),
           },
         ],
       },

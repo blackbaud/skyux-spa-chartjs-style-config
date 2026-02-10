@@ -452,7 +452,7 @@ const BAR_CATEGORY_TUNING = {
     baseSpacingRem: 1,
     minSpacingRem: 0.15,
     categoryPercentageCap: 0.75,
-    verticalPaddingPerCategoryRem: 0.5,
+    verticalPaddingPerCategoryRem: .5,
   },
 
   // Dense layouts (> threshold)

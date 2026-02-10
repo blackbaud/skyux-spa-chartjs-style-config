@@ -12,76 +12,6 @@ import { SkyBarChartComponent } from '../../skyux/bar-chart/bar-chart.component'
 
 Chart.register(...registerables);
 
-/**
- * Helper function to resolve CSS custom property value
- */
-function resolveCssVariable(varName: string): string {
-  if (typeof document === 'undefined') {
-    return '';
-  }
-  
-  let value = getComputedStyle(document.body)
-    .getPropertyValue(varName)
-    .trim();
-  
-  if (!value) {
-    value = getComputedStyle(document.documentElement)
-      .getPropertyValue(varName)
-      .trim();
-  }
-  
-  return value || '';
-}
-
-/**
- * Plugin to add box-shadow to tooltips using CSS variable
- */
-const tooltipShadowPlugin = {
-  id: 'tooltipShadow',
-  beforeTooltipDraw: (chart: any) => {
-    const tooltip = chart.tooltip;
-    if (!tooltip || tooltip.opacity === 0) return;
-
-    const ctx = chart.ctx;
-    const shadowVar = resolveCssVariable('--sky-elevation-overlay-100');
-    
-    // Parse box-shadow format: "0px 2px 4px 0px rgba(0, 0, 0, 0.15)"
-    const match = shadowVar.match(/(-?[\d.]+)px\s+(-?[\d.]+)px\s+([\d.]+)px\s+[\d.]+px\s+(.+)/);
-    
-    const shadow = match ? {
-      offsetX: parseFloat(match[1]),
-      offsetY: parseFloat(match[2]),
-      blur: parseFloat(match[3]),
-      color: match[4].trim(),
-    } : {
-      offsetX: 0,
-      offsetY: 2,
-      blur: 4,
-      color: 'rgba(0, 0, 0, 0.15)',
-    };
-    
-    const { x, y, width, height } = tooltip;
-    const borderRadius = 6;
-    
-    ctx.save();
-    
-    // Temporarily disable clipping to allow shadow to extend beyond tooltip bounds
-    ctx.globalCompositeOperation = 'destination-over';
-    
-    ctx.shadowColor = shadow.color;
-    ctx.shadowBlur = shadow.blur;
-    ctx.shadowOffsetX = shadow.offsetX;
-    ctx.shadowOffsetY = shadow.offsetY;
-    
-    ctx.fillStyle = skyuxChartStyles.tooltipBackgroundColor;
-    ctx.beginPath();
-    ctx.roundRect(x, y, width, height, borderRadius);
-    ctx.fill();
-    
-    ctx.restore();
-  },
-};
-
 export interface ChartMetrics {
   categoryPercentage: number;
   barPercentage: number;
@@ -498,10 +428,7 @@ export class BarChartSizingComponent {
       ['Lower School', 'Upper School'],
       [610, 920],
       [635, 970],
-      'y',
-      {
-        borderWidth: 2,
-      }
+      'y'
     );
   }
 
@@ -510,11 +437,7 @@ export class BarChartSizingComponent {
       ['Lower School', 'Middle School', 'Upper School'],
       [610, 780, 920],
       [635, 820, 970],
-      'y',
-      {
-        borderWidth: 1,
-        borderColor: 'var(--bb-color-gray-500)',
-      }
+      'y'
     );
   }
 
@@ -523,9 +446,7 @@ export class BarChartSizingComponent {
       ['Lower School', 'Middle School', 'Upper School', 'High School', 'Advanced Placement'],
       [610, 780, 920, 690, 480],
       [635, 820, 970, 730, 500],
-      'y',
-      undefined,
-      tooltipShadowPlugin
+      'y'
     );
   }
 
@@ -533,9 +454,7 @@ export class BarChartSizingComponent {
     labels: string[],
     maleData: number[],
     femaleData: number[],
-    indexAxis: 'x' | 'y',
-    tooltipOverrides?: { borderWidth?: number; borderColor?: string },
-    plugin?: any
+    indexAxis: 'x' | 'y'
   ): ChartConfiguration<'bar'> {
     const colors = skyuxChartStyles.series;
     const borderColor = skyuxChartStyles.barBorderColor;
@@ -569,24 +488,8 @@ export class BarChartSizingComponent {
               max: 2500,
             },
           },
-          ...(plugin && {
-            layout: {
-              padding: {
-                top: 15,
-                right: 15,
-                bottom: 15,
-                left: 15,
-              },
-            },
-          }),
-          ...(tooltipOverrides && {
-            plugins: {
-              tooltip: tooltipOverrides,
-            },
-          }),
         }),
       } as any,
-      ...(plugin && { plugins: [plugin] }),
     };
   }
 

@@ -1,4 +1,4 @@
-import { ChartOptions, InteractionMode } from 'chart.js';
+import { Chart, ChartOptions, InteractionMode } from 'chart.js';
 
 /**
  * Helper function to convert rem values to pixels
@@ -134,6 +134,78 @@ function resolveCssVariable(varName: string): string {
   
   return value || '';
 }
+
+function extractShadowColor(shadowValue: string): string | null {
+  const rgbaMatch = shadowValue.match(/rgba?\(\s*\d+\s*,\s*\d+\s*,\s*\d+\s*(?:,\s*[\d.]+\s*)?\)/);
+  if (rgbaMatch) {
+    return rgbaMatch[0];
+  }
+
+  const hexMatch = shadowValue.match(/#(?:[0-9a-fA-F]{3}|[0-9a-fA-F]{6})/);
+  if (hexMatch) {
+    return hexMatch[0];
+  }
+
+  return null;
+}
+
+function colorToRgbaWithAlpha(color: string, alpha: number): string | null {
+  const rgbMatch = color.match(/rgba?\((\d+),\s*(\d+),\s*(\d+)/);
+  if (rgbMatch) {
+    return `rgba(${rgbMatch[1]}, ${rgbMatch[2]}, ${rgbMatch[3]}, ${alpha})`;
+  }
+
+  const hexMatch = color.match(/^#([0-9a-fA-F]{3}|[0-9a-fA-F]{6})$/);
+  if (hexMatch) {
+    const hex = hexMatch[1].length === 3
+      ? hexMatch[1].split('').map((char) => char + char).join('')
+      : hexMatch[1];
+    const r = parseInt(hex.slice(0, 2), 16);
+    const g = parseInt(hex.slice(2, 4), 16);
+    const b = parseInt(hex.slice(4, 6), 16);
+    return `rgba(${r}, ${g}, ${b}, ${alpha})`;
+  }
+
+  return null;
+}
+
+/**
+ * Plugin to add box-shadow to tooltips using CSS variable
+ */
+export const tooltipShadowPlugin = {
+  id: 'tooltipShadow',
+  beforeTooltipDraw: (chart: any) => {
+    const tooltip = chart.tooltip;
+    if (!tooltip || tooltip.opacity === 0) return;
+
+    const ctx = chart.ctx;
+    const shadowVar = resolveCssVariable('--sky-elevation-overlay-100');
+    const baseShadowColor = extractShadowColor(shadowVar) || 'rgba(0, 0, 0, 0.15)';
+    const overrideColor = colorToRgbaWithAlpha(baseShadowColor, 0.6) || baseShadowColor;
+
+    const { x, y, width, height } = tooltip;
+    const borderRadius = 6;
+
+    ctx.save();
+
+    // Temporarily disable clipping to allow shadow to extend beyond tooltip bounds
+    ctx.globalCompositeOperation = 'destination-over';
+
+    ctx.fillStyle = skyuxChartStyles.tooltipBackgroundColor;
+    ctx.shadowColor = overrideColor;
+    ctx.shadowBlur = 4;
+    ctx.shadowOffsetX = 1;
+    ctx.shadowOffsetY = 2;
+
+    ctx.beginPath();
+    ctx.roundRect(x, y, width, height, borderRadius);
+    ctx.fill();
+
+    ctx.restore();
+  },
+};
+
+Chart.register(tooltipShadowPlugin);
 
 /**
  * Convert CSS color value (rgb, rgba, or hex) to hex format
@@ -465,9 +537,9 @@ export const skyuxChartStyles = {
   },
   
   get tooltipTitleMarginBottom(): number {
-    const space = resolveCssVariable('--sky-space-stacked-xs');
+    const space = resolveCssVariable('--sky-space-stacked-s');
     console.log('SKY UX Tooltip Title Margin Bottom:', space);
-    return remToPixels(space || '4px'); // Fallback
+    return remToPixels(space || '8px'); // Fallback
   },
   
   get tooltipBodySpacing(): number {
