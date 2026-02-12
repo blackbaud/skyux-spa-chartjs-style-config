@@ -159,26 +159,27 @@
       </sky-tab>
 
       <sky-tab tabHeading="Vertical" layout="blocks">
-        <sky-fluid-grid gutterSize="medium" [disableMargin]="true">
+        <div #verticalTabContainer>
+          <sky-fluid-grid gutterSize="medium" [disableMargin]="true">
           <sky-row>
             <sky-column [screenSmall]="4">
               <sky-box class="sky-margin-stacked-xl" headingText="Student Enrollment by School">
                 <sky-box-content>
-                  <sky-bar-chart [chartHeight]="300" [config]="chartEnrollmentSchoolsVerticalConfigB" />
+                  <sky-bar-chart [chartHeight]="chartEnrollmentSchoolsVerticalHeight" [config]="chartEnrollmentSchoolsVerticalConfigB" />
                 </sky-box-content>
               </sky-box>
             </sky-column>
             <sky-column [screenSmall]="4">
               <sky-box class="sky-margin-stacked-xl" headingText="Student Enrollment by School and Gender">
                 <sky-box-content>
-                  <sky-bar-chart [chartHeight]="300" [config]="chartEnrollmentSchoolsByGenderVerticalConfigB" />
+                  <sky-bar-chart [chartHeight]="chartEnrollmentSchoolsByGenderVerticalHeight" [config]="chartEnrollmentSchoolsByGenderVerticalConfigB" />
                 </sky-box-content>
               </sky-box>
             </sky-column>
             <sky-column [screenSmall]="4">
               <sky-box class="sky-margin-stacked-xl" headingText="Student Enrollment by Grade">
                 <sky-box-content>
-                  <sky-bar-chart [chartHeight]="300" [config]="chartEnrollmentByGradeVerticalConfigB" />
+                  <sky-bar-chart [chartHeight]="chartEnrollmentByGradeVerticalHeight" [config]="chartEnrollmentByGradeVerticalConfigB" />
                 </sky-box-content>
               </sky-box>
             </sky-column>
@@ -188,14 +189,14 @@
             <sky-column [screenSmall]="6">
               <sky-box class="sky-margin-stacked-xl" headingText="Student Enrollment">
                 <sky-box-content>
-                  <sky-bar-chart [chartHeight]="225" [config]="chartEnrollmentVerticalConfigB" />
+                  <sky-bar-chart [chartHeight]="chartEnrollmentVerticalHeight" [config]="chartEnrollmentVerticalConfigB" />
                 </sky-box-content>
               </sky-box>
             </sky-column>
             <sky-column [screenSmall]="6">
               <sky-box class="sky-margin-stacked-xl" headingText="Student Enrollment by Gender">
                 <sky-box-content>
-                  <sky-bar-chart [chartHeight]="225" [config]="chartEnrollmentByGenderVerticalConfigB" />
+                  <sky-bar-chart [chartHeight]="chartEnrollmentByGenderVerticalHeight" [config]="chartEnrollmentByGenderVerticalConfigB" />
                 </sky-box-content>
               </sky-box>
             </sky-column>
@@ -256,7 +257,8 @@
               </sky-box>
             </sky-column>
           </sky-row>
-        </sky-fluid-grid>
+          </sky-fluid-grid>
+        </div>
       </sky-tab>
     </sky-tabset>
   </sky-page-content>

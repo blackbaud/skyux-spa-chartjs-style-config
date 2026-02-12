@@ -1,9 +1,9 @@
-import { Component } from '@angular/core';
+import { AfterViewInit, Component, ElementRef, OnDestroy, ViewChild } from '@angular/core';
 import { SkyBoxModule, SkyFluidGridModule } from '@skyux/layout';
 import { SkyPageModule } from '@skyux/pages';
 import { SkyTabsModule } from '@skyux/tabs';
 import { Chart, ChartConfiguration, registerables } from 'chart.js';
-import { getSkyuxBarChartConfig } from '../chartjs-config/bar-chart.config';
+import { getSkyuxBarChartConfig, getVerticalBarChartHeight, getVerticalBarChartSizing } from '../chartjs-config/bar-chart.config';
 import { skyuxChartStyles } from '../chartjs-config/global-chart.config';
 import { SkyBarChartComponent } from '../../skyux/bar-chart/bar-chart.component';
 
@@ -15,7 +15,7 @@ Chart.register(...registerables);
   templateUrl: './bar-chart-styles.component.html',
   imports: [SkyBoxModule, SkyFluidGridModule, SkyPageModule, SkyTabsModule, SkyBarChartComponent],
 })
-export class BarChartStylesComponent {
+export class BarChartStylesComponent implements AfterViewInit, OnDestroy {
   protected globalConfigRows = [
     {
       section: 'Root',
@@ -351,8 +351,47 @@ export class BarChartStylesComponent {
   public chartEnrollmentByGenderVerticalConfigB!: ChartConfiguration<'bar'>;
   // #endregion
 
+  //#region Chart Heights - Vertical
+  public chartEnrollmentSchoolsVerticalHeight!: number;
+  public chartEnrollmentSchoolsByGenderVerticalHeight!: number;
+  public chartEnrollmentByGradeVerticalHeight!: number;
+  public chartEnrollmentVerticalHeight!: number;
+  public chartEnrollmentByGenderVerticalHeight!: number;
+  // #endregion
+
+  @ViewChild('verticalTabContainer')
+  private verticalTabContainer?: ElementRef<HTMLElement>;
+  private verticalResizeObserver?: ResizeObserver;
+  private verticalContainerWidth = 800;
+
   constructor() {
     this.initializeCharts();
+  }
+
+  public ngAfterViewInit(): void {
+    if (!this.verticalTabContainer?.nativeElement || typeof ResizeObserver === 'undefined') {
+      return;
+    }
+
+    const element = this.verticalTabContainer.nativeElement;
+    const updateWidth = (width: number) => {
+      if (width > 0 && Math.abs(width - this.verticalContainerWidth) > 1) {
+        this.verticalContainerWidth = width;
+        this.initializeCharts();
+      }
+    };
+
+    updateWidth(element.getBoundingClientRect().width);
+    this.verticalResizeObserver = new ResizeObserver((entries) => {
+      for (const entry of entries) {
+        updateWidth(entry.contentRect.width);
+      }
+    });
+    this.verticalResizeObserver.observe(element);
+  }
+
+  public ngOnDestroy(): void {
+    this.verticalResizeObserver?.disconnect();
   }
 
   private initializeCharts(): void {
@@ -373,6 +412,58 @@ export class BarChartStylesComponent {
     // Vertical charts - Bottom Row
     this.chartEnrollmentVerticalConfigB = this.getVerticalChartConfiguration();
     this.chartEnrollmentByGenderVerticalConfigB = this.getVerticalChartConfigurationByGender();
+
+    // Vertical chart heights
+    this.chartEnrollmentSchoolsVerticalHeight = this.getVerticalChartHeight(this.chartEnrollmentSchoolsVerticalConfigB, 3, 1);
+    this.chartEnrollmentSchoolsByGenderVerticalHeight = this.getVerticalChartHeight(this.chartEnrollmentSchoolsByGenderVerticalConfigB, 3, 2);
+    this.chartEnrollmentByGradeVerticalHeight = this.getVerticalChartHeight(this.chartEnrollmentByGradeVerticalConfigB, 6, 2);
+    this.chartEnrollmentVerticalHeight = this.getVerticalChartHeight(this.chartEnrollmentVerticalConfigB, 2, 1);
+    this.chartEnrollmentByGenderVerticalHeight = this.getVerticalChartHeight(this.chartEnrollmentByGenderVerticalConfigB, 2, 2);
+  }
+
+  private getDataRangeFromConfig(
+    config: ChartConfiguration<'bar'>
+  ): { min: number; max: number } | undefined {
+    const datasets = config.data?.datasets
+      ?.map((dataset: any) => dataset?.data)
+      .filter((data: any) => Array.isArray(data)) as number[][] | undefined;
+
+    if (!datasets || datasets.length === 0) {
+      return undefined;
+    }
+
+    const values: number[] = [];
+    for (const dataset of datasets) {
+      for (const value of dataset) {
+        const num = Number(value);
+        if (!Number.isNaN(num)) {
+          values.push(num);
+        }
+      }
+    }
+
+    if (values.length === 0) {
+      return undefined;
+    }
+
+    return {
+      min: Math.min(...values),
+      max: Math.max(...values),
+    };
+  }
+
+  private getVerticalChartHeight(
+    config: ChartConfiguration<'bar'>,
+    dataPointCount: number,
+    seriesCount: number
+  ): number {
+    const dataRange = this.getDataRangeFromConfig(config);
+    return getVerticalBarChartHeight(
+      dataPointCount,
+      this.verticalContainerWidth,
+      seriesCount,
+      dataRange
+    );
   }
 
   private getChartConfigurationSchools(): ChartConfiguration<'bar'> {
@@ -674,6 +765,11 @@ export class BarChartStylesComponent {
         },
       },
     });
+    const sizing = getVerticalBarChartSizing(2, this.verticalContainerWidth, 1);
+    const mergedOptions = {
+      ...options,
+      ...sizing,
+    };
 
     return {
       type: 'bar',
@@ -690,7 +786,7 @@ export class BarChartStylesComponent {
           },
         ],
       },
-      options,
+      options: mergedOptions,
     };
   }
 
@@ -715,6 +811,11 @@ export class BarChartStylesComponent {
         },
       },
     });
+    const sizing = getVerticalBarChartSizing(2, this.verticalContainerWidth, 2);
+    const mergedOptions = {
+      ...options,
+      ...sizing,
+    };
 
     return {
       type: 'bar',
@@ -739,7 +840,7 @@ export class BarChartStylesComponent {
           },
         ],
       },
-      options,
+      options: mergedOptions,
     };
   }
 
@@ -764,6 +865,11 @@ export class BarChartStylesComponent {
         },
       },
     });
+    const sizing = getVerticalBarChartSizing(3, this.verticalContainerWidth, 1);
+    const mergedOptions = {
+      ...options,
+      ...sizing,
+    };
 
     return {
       type: 'bar',
@@ -780,7 +886,7 @@ export class BarChartStylesComponent {
           },
         ],
       },
-      options,
+      options: mergedOptions,
     };
   }
 
@@ -805,6 +911,11 @@ export class BarChartStylesComponent {
         },
       },
     });
+    const sizing = getVerticalBarChartSizing(3, this.verticalContainerWidth, 2);
+    const mergedOptions = {
+      ...options,
+      ...sizing,
+    };
 
     return {
       type: 'bar',
@@ -829,7 +940,7 @@ export class BarChartStylesComponent {
           },
         ],
       },
-      options,
+      options: mergedOptions,
     };
   }
 
@@ -854,6 +965,11 @@ export class BarChartStylesComponent {
         },
       },
     });
+    const sizing = getVerticalBarChartSizing(6, this.verticalContainerWidth, 2);
+    const mergedOptions = {
+      ...options,
+      ...sizing,
+    };
 
     return {
       type: 'bar',
@@ -878,7 +994,7 @@ export class BarChartStylesComponent {
           },
         ],
       },
-      options,
+      options: mergedOptions,
     };
   }
 }

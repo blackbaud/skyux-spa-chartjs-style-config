@@ -83,6 +83,9 @@ function getBaseBarChartConfig(): Partial<ChartOptions<'bar'>> {
             weight: fontWeight,
           },
           padding: labelPaddingX,
+          major: {
+            enabled: true,
+          },
         },
         title: {
           display: false,
@@ -118,6 +121,9 @@ function getBaseBarChartConfig(): Partial<ChartOptions<'bar'>> {
             weight: fontWeight,
           },
           padding: labelPaddingY,
+          major: {
+            enabled: true,
+          },
         },
         title: {
           display: false,
@@ -437,7 +443,11 @@ export interface BarSizingResult {
 }
 
 // =============================================================================
-// BAR/CATEGORY SIZING TUNABLES
+// HORIZONTAL BAR CHART SIZING
+// =============================================================================
+
+// =============================================================================
+// HORIZONTAL BAR CHART SIZING: TUNING CONSTANTS
 // =============================================================================
 const BAR_CATEGORY_TUNING = {
   // Overall density behavior
@@ -627,5 +637,187 @@ export function calculateHorizontalBarChartHeight(
     categoryPercentage: optimalSettings.categoryPercentage,
     barPercentage: optimalSettings.barPercentage,
     spaceBetweenCategories: spaceBetweenCategoriesRem
+  };
+}
+
+// =============================================================================
+// VERTICAL BAR CHART SIZING
+// =============================================================================
+
+/**
+ * Vertical Bar Chart Sizing Configuration
+ * Contains all tunable parameters for responsive vertical bar chart sizing
+ * Adjust these values to tweak the responsive sizing strategy
+ */
+export const verticalBarChartSizing = {
+  // Data-range-driven height controls (in pixels)
+  heightRange: {
+    min: 180,
+    max: 400,
+  },
+
+  // Data-range-driven tuning
+  dataRangeHeight: {
+    // Prevent extreme height swings for very tight ranges
+    rangeRatioFloor: 0.15,
+    // Cap height for smaller viewports
+    smallViewportMax: 360,
+  },
+
+  // Bar percentage for different data densities
+  // Determines how much of the category space is used by bars
+  barPercentages: {
+    fewBars: 1,     // 2-3 bars: leave more breathing room
+    mediumBars: 1,  // 4-8 bars: balanced sizing
+    manyBars: 1,    // 9+ bars: maximize use of space
+  },
+
+  // Category percentage for different data densities
+  // Determines how much of the available width is allocated to each category
+  categoryPercentages: {
+    fewBars: 0.4,     // 2-3 bars: more space between categories
+    mediumBars: 0.7,  // 4-8 bars: balanced spacing
+    manyBars: 0.95,   // 9+ bars: tight spacing for density
+  },
+
+  // Hard limits on bar dimensions
+  limits: {
+    maxBarThickness: 32,  // Maximum bar width in pixels for narrow containers
+    maxBarThicknessWide: 160,  // Maximum bar width in pixels for wide containers (>768px)
+  },
+
+  // Container width breakpoints (in pixels)
+  breakpoints: {
+    mobile: 600,    // Below this: use mobile height
+    wide: 768,      // Above this: allow wider bars
+    desktop: 1200,  // Above 600, below this: use tablet height; above this: use desktop height
+  },
+
+  // Thresholds for data density categorization
+  thresholds: {
+    few: 3,   // <= 3 data points
+    medium: 8, // <= 8 data points
+  },
+};
+
+/**
+ * Get optimized sizing configuration for vertical bar charts
+ * Implements a hybrid responsive strategy that adapts to data density and container width
+ * @param dataPointCount Number of data points/categories in the chart
+ * @param containerWidth Width of the chart's container in pixels (optional, default 800)
+ * @param seriesCount Number of series/datasets (optional, default 1)
+ * @param dataRange Optional data range for height calculation
+ * @returns Calculated chart height in pixels
+ */
+export function getVerticalBarChartHeight(
+  dataPointCount: number,
+  containerWidth: number = 800,
+  seriesCount: number = 1,
+  dataRange?: { min: number; max: number }
+): number {
+  // Determine data density category
+  const isFewBars = dataPointCount <= verticalBarChartSizing.thresholds.few;
+  const isManyBars = dataPointCount > verticalBarChartSizing.thresholds.medium;
+
+  // Select bar/category percentages based on data density
+  let barPercentage = isFewBars
+    ? verticalBarChartSizing.barPercentages.fewBars
+    : isManyBars
+    ? verticalBarChartSizing.barPercentages.manyBars
+    : verticalBarChartSizing.barPercentages.mediumBars;
+
+  const categoryPercentage = isFewBars
+    ? verticalBarChartSizing.categoryPercentages.fewBars
+    : isManyBars
+    ? verticalBarChartSizing.categoryPercentages.manyBars
+    : verticalBarChartSizing.categoryPercentages.mediumBars;
+
+  // For grouped vertical bars, remove gaps within each category
+  if (seriesCount > 1) {
+    barPercentage = 1;
+  }
+
+  // Determine height based on data range when available
+  let height: number;
+  if (dataRange && dataRange.max > 0) {
+    const range = Math.max(0, dataRange.max - dataRange.min);
+    const ratio = range / dataRange.max;
+    const rangeRatioFloor = verticalBarChartSizing.dataRangeHeight.rangeRatioFloor;
+    const clampedRatio = Math.min(1, Math.max(rangeRatioFloor, ratio));
+    const normalized = 1 - clampedRatio;
+    height = verticalBarChartSizing.heightRange.min
+      + normalized * (verticalBarChartSizing.heightRange.max - verticalBarChartSizing.heightRange.min);
+  } else {
+    height = verticalBarChartSizing.heightRange.min;
+  }
+
+  // Adjust height slightly for multi-series charts
+  if (seriesCount > 1) {
+    const seriesAdjustment = (seriesCount - 1) * 20;
+    height += seriesAdjustment;
+  }
+
+  const maxHeight = containerWidth <= verticalBarChartSizing.breakpoints.mobile
+    ? Math.min(verticalBarChartSizing.heightRange.max, verticalBarChartSizing.dataRangeHeight.smallViewportMax)
+    : verticalBarChartSizing.heightRange.max;
+  height = Math.max(verticalBarChartSizing.heightRange.min, Math.min(maxHeight, height));
+
+  return height;
+}
+
+/**
+ * Get optimized sizing configuration for vertical bar charts
+ * Implements a hybrid responsive strategy that adapts to data density and container width
+ * @param dataPointCount Number of data points/categories in the chart
+ * @param containerWidth Width of the chart's container in pixels (optional, default 800)
+ * @param seriesCount Number of series/datasets (optional, default 1)
+ * @param dataRange Optional data range (used by height helper)
+ * @param allowWiderBars Whether to allow wider bars (120px) for wide containers over 768px (optional, default false)
+ * @returns Partial ChartOptions with optimized sizing configuration
+ */
+export function getVerticalBarChartSizing(
+  dataPointCount: number,
+  containerWidth: number = 800,
+  seriesCount: number = 1,
+  dataRange?: { min: number; max: number },
+  allowWiderBars: boolean = false
+): Partial<ChartOptions> {
+  // Determine data density category
+  const isFewBars = dataPointCount <= verticalBarChartSizing.thresholds.few;
+  const isManyBars = dataPointCount > verticalBarChartSizing.thresholds.medium;
+
+  // Select bar/category percentages based on data density
+  let barPercentage = isFewBars
+    ? verticalBarChartSizing.barPercentages.fewBars
+    : isManyBars
+    ? verticalBarChartSizing.barPercentages.manyBars
+    : verticalBarChartSizing.barPercentages.mediumBars;
+
+  const categoryPercentage = isFewBars
+    ? verticalBarChartSizing.categoryPercentages.fewBars
+    : isManyBars
+    ? verticalBarChartSizing.categoryPercentages.manyBars
+    : verticalBarChartSizing.categoryPercentages.mediumBars;
+
+  // For grouped vertical bars, remove gaps within each category
+  if (seriesCount > 1) {
+    barPercentage = 1;
+  }
+
+  // Determine maxBarThickness based on container width and allowWiderBars flag
+  const maxBarThickness = allowWiderBars && containerWidth > verticalBarChartSizing.breakpoints.wide
+    ? verticalBarChartSizing.limits.maxBarThicknessWide
+    : verticalBarChartSizing.limits.maxBarThickness;
+
+  return {
+    maintainAspectRatio: false,
+    indexAxis: 'x',
+    datasets: {
+      bar: {
+        barPercentage,
+        categoryPercentage,
+        maxBarThickness,
+      },
+    },
   };
 }

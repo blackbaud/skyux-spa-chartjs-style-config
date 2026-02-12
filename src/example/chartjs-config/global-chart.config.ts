@@ -181,7 +181,7 @@ export const tooltipShadowPlugin = {
     const ctx = chart.ctx;
     const shadowVar = resolveCssVariable('--sky-elevation-overlay-100');
     const baseShadowColor = extractShadowColor(shadowVar) || 'rgba(0, 0, 0, 0.15)';
-    const overrideColor = colorToRgbaWithAlpha(baseShadowColor, 0.6) || baseShadowColor;
+    const overrideColor = colorToRgbaWithAlpha(baseShadowColor, 0.5) || baseShadowColor;
 
     const { x, y, width, height } = tooltip;
     const borderRadius = 6;

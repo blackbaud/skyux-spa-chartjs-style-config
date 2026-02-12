@@ -360,7 +360,7 @@
             <sky-column [screenSmall]="12">
               <sky-box class="sky-margin-stacked-xl" [headingText]="'Enrollment Performance by Program (Stacked - ' + chartStackedHeight + 'px)'">
                 <sky-box-content>
-                  <sky-bar-chart [chartHeight]="chartStackedHeight" [config]="chartStackedVerticalConfig" />
+                  <sky-bar-chart [chartHeight]="chartStackedHeight" [config]="chartStackedConfig" />
                   <table style="width: 100%; margin-top: 12px; font-size: 12px; border-collapse: collapse;">
                     <tr style="border-top: 1px solid #e0e0e0; border-bottom: 1px solid #e0e0e0;">
                       <td style="padding: 4px 8px;"><strong>Category %:</strong></td>
@@ -383,26 +383,27 @@
       </sky-tab>
 
       <sky-tab tabHeading="Vertical" layout="blocks">
-        <sky-fluid-grid gutterSize="medium" [disableMargin]="true">
+        <div #verticalTabContainer>
+          <sky-fluid-grid gutterSize="medium" [disableMargin]="true">
           <sky-row>
             <sky-column [screenSmall]="4">
               <sky-box class="sky-margin-stacked-xl" headingText="Student Enrollment 1">
                 <sky-box-content>
-                  <sky-bar-chart [config]="chartV1Config" />
+                  <sky-bar-chart [chartHeight]="chartV1Height" [config]="chartV1Config" />
                 </sky-box-content>
               </sky-box>
             </sky-column>
             <sky-column [screenSmall]="4">
               <sky-box class="sky-margin-stacked-xl" headingText="Student Enrollment 2">
                 <sky-box-content>
-                  <sky-bar-chart [config]="chartV2Config" />
+                  <sky-bar-chart [chartHeight]="chartV2Height" [config]="chartV2Config" />
                 </sky-box-content>
               </sky-box>
             </sky-column>
             <sky-column [screenSmall]="4">
               <sky-box class="sky-margin-stacked-xl" headingText="Student Enrollment 3">
                 <sky-box-content>
-                  <sky-bar-chart [config]="chartV3Config" />
+                  <sky-bar-chart [chartHeight]="chartV3Height" [config]="chartV3Config" />
                 </sky-box-content>
               </sky-box>
             </sky-column>
@@ -412,21 +413,21 @@
             <sky-column [screenSmall]="4">
               <sky-box class="sky-margin-stacked-xl" headingText="Student Enrollment by Gender 1">
                 <sky-box-content>
-                  <sky-bar-chart [config]="chartV4Config" />
+                  <sky-bar-chart [chartHeight]="chartV4Height" [config]="chartV4Config" />
                 </sky-box-content>
               </sky-box>
             </sky-column>
             <sky-column [screenSmall]="4">
               <sky-box class="sky-margin-stacked-xl" headingText="Student Enrollment by Gender 2">
                 <sky-box-content>
-                  <sky-bar-chart [config]="chartV5Config" />
+                  <sky-bar-chart [chartHeight]="chartV5Height" [config]="chartV5Config" />
                 </sky-box-content>
               </sky-box>
             </sky-column>
             <sky-column [screenSmall]="4">
               <sky-box class="sky-margin-stacked-xl" headingText="Student Enrollment by Gender 3">
                 <sky-box-content>
-                  <sky-bar-chart [config]="chartV6Config" />
+                  <sky-bar-chart [chartHeight]="chartV6Height" [config]="chartV6Config" />
                 </sky-box-content>
               </sky-box>
             </sky-column>
@@ -436,21 +437,21 @@
             <sky-column [screenSmall]="4">
               <sky-box class="sky-margin-stacked-xl" headingText="Grade Distribution by Gender 1">
                 <sky-box-content>
-                  <sky-bar-chart [config]="chartV7Config" />
+                  <sky-bar-chart [chartHeight]="chartV7Height" [config]="chartV7Config" />
                 </sky-box-content>
               </sky-box>
             </sky-column>
             <sky-column [screenSmall]="4">
               <sky-box class="sky-margin-stacked-xl" headingText="Grade Distribution by Gender 2">
                 <sky-box-content>
-                  <sky-bar-chart [config]="chartV8Config" />
+                  <sky-bar-chart [chartHeight]="chartV8Height" [config]="chartV8Config" />
                 </sky-box-content>
               </sky-box>
             </sky-column>
             <sky-column [screenSmall]="4">
               <sky-box class="sky-margin-stacked-xl" headingText="Grade Distribution by Gender 3">
                 <sky-box-content>
-                  <sky-bar-chart [config]="chartV9Config" />
+                  <sky-bar-chart [chartHeight]="chartV9Height" [config]="chartV9Config" />
                 </sky-box-content>
               </sky-box>
             </sky-column>
@@ -460,21 +461,21 @@
             <sky-column [screenSmall]="4">
               <sky-box class="sky-margin-stacked-xl" headingText="Grade Metrics 1">
                 <sky-box-content>
-                  <sky-bar-chart [config]="chartV10Config" />
+                  <sky-bar-chart [chartHeight]="chartV10Height" [config]="chartV10Config" />
                 </sky-box-content>
               </sky-box>
             </sky-column>
             <sky-column [screenSmall]="4">
               <sky-box class="sky-margin-stacked-xl" headingText="Grade Metrics 2">
                 <sky-box-content>
-                  <sky-bar-chart [config]="chartV11Config" />
+                  <sky-bar-chart [chartHeight]="chartV11Height" [config]="chartV11Config" />
                 </sky-box-content>
               </sky-box>
             </sky-column>
             <sky-column [screenSmall]="4">
               <sky-box class="sky-margin-stacked-xl" headingText="Grade Metrics 3">
                 <sky-box-content>
-                  <sky-bar-chart [config]="chartV12Config" />
+                  <sky-bar-chart [chartHeight]="chartV12Height" [config]="chartV12Config" />
                 </sky-box-content>
               </sky-box>
             </sky-column>
@@ -484,12 +485,13 @@
             <sky-column [screenSmall]="12">
               <sky-box class="sky-margin-stacked-xl" headingText="Enrollment Performance by Program (Stacked Vertical)">
                 <sky-box-content>
-                  <sky-bar-chart [config]="chartStackedConfig" />
+                  <sky-bar-chart [chartHeight]="chartStackedVerticalHeight" [config]="chartStackedVerticalConfig" />
                 </sky-box-content>
               </sky-box>
             </sky-column>
           </sky-row>
-        </sky-fluid-grid>
+          </sky-fluid-grid>
+        </div>
       </sky-tab>
     </sky-tabset>
   </sky-page-content>

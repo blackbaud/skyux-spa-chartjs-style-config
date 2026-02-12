@@ -25,6 +25,8 @@ export {
 export {
   getSkyuxBarChartConfig,
   calculateHorizontalBarChartHeight,
+  getVerticalBarChartSizing,
+  getVerticalBarChartHeight,
 } from './bar-chart.config';
 
 export type {

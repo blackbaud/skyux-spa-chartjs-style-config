@@ -72,6 +72,9 @@ function getBaseLineChartConfig(): Partial<ChartOptions<'line'>> {
             weight: fontWeight,
           },
           padding: labelPaddingX,
+          major: {
+            enabled: true,
+          },
         },
         title: {
           display: false,
@@ -107,6 +110,9 @@ function getBaseLineChartConfig(): Partial<ChartOptions<'line'>> {
             weight: fontWeight,
           },
           padding: labelPaddingY,
+          major: {
+            enabled: true,
+          },
         },
         title: {
           display: false,

@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { AfterViewInit, Component, ElementRef, OnDestroy, ViewChild } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { SkyBoxModule, SkyFluidGridModule } from '@skyux/layout';
@@ -6,8 +6,8 @@ import { SkyPageModule } from '@skyux/pages';
 import { SkyTabsModule } from '@skyux/tabs';
 import { SkyInputBoxModule } from '@skyux/forms';
 import { Chart, ChartConfiguration, registerables } from 'chart.js';
-import { getSkyuxBarChartConfig, calculateHorizontalBarChartHeight, BarSizingResult } from '../chartjs-config/bar-chart.config';
-import { skyuxChartStyles } from '../chartjs-config/global-chart.config';
+import { getSkyuxBarChartConfig, calculateHorizontalBarChartHeight, BarSizingResult, getVerticalBarChartHeight, getVerticalBarChartSizing } from '../chartjs-config/bar-chart.config';
+import { skyuxChartStyles, mergeChartConfig } from '../chartjs-config/global-chart.config';
 import { SkyBarChartComponent } from '../../skyux/bar-chart/bar-chart.component';
 
 Chart.register(...registerables);
@@ -25,7 +25,7 @@ export interface ChartMetrics {
   templateUrl: './bar-chart-sizing.component.html',
   imports: [CommonModule, FormsModule, SkyBoxModule, SkyFluidGridModule, SkyPageModule, SkyTabsModule, SkyInputBoxModule, SkyBarChartComponent],
 })
-export class BarChartSizingComponent {
+export class BarChartSizingComponent implements AfterViewInit, OnDestroy {
   //#region Chart Configuration Options
   protected barPercentage = 0.66;
   protected barThickness = 'flex';
@@ -83,6 +83,22 @@ export class BarChartSizingComponent {
   public chartStackedHeight!: number;
   // #endregion
 
+  //#region Calculated Heights for Vertical Charts
+  public chartV1Height!: number;
+  public chartV2Height!: number;
+  public chartV3Height!: number;
+  public chartV4Height!: number;
+  public chartV5Height!: number;
+  public chartV6Height!: number;
+  public chartV7Height!: number;
+  public chartV8Height!: number;
+  public chartV9Height!: number;
+  public chartV10Height!: number;
+  public chartV11Height!: number;
+  public chartV12Height!: number;
+  public chartStackedVerticalHeight!: number;
+  // #endregion
+
   //#region Chart Metrics for Display
   public chart1Metrics!: ChartMetrics;
   public chart2Metrics!: ChartMetrics;
@@ -99,8 +115,39 @@ export class BarChartSizingComponent {
   public chartStackedMetrics!: ChartMetrics;
   // #endregion
 
+  @ViewChild('verticalTabContainer')
+  private verticalTabContainer?: ElementRef<HTMLElement>;
+  private verticalResizeObserver?: ResizeObserver;
+  private verticalContainerWidth = 800;
+
   constructor() {
     this.initializeCharts();
+  }
+
+  public ngAfterViewInit(): void {
+    if (!this.verticalTabContainer?.nativeElement || typeof ResizeObserver === 'undefined') {
+      return;
+    }
+
+    const element = this.verticalTabContainer.nativeElement;
+    const updateWidth = (width: number) => {
+      if (width > 0 && Math.abs(width - this.verticalContainerWidth) > 1) {
+        this.verticalContainerWidth = width;
+        this.initializeCharts();
+      }
+    };
+
+    updateWidth(element.getBoundingClientRect().width);
+    this.verticalResizeObserver = new ResizeObserver((entries) => {
+      for (const entry of entries) {
+        updateWidth(entry.contentRect.width);
+      }
+    });
+    this.verticalResizeObserver.observe(element);
+  }
+
+  public ngOnDestroy(): void {
+    this.verticalResizeObserver?.disconnect();
   }
 
   private initializeCharts(): void {
@@ -208,6 +255,21 @@ export class BarChartSizingComponent {
     const resultStacked = calculateHorizontalBarChartHeight(4, 1);
     this.chartStackedHeight = resultStacked.height;
 
+    // Calculate heights for vertical charts (indexAxis: 'x')
+    this.chartV1Height = this.getVerticalChartHeight(this.chartV1Config, 2, 1);
+    this.chartV2Height = this.getVerticalChartHeight(this.chartV2Config, 3, 1);
+    this.chartV3Height = this.getVerticalChartHeight(this.chartV3Config, 5, 1);
+    this.chartV4Height = this.getVerticalChartHeight(this.chartV4Config, 2, 2);
+    this.chartV5Height = this.getVerticalChartHeight(this.chartV5Config, 3, 2);
+    this.chartV6Height = this.getVerticalChartHeight(this.chartV6Config, 5, 2);
+    this.chartV7Height = this.getVerticalChartHeight(this.chartV7Config, 7, 2);
+    this.chartV8Height = this.getVerticalChartHeight(this.chartV8Config, 7, 3);
+    this.chartV9Height = this.getVerticalChartHeight(this.chartV9Config, 7, 4);
+    this.chartV10Height = this.getVerticalChartHeight(this.chartV10Config, 4, 5);
+    this.chartV11Height = this.getVerticalChartHeight(this.chartV11Config, 4, 7);
+    this.chartV12Height = this.getVerticalChartHeight(this.chartV12Config, 5, 8);
+    this.chartStackedVerticalHeight = this.getVerticalChartHeight(this.chartStackedVerticalConfig, 4, 3, true);
+
     // Calculate metrics for each chart using optimal settings from algorithm
     this.chart1Metrics = this.calculateChartMetrics(2, 1, result1);
     this.chart2Metrics = this.calculateChartMetrics(3, 1, result2);
@@ -286,6 +348,66 @@ export class BarChartSizingComponent {
     };
   }
 
+  private getDataRangeFromConfig(
+    config: ChartConfiguration<'bar'>,
+    isStacked = false
+  ): { min: number; max: number } | undefined {
+    const datasets = config.data?.datasets
+      ?.map((dataset: any) => dataset?.data)
+      .filter((data: any) => Array.isArray(data)) as number[][] | undefined;
+
+    if (!datasets || datasets.length === 0) {
+      return undefined;
+    }
+
+    const values: number[] = [];
+
+    if (isStacked) {
+      const length = datasets[0]?.length || 0;
+      for (let index = 0; index < length; index += 1) {
+        let total = 0;
+        for (const dataset of datasets) {
+          const value = Number(dataset?.[index] ?? 0);
+          total += Number.isNaN(value) ? 0 : value;
+        }
+        values.push(total);
+      }
+    } else {
+      for (const dataset of datasets) {
+        for (const value of dataset) {
+          const num = Number(value);
+          if (!Number.isNaN(num)) {
+            values.push(num);
+          }
+        }
+      }
+    }
+
+    if (values.length === 0) {
+      return undefined;
+    }
+
+    return {
+      min: Math.min(...values),
+      max: Math.max(...values),
+    };
+  }
+
+  private getVerticalChartHeight(
+    config: ChartConfiguration<'bar'>,
+    dataPointCount: number,
+    seriesCount: number,
+    isStacked = false
+  ): number {
+    const dataRange = this.getDataRangeFromConfig(config, isStacked);
+    return getVerticalBarChartHeight(
+      dataPointCount,
+      this.verticalContainerWidth,
+      seriesCount,
+      dataRange
+    );
+  }
+
   private applyBarOptions(config: ChartConfiguration<'bar'>): void {
     // Determine which settings to use based on useCustomOptions flag
     let categoryPercentage: number;
@@ -294,6 +416,12 @@ export class BarChartSizingComponent {
     let borderRadius: number;
     let barThicknessValue: number | 'flex';
     let maxBarThickness: number | undefined;
+    const indexAxis = (config.options as any)?.indexAxis ?? 'x';
+
+    if (!this.useCustomOptions && indexAxis === 'x') {
+      // Respect vertical sizing helper output; avoid overriding its values.
+      return;
+    }
 
     if (this.useCustomOptions) {
       // Use form input values
@@ -668,58 +796,172 @@ export class BarChartSizingComponent {
   }
 
   private getVerticalChartConfiguration(): ChartConfiguration<'bar'> {
-    return this.getEnrollmentChartConfiguration(
+    const baseConfig = this.getEnrollmentChartConfiguration(
       ['Lower School', 'Upper School'],
       [1245, 1890],
       'x'
     );
+    
+    // Apply vertical bar chart sizing for 2 categories, 1 series
+    const dataRange = this.getDataRangeFromConfig(baseConfig);
+    const sizing = getVerticalBarChartSizing(2, this.verticalContainerWidth, 1, dataRange);
+    return mergeChartConfig({
+      ...baseConfig,
+      options: {
+        ...baseConfig.options,
+        ...sizing,
+      },
+    });
   }
 
   private getVerticalChartConfigurationEnrollment2(): ChartConfiguration<'bar'> {
-    return this.getEnrollmentChartConfiguration(
+    const baseConfig = this.getEnrollmentChartConfiguration(
       ['Lower School', 'Middle School', 'Upper School'],
       [1245, 1560, 1890],
       'x'
     );
+    
+    // Apply vertical bar chart sizing for 3 categories, 1 series
+    const dataRange = this.getDataRangeFromConfig(baseConfig);
+    const sizing = getVerticalBarChartSizing(3, this.verticalContainerWidth, 1, dataRange);
+    return mergeChartConfig({
+      ...baseConfig,
+      options: {
+        ...baseConfig.options,
+        ...sizing,
+      },
+    });
   }
 
   private getVerticalChartConfigurationEnrollment3(): ChartConfiguration<'bar'> {
-    return this.getEnrollmentChartConfiguration(
+    const baseConfig = this.getEnrollmentChartConfiguration(
       ['Lower School', 'Middle School', 'Upper School', 'High School', 'Advanced Placement'],
       [1245, 1560, 1890, 1420, 980],
       'x'
     );
+    
+    // Apply vertical bar chart sizing for 5 categories, 1 series
+    const dataRange = this.getDataRangeFromConfig(baseConfig);
+    const sizing = getVerticalBarChartSizing(5, this.verticalContainerWidth, 1, dataRange);
+    return mergeChartConfig({
+      ...baseConfig,
+      options: {
+        ...baseConfig.options,
+        ...sizing,
+      },
+    });
   }
 
   private getVerticalChartConfigurationByGender(): ChartConfiguration<'bar'> {
-    return this.getEnrollmentByGenderChartConfiguration(
+    const baseConfig = this.getEnrollmentByGenderChartConfiguration(
       ['Lower School', 'Upper School'],
       [610, 920],
       [635, 970],
       'x'
     );
+    
+    // Apply vertical bar chart sizing for 2 categories, 2 series
+    const dataRange = this.getDataRangeFromConfig(baseConfig);
+    const sizing = getVerticalBarChartSizing(2, this.verticalContainerWidth, 2, dataRange);
+    
+    // Set bar sizing directly on datasets
+    if (baseConfig.data?.datasets) {
+      const barPercentage = (sizing as any).datasets?.bar?.barPercentage ?? 1;
+      const categoryPercentage = (sizing as any).datasets?.bar?.categoryPercentage ?? 0.7;
+      const maxBarThickness = (sizing as any).datasets?.bar?.maxBarThickness;
+      
+      baseConfig.data.datasets.forEach((dataset: any) => {
+        dataset.barPercentage = barPercentage;
+        dataset.categoryPercentage = categoryPercentage;
+        if (maxBarThickness) {
+          dataset.maxBarThickness = maxBarThickness;
+        }
+      });
+    }
+    
+    return mergeChartConfig({
+      ...baseConfig,
+      options: {
+        ...baseConfig.options,
+        ...sizing,
+      },
+    });
   }
 
   private getVerticalChartConfigurationByGenderEnrollment2(): ChartConfiguration<'bar'> {
-    return this.getEnrollmentByGenderChartConfiguration(
+    const baseConfig = this.getEnrollmentByGenderChartConfiguration(
       ['Lower School', 'Middle School', 'Upper School'],
       [610, 780, 920],
       [635, 820, 970],
       'x'
     );
+    
+    // Apply vertical bar chart sizing for 3 categories, 2 series
+    const dataRange = this.getDataRangeFromConfig(baseConfig);
+    const sizing = getVerticalBarChartSizing(3, this.verticalContainerWidth, 2, dataRange);
+    
+    // Set bar sizing directly on datasets
+    if (baseConfig.data?.datasets) {
+      const barPercentage = (sizing as any).datasets?.bar?.barPercentage ?? 1;
+      const categoryPercentage = (sizing as any).datasets?.bar?.categoryPercentage ?? 0.7;
+      const maxBarThickness = (sizing as any).datasets?.bar?.maxBarThickness;
+      
+      baseConfig.data.datasets.forEach((dataset: any) => {
+        dataset.barPercentage = barPercentage;
+        dataset.categoryPercentage = categoryPercentage;
+        if (maxBarThickness) {
+          dataset.maxBarThickness = maxBarThickness;
+        }
+      });
+    }
+    
+    return mergeChartConfig({
+      ...baseConfig,
+      options: {
+        ...baseConfig.options,
+        ...sizing,
+      },
+    });
   }
 
   private getVerticalChartConfigurationByGenderEnrollment3(): ChartConfiguration<'bar'> {
-    return this.getEnrollmentByGenderChartConfiguration(
+    const baseConfig = this.getEnrollmentByGenderChartConfiguration(
       ['Lower School', 'Middle School', 'Upper School', 'High School', 'Advanced Placement'],
       [610, 780, 920, 690, 480],
       [635, 820, 970, 730, 500],
       'x'
     );
+    
+    // Apply vertical bar chart sizing for 5 categories, 2 series
+    const dataRange = this.getDataRangeFromConfig(baseConfig);
+    const sizing = getVerticalBarChartSizing(5, this.verticalContainerWidth, 2, dataRange);
+    
+    // Set bar sizing directly on datasets
+    if (baseConfig.data?.datasets) {
+      const barPercentage = (sizing as any).datasets?.bar?.barPercentage ?? 1;
+      const categoryPercentage = (sizing as any).datasets?.bar?.categoryPercentage ?? 0.7;
+      const maxBarThickness = (sizing as any).datasets?.bar?.maxBarThickness;
+      
+      baseConfig.data.datasets.forEach((dataset: any) => {
+        dataset.barPercentage = barPercentage;
+        dataset.categoryPercentage = categoryPercentage;
+        if (maxBarThickness) {
+          dataset.maxBarThickness = maxBarThickness;
+        }
+      });
+    }
+    
+    return mergeChartConfig({
+      ...baseConfig,
+      options: {
+        ...baseConfig.options,
+        ...sizing,
+      },
+    });
   }
 
   private getVerticalChartConfigurationByGradeAndGender(): ChartConfiguration<'bar'> {
-    return this.getGradeDistributionByGenderChartConfiguration(
+    const baseConfig = this.getGradeDistributionByGenderChartConfiguration(
       [
         {
           label: 'Male Students',
@@ -732,10 +974,37 @@ export class BarChartSizingComponent {
       ],
       'x'
     );
+    
+    // Apply vertical bar chart sizing for 7 categories, 2 series
+    const dataRange = this.getDataRangeFromConfig(baseConfig);
+    const sizing = getVerticalBarChartSizing(7, this.verticalContainerWidth, 2, dataRange);
+    
+    // Set bar sizing directly on datasets
+    if (baseConfig.data?.datasets) {
+      const barPercentage = (sizing as any).datasets?.bar?.barPercentage ?? 1;
+      const categoryPercentage = (sizing as any).datasets?.bar?.categoryPercentage ?? 0.7;
+      const maxBarThickness = (sizing as any).datasets?.bar?.maxBarThickness;
+      
+      baseConfig.data.datasets.forEach((dataset: any) => {
+        dataset.barPercentage = barPercentage;
+        dataset.categoryPercentage = categoryPercentage;
+        if (maxBarThickness) {
+          dataset.maxBarThickness = maxBarThickness;
+        }
+      });
+    }
+    
+    return mergeChartConfig({
+      ...baseConfig,
+      options: {
+        ...baseConfig.options,
+        ...sizing,
+      },
+    });
   }
 
   private getVerticalChartConfigurationByGradeAndGender2(): ChartConfiguration<'bar'> {
-    return this.getGradeDistributionByGenderChartConfiguration(
+    const baseConfig = this.getGradeDistributionByGenderChartConfiguration(
       [
         {
           label: 'Male Students',
@@ -752,10 +1021,37 @@ export class BarChartSizingComponent {
       ],
       'x'
     );
+    
+    // Apply vertical bar chart sizing for 7 categories, 3 series
+    const dataRange = this.getDataRangeFromConfig(baseConfig);
+    const sizing = getVerticalBarChartSizing(7, this.verticalContainerWidth, 3, dataRange);
+    
+    // Set bar sizing directly on datasets
+    if (baseConfig.data?.datasets) {
+      const barPercentage = (sizing as any).datasets?.bar?.barPercentage ?? 1;
+      const categoryPercentage = (sizing as any).datasets?.bar?.categoryPercentage ?? 0.7;
+      const maxBarThickness = (sizing as any).datasets?.bar?.maxBarThickness;
+      
+      baseConfig.data.datasets.forEach((dataset: any) => {
+        dataset.barPercentage = barPercentage;
+        dataset.categoryPercentage = categoryPercentage;
+        if (maxBarThickness) {
+          dataset.maxBarThickness = maxBarThickness;
+        }
+      });
+    }
+    
+    return mergeChartConfig({
+      ...baseConfig,
+      options: {
+        ...baseConfig.options,
+        ...sizing,
+      },
+    });
   }
 
   private getVerticalChartConfigurationByGradeAndGender3(): ChartConfiguration<'bar'> {
-    return this.getGradeDistributionByGenderChartConfiguration(
+    const baseConfig = this.getGradeDistributionByGenderChartConfiguration(
       [
         {
           label: 'Male Students',
@@ -776,10 +1072,37 @@ export class BarChartSizingComponent {
       ],
       'x'
     );
+    
+    // Apply vertical bar chart sizing for 7 categories, 4 series
+    const dataRange = this.getDataRangeFromConfig(baseConfig);
+    const sizing = getVerticalBarChartSizing(7, this.verticalContainerWidth, 4, dataRange);
+    
+    // Set bar sizing directly on datasets
+    if (baseConfig.data?.datasets) {
+      const barPercentage = (sizing as any).datasets?.bar?.barPercentage ?? 1;
+      const categoryPercentage = (sizing as any).datasets?.bar?.categoryPercentage ?? 0.7;
+      const maxBarThickness = (sizing as any).datasets?.bar?.maxBarThickness;
+      
+      baseConfig.data.datasets.forEach((dataset: any) => {
+        dataset.barPercentage = barPercentage;
+        dataset.categoryPercentage = categoryPercentage;
+        if (maxBarThickness) {
+          dataset.maxBarThickness = maxBarThickness;
+        }
+      });
+    }
+    
+    return mergeChartConfig({
+      ...baseConfig,
+      options: {
+        ...baseConfig.options,
+        ...sizing,
+      },
+    });
   }
 
   private getVerticalChartConfigurationByGradeMetrics(): ChartConfiguration<'bar'> {
-    return this.getGradeMetricsChartConfiguration(
+    const baseConfig = this.getGradeMetricsChartConfiguration(
       ['Absences', 'Tardies', 'Infractions', 'Awards'],
       [
         { label: 'Grade 6', data: [8, 14, 3, 5] },
@@ -792,10 +1115,37 @@ export class BarChartSizingComponent {
       ],
       'x'
     );
+    
+    // Apply vertical bar chart sizing for 4 categories, 7 series
+    const dataRange = this.getDataRangeFromConfig(baseConfig);
+    const sizing = getVerticalBarChartSizing(4, this.verticalContainerWidth, 7, dataRange);
+    
+    // Set bar sizing directly on datasets
+    if (baseConfig.data?.datasets) {
+      const barPercentage = (sizing as any).datasets?.bar?.barPercentage ?? 1;
+      const categoryPercentage = (sizing as any).datasets?.bar?.categoryPercentage ?? 0.7;
+      const maxBarThickness = (sizing as any).datasets?.bar?.maxBarThickness;
+      
+      baseConfig.data.datasets.forEach((dataset: any) => {
+        dataset.barPercentage = barPercentage;
+        dataset.categoryPercentage = categoryPercentage;
+        if (maxBarThickness) {
+          dataset.maxBarThickness = maxBarThickness;
+        }
+      });
+    }
+    
+    return mergeChartConfig({
+      ...baseConfig,
+      options: {
+        ...baseConfig.options,
+        ...sizing,
+      },
+    });
   }
 
   private getVerticalChartConfigurationByGradeMetrics1(): ChartConfiguration<'bar'> {
-    return this.getGradeMetricsChartConfiguration(
+    const baseConfig = this.getGradeMetricsChartConfiguration(
       ['Absences', 'Tardies', 'Infractions', 'Awards'],
       [
         { label: 'Grade 6', data: [8, 14, 3, 5] },
@@ -806,10 +1156,37 @@ export class BarChartSizingComponent {
       ],
       'x'
     );
+    
+    // Apply vertical bar chart sizing for 4 categories, 5 series
+    const dataRange = this.getDataRangeFromConfig(baseConfig);
+    const sizing = getVerticalBarChartSizing(4, this.verticalContainerWidth, 5, dataRange);
+    
+    // Set bar sizing directly on datasets
+    if (baseConfig.data?.datasets) {
+      const barPercentage = (sizing as any).datasets?.bar?.barPercentage ?? 1;
+      const categoryPercentage = (sizing as any).datasets?.bar?.categoryPercentage ?? 0.7;
+      const maxBarThickness = (sizing as any).datasets?.bar?.maxBarThickness;
+      
+      baseConfig.data.datasets.forEach((dataset: any) => {
+        dataset.barPercentage = barPercentage;
+        dataset.categoryPercentage = categoryPercentage;
+        if (maxBarThickness) {
+          dataset.maxBarThickness = maxBarThickness;
+        }
+      });
+    }
+    
+    return mergeChartConfig({
+      ...baseConfig,
+      options: {
+        ...baseConfig.options,
+        ...sizing,
+      },
+    });
   }
 
   private getVerticalChartConfigurationByGradeMetrics3(): ChartConfiguration<'bar'> {
-    return this.getGradeMetricsChartConfiguration(
+    const baseConfig = this.getGradeMetricsChartConfiguration(
       ['Absences', 'Tardies', 'Infractions', 'Awards', 'Detentions'],
       [
         { label: 'Grade 5', data: [7, 12, 3, 4, 2] },
@@ -823,6 +1200,33 @@ export class BarChartSizingComponent {
       ],
       'x'
     );
+    
+    // Apply vertical bar chart sizing for 5 categories, 8 series
+    const dataRange = this.getDataRangeFromConfig(baseConfig);
+    const sizing = getVerticalBarChartSizing(5, this.verticalContainerWidth, 8, dataRange);
+    
+    // Set bar sizing directly on datasets
+    if (baseConfig.data?.datasets) {
+      const barPercentage = (sizing as any).datasets?.bar?.barPercentage ?? 1;
+      const categoryPercentage = (sizing as any).datasets?.bar?.categoryPercentage ?? 0.7;
+      const maxBarThickness = (sizing as any).datasets?.bar?.maxBarThickness;
+      
+      baseConfig.data.datasets.forEach((dataset: any) => {
+        dataset.barPercentage = barPercentage;
+        dataset.categoryPercentage = categoryPercentage;
+        if (maxBarThickness) {
+          dataset.maxBarThickness = maxBarThickness;
+        }
+      });
+    }
+    
+    return mergeChartConfig({
+      ...baseConfig,
+      options: {
+        ...baseConfig.options,
+        ...sizing,
+      },
+    });
   }
 
   private getStackedEnrollmentChartConfiguration(isVertical = false): ChartConfiguration<'bar'> {
@@ -836,8 +1240,8 @@ export class BarChartSizingComponent {
       'Previous Year': [420, 310, 270, 140],
     };
 
-    return {
-      type: 'bar',
+    const baseConfig = {
+      type: 'bar' as const,
       data: {
         labels: programs,
         datasets: [
@@ -863,7 +1267,7 @@ export class BarChartSizingComponent {
       },
       options: {
         ...getSkyuxBarChartConfig({
-          indexAxis: isVertical ? 'y' : 'x',
+          indexAxis: isVertical ? 'x' : 'y',
           scales: {
             x: {
               stacked: true,
@@ -886,7 +1290,39 @@ export class BarChartSizingComponent {
             },
           },
         }),
-      } as any,
+      },
     };
+
+    // Apply vertical bar chart sizing for 4 categories, 3 series (stacked)
+    if (isVertical) {
+      const dataRange = this.getDataRangeFromConfig(baseConfig as ChartConfiguration<'bar'>, true);
+      const sizing = getVerticalBarChartSizing(4, this.verticalContainerWidth, 3, dataRange, true);
+      
+      // Set bar sizing directly on datasets
+      const typedConfig = baseConfig as ChartConfiguration<'bar'>;
+      if (typedConfig.data?.datasets) {
+        const barPercentage = (sizing as any).datasets?.bar?.barPercentage ?? 1;
+        const categoryPercentage = (sizing as any).datasets?.bar?.categoryPercentage ?? 0.7;
+        const maxBarThickness = (sizing as any).datasets?.bar?.maxBarThickness;
+        
+        typedConfig.data.datasets.forEach((dataset: any) => {
+          dataset.barPercentage = barPercentage;
+          dataset.categoryPercentage = categoryPercentage;
+          if (maxBarThickness) {
+            dataset.maxBarThickness = maxBarThickness;
+          }
+        });
+      }
+      
+      return mergeChartConfig({
+        ...baseConfig,
+        options: {
+          ...baseConfig.options,
+          ...sizing,
+        },
+      }) as ChartConfiguration<'bar'>;
+    }
+
+    return baseConfig as ChartConfiguration<'bar'>;
   }
 }

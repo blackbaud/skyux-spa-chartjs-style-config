@@ -149,7 +149,7 @@ export class TileProspectManagementComponent implements AfterViewInit {
         ],
       },
       options: baseConfig,
-      plugins: [ChartDataLabels],
+      plugins: [ChartDataLabels as any],
     };
 
     this.chart = new Chart(ctx, config);
